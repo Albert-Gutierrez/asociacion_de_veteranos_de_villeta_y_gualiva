@@ -30,6 +30,13 @@ function e(string $v): string
             <dt>Fuerza</dt><dd><?= e($asociado['fuerza']) ?></dd>
             <dt>Mensaje</dt><dd><?= $asociado['mensaje'] ? nl2br(e($asociado['mensaje'])) : '—' ?></dd>
             <dt>Fecha de inscripción</dt><dd><?= e((new DateTime($asociado['creado_en']))->format('d/m/Y H:i')) ?></dd>
+            <dt>Fecha de afiliación</dt>
+            <dd>
+                <?= e((new DateTime(PagoCuota::fechaBaseCuota($asociado)))->format('d/m/Y')) ?>
+                <?php if (!$asociado['fecha_afiliacion']): ?>
+                    <span class="admin-texto-suave">(= fecha de inscripción, aún no se cargó una real)</span>
+                <?php endif; ?>
+            </dd>
         </dl>
 
         <?php if (Auth::puedeGestionarSolicitudes()): ?>
