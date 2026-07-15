@@ -1,9 +1,12 @@
 # Bloquea el acceso a cualquier ruta con un componente que empiece por punto
 # (.env, .git/ y todo su contenido, .htaccess, etc.) sin importar la profundidad.
-RewriteEngine On
-RewriteRule "(^|/)\." - [F,L]
+# Envuelto en <IfModule> para no romper el sitio en hosts sin mod_rewrite.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule "(^|/)\." - [F,L]
+</IfModule>
 
-# Respaldo para servidores sin mod_rewrite habilitado
+# Respaldo para servidores sin mod_rewrite habilitado (o defensa adicional)
 <FilesMatch "^\.">
     Require all denied
 </FilesMatch>

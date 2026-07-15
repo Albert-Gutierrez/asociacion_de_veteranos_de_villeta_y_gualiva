@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+// Nunca mostrar errores de PHP al visitante, sin importar la configuración
+// del hosting (defensa adicional a la de display_errors en php.ini).
+ini_set('display_errors', '0');
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/config/database.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
