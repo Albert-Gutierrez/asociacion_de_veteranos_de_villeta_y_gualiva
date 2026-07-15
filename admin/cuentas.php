@@ -45,6 +45,25 @@ foreach ($asociados as $a) {
     }
 }
 
+// Recaudo mes a mes (enero a diciembre) de un año calendario específico.
+$anioActual = (int) date('Y');
+$aniosConDatos = $pdo->query('SELECT DISTINCT anio FROM pagos_cuota')->fetchAll(PDO::FETCH_COLUMN);
+$aniosDisponibles = array_unique(array_merge([$anioActual], array_map('intval', $aniosConDatos)));
+rsort($aniosDisponibles);
+
+$anioSeleccionado = (int) ($_GET['anio'] ?? $anioActual);
+if ($anioSeleccionado < 2000 || $anioSeleccionado > $anioActual + 1) {
+    $anioSeleccionado = $anioActual;
+}
+
+$stmtRecaudoAnual = $pdo->prepare('SELECT mes, SUM(monto) AS total FROM pagos_cuota WHERE anio = :anio GROUP BY mes');
+$stmtRecaudoAnual->execute(['anio' => $anioSeleccionado]);
+$recaudoPorMes = array_fill(1, 12, 0.0);
+foreach ($stmtRecaudoAnual->fetchAll() as $r) {
+    $recaudoPorMes[(int) $r['mes']] = (float) $r['total'];
+}
+$totalAnioSeleccionado = array_sum($recaudoPorMes);
+
 $tituloPagina = 'Cuentas Totales';
 $paginaActiva = 'cuentas';
 require __DIR__ . '/incluye/layout_inicio.php';
@@ -83,6 +102,42 @@ function e(string $v): string
             <span class="stat-valor"><?= $morosos ?></span>
             <span class="stat-etiqueta">Morosos este ciclo</span>
         </div>
+    </div>
+</div>
+
+<div class="admin-panel">
+    <div class="admin-panel-header">
+        <h2>Recaudo mensual de <?= $anioSeleccionado ?></h2>
+        <form method="GET" class="admin-filtros">
+            <select name="anio" onchange="this.form.submit()">
+                <?php foreach ($aniosDisponibles as $a): ?>
+                    <option value="<?= $a ?>" <?= $a === $anioSeleccionado ? 'selected' : '' ?>><?= $a ?></option>
+                <?php endforeach; ?>
+            </select>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="admin-tabla admin-tabla-matriz">
+            <thead>
+                <tr>
+                    <?php for ($mes = 1; $mes <= 12; $mes++): ?>
+                        <th><?= substr(nombreMes($mes), 0, 3) ?></th>
+                    <?php endfor; ?>
+                    <th>Total <?= $anioSeleccionado ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <?php for ($mes = 1; $mes <= 12; $mes++): ?>
+                        <td class="<?= $recaudoPorMes[$mes] > 0 ? 'celda-recaudo-con-datos' : '' ?>">
+                            <?= formatoPesos($recaudoPorMes[$mes]) ?>
+                        </td>
+                    <?php endfor; ?>
+                    <td><strong><?= formatoPesos($totalAnioSeleccionado) ?></strong></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 

@@ -512,6 +512,12 @@ body.login-body {
     opacity: .6;
 }
 
+.celda-recaudo-con-datos {
+    background: #EFFAF1;
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
 /* MODAL DE CUOTAS (celdas clickeables) _____________________________________________ */
 .cuotas-grid {
     display: grid;
@@ -642,6 +648,19 @@ body.login-body {
     grid-template-columns: 1fr 1fr;
     gap: 24px;
     align-items: start;
+}
+
+.admin-total-historico {
+    background: var(--color-bg-light);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    font-size: 14px;
+}
+
+.admin-total-historico strong {
+    color: var(--color-primary);
+    font-size: 16px;
 }
 
 /* RESPONSIVE _______________________________________________________________________ */

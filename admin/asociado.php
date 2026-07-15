@@ -37,8 +37,10 @@ $stmtPagos->execute(['id' => $id]);
 $pagos = $stmtPagos->fetchAll();
 
 $pagosPorMes = [];
+$totalPagadoHistorico = 0.0;
 foreach ($pagos as $p) {
     $pagosPorMes[$p['anio'] . '-' . $p['mes']] = $p;
+    $totalPagadoHistorico += (float) $p['monto'];
 }
 
 $ciclo = obtenerCicloPago();
@@ -109,6 +111,11 @@ function e(string $v): string
         <div class="admin-panel-header">
             <h2>Cuota mensual</h2>
         </div>
+
+        <p class="admin-total-historico">
+            Total aportado desde su inscripción: <strong><?= formatoPesos($totalPagadoHistorico) ?></strong>
+            <span class="admin-texto-suave">(<?= count($pagos) ?> cuota<?= count($pagos) === 1 ? '' : 's' ?> pagada<?= count($pagos) === 1 ? '' : 's' ?>)</span>
+        </p>
 
         <?php if ($asociado['estado'] !== 'aprobado'): ?>
             <p class="admin-texto-suave">Solo los asociados aprobados quedan sujetos al cobro de la cuota mensual.</p>
