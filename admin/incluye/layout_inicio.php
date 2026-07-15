@@ -29,6 +29,9 @@
                 <a href="dashboard.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'dashboard' ? 'active' : '' ?>">
                     <i class="fas fa-gauge-high"></i> Dashboard
                 </a>
+                <a href="cuentas.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'cuentas' ? 'active' : '' ?>">
+                    <i class="fas fa-sack-dollar"></i> Cuentas Totales
+                </a>
                 <?php if (esSuperAdmin()): ?>
                 <a href="administradores.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'administradores' ? 'active' : '' ?>">
                     <i class="fas fa-user-shield"></i> Administradores
@@ -47,7 +50,7 @@
                     <i class="fas fa-circle-user"></i>
                     <div>
                         <strong><?= htmlspecialchars($usuario['nombre'], ENT_QUOTES, 'UTF-8') ?></strong>
-                        <span><?= $usuario['rol'] === 'super_administrador' ? 'Super administrador' : 'Administrador' ?></span>
+                        <span><?= etiquetaRol($usuario['rol']) ?></span>
                     </div>
                 </div>
                 <a href="logout.php" class="admin-logout-link"><i class="fas fa-right-from-bracket"></i> Cerrar sesión</a>

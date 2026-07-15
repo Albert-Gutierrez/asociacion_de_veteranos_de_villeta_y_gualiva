@@ -162,3 +162,41 @@ if (formCambiarPassword) {
         if (ok) formCambiarPassword.reset();
     });
 }
+
+// Modal "Gestionar pagos" (cuentas.php)
+const modalPagoEl = document.getElementById('modal-pago');
+if (modalPagoEl) {
+    const modalPago = new bootstrap.Modal(modalPagoEl);
+    const modalNombre = document.getElementById('modal-pago-nombre');
+    const modalAsociadoId = document.getElementById('modal-asociado-id');
+    const modalMesSelect = document.getElementById('modal-mes-select');
+    const modalMensaje = document.getElementById('modal-pago-mensaje');
+    const modalCsrf = document.getElementById('modal-csrf');
+
+    document.querySelectorAll('.btn-gestionar-pago').forEach((boton) => {
+        boton.addEventListener('click', () => {
+            modalNombre.textContent = boton.dataset.nombre;
+            modalAsociadoId.value = boton.dataset.id;
+            modalMensaje.textContent = '';
+            modalMensaje.className = 'admin-mensaje-accion';
+            modalPago.show();
+        });
+    });
+
+    async function marcarDesdeModal(accion) {
+        const [anio, mes] = modalMesSelect.value.split('-');
+        const { ok, resultado } = await llamarAccion('acciones/marcar_pago.php', {
+            csrf_token: modalCsrf.value,
+            asociado_id: modalAsociadoId.value,
+            anio,
+            mes,
+            accion,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+
+        mostrarMensaje(modalMensaje, resultado.mensaje, ok);
+        if (ok) setTimeout(() => window.location.reload(), 700);
+    }
+
+    document.getElementById('btn-marcar-pagado').addEventListener('click', () => marcarDesdeModal('pagado'));
+    document.getElementById('btn-marcar-moroso').addEventListener('click', () => marcarDesdeModal('moroso'));
+}

@@ -99,3 +99,48 @@ function requerirRolApi(string $rol): array
     }
     return $u;
 }
+
+/**
+ * @param string[] $roles
+ */
+function requerirRoles(array $roles): array
+{
+    $u = requerirSesion();
+    if (!in_array($u['rol'], $roles, true)) {
+        http_response_code(403);
+        echo 'No tienes permisos para ver esta página.';
+        exit;
+    }
+    return $u;
+}
+
+/**
+ * @param string[] $roles
+ */
+function requerirRolesApi(array $roles): array
+{
+    $u = requerirSesionApi();
+    if (!in_array($u['rol'], $roles, true)) {
+        http_response_code(403);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['exito' => false, 'mensaje' => 'No tienes permisos para esta acción.']);
+        exit;
+    }
+    return $u;
+}
+
+function puedeGestionarSolicitudes(): bool
+{
+    $u = usuarioActual();
+    return $u !== null && in_array($u['rol'], ['administrador', 'super_administrador'], true);
+}
+
+function etiquetaRol(string $rol): string
+{
+    $etiquetas = [
+        'super_administrador' => 'Super administrador',
+        'tesorero' => 'Tesorero',
+        'administrador' => 'Administrador',
+    ];
+    return $etiquetas[$rol] ?? 'Administrador';
+}

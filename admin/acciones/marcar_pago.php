@@ -32,8 +32,9 @@ requerirCsrfApi($entrada['csrf_token'] ?? null);
 $asociadoId = (int) ($entrada['asociado_id'] ?? 0);
 $anio = (int) ($entrada['anio'] ?? 0);
 $mes = (int) ($entrada['mes'] ?? 0);
+$accion = (string) ($entrada['accion'] ?? 'pagado');
 
-if ($asociadoId <= 0 || $anio < 2020 || $mes < 1 || $mes > 12) {
+if ($asociadoId <= 0 || $anio < 2020 || $mes < 1 || $mes > 12 || !in_array($accion, ['pagado', 'moroso'], true)) {
     responder(422, false, 'Datos inválidos.');
 }
 
@@ -48,6 +49,17 @@ if (!$asociado) {
 }
 if ($asociado['estado'] !== 'aprobado') {
     responder(422, false, 'Solo los asociados aprobados pagan cuota mensual.');
+}
+
+if ($accion === 'moroso') {
+    try {
+        $delete = $pdo->prepare('DELETE FROM pagos_cuota WHERE asociado_id = :asociado_id AND anio = :anio AND mes = :mes');
+        $delete->execute(['asociado_id' => $asociadoId, 'anio' => $anio, 'mes' => $mes]);
+    } catch (PDOException $e) {
+        error_log('Error marcando moroso: ' . $e->getMessage());
+        responder(500, false, 'No se pudo actualizar el estado de la cuota.');
+    }
+    responder(200, true, 'Mes marcado como moroso.');
 }
 
 try {

@@ -76,6 +76,7 @@ function e(string $v): string
             <dt>Fecha de inscripción</dt><dd><?= e((new DateTime($asociado['creado_en']))->format('d/m/Y H:i')) ?></dd>
         </dl>
 
+        <?php if (puedeGestionarSolicitudes()): ?>
         <form id="form-estado" class="admin-form-inline">
             <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
             <input type="hidden" name="asociado_id" value="<?= (int) $asociado['id'] ?>">
@@ -90,6 +91,7 @@ function e(string $v): string
             </div>
             <p id="estado-mensaje" class="admin-mensaje-accion"></p>
         </form>
+        <?php endif; ?>
     </div>
 
     <div class="admin-panel">

@@ -37,7 +37,7 @@ if ($accion === 'crear') {
     $telefono = trim((string) ($entrada['telefono'] ?? ''));
     $rol = (string) ($entrada['rol'] ?? 'administrador');
 
-    if ($nombre === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || !in_array($rol, ['administrador', 'super_administrador'], true)) {
+    if ($nombre === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || !in_array($rol, ['administrador', 'super_administrador', 'tesorero'], true)) {
         responder(422, false, 'Datos inválidos.');
     }
     if ($telefono !== '' && !preg_match('/^[0-9+()\s-]{7,20}$/', $telefono)) {

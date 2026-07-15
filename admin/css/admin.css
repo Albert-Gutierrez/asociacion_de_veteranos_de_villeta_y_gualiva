@@ -479,6 +479,60 @@ body.login-body {
     color: #777;
 }
 
+/* MATRIZ DE CUOTAS (cuentas.php) __________________________________________________ */
+.admin-tabla-matriz th,
+.admin-tabla-matriz td {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.admin-tabla-matriz th:first-child,
+.admin-tabla-matriz td:first-child {
+    text-align: left;
+}
+
+.celda-cuota {
+    font-size: 16px;
+}
+
+.celda-pagado {
+    color: var(--color-primary);
+}
+
+.celda-moroso {
+    color: var(--color-rojo-patrio);
+    opacity: .6;
+}
+
+/* MODAL (Bootstrap) ________________________________________________________________ */
+#modal-pago label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--color-texto-oscuro);
+}
+
+#modal-pago select {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-family: var(--font-text);
+}
+
+#btn-marcar-moroso {
+    background: #FBE2E1;
+    color: var(--color-rojo-patrio);
+    border-color: #FBE2E1;
+}
+
+#btn-marcar-moroso:hover {
+    background: var(--color-rojo-patrio);
+    color: white;
+}
+
 /* FORMULARIOS DEL PANEL __________________________________________________________ */
 .admin-datos {
     display: grid;

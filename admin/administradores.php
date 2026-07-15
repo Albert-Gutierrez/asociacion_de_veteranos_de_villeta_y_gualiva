@@ -46,6 +46,7 @@ function e(string $v): string
             <label for="rol">Rol</label>
             <select id="rol" name="rol">
                 <option value="administrador">Administrador</option>
+                <option value="tesorero">Tesorero</option>
                 <option value="super_administrador">Super administrador</option>
             </select>
         </div>
@@ -70,7 +71,7 @@ function e(string $v): string
                         <td><?= e($a['nombre']) ?></td>
                         <td><?= e($a['email']) ?></td>
                         <td><?= $a['telefono'] ? e($a['telefono']) : '—' ?></td>
-                        <td><?= $a['rol'] === 'super_administrador' ? 'Super administrador' : 'Administrador' ?></td>
+                        <td><?= etiquetaRol($a['rol']) ?></td>
                         <td>
                             <span class="badge-estado <?= (int) $a['activo'] === 1 ? 'badge-aprobado' : 'badge-rechazado' ?>">
                                 <?= (int) $a['activo'] === 1 ? 'Activo' : 'Inactivo' ?>

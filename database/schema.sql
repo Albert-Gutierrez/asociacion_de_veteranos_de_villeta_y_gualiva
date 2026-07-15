@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS usuarios_admin (
     email VARCHAR(150) NOT NULL,
     telefono VARCHAR(20) NULL,
     password_hash VARCHAR(255) NOT NULL,
-    rol ENUM('administrador', 'super_administrador') NOT NULL DEFAULT 'administrador',
+    rol ENUM('administrador', 'super_administrador', 'tesorero') NOT NULL DEFAULT 'administrador',
     activo TINYINT(1) NOT NULL DEFAULT 1,
     intentos_fallidos TINYINT UNSIGNED NOT NULL DEFAULT 0,
     bloqueado_hasta TIMESTAMP NULL,
@@ -72,13 +72,16 @@ CREATE TABLE IF NOT EXISTS pagos_cuota (
 -- ---------------------------------------------------------------------------
 -- Usuario de base de datos de mínimo privilegio para la aplicación web.
 -- No uses la cuenta "root" en el .env de producción: crea un usuario dedicado
--- que solo pueda leer/insertar/actualizar en esta base de datos concreta
--- (no necesita DELETE: las cuentas de admin se desactivan, no se borran).
+-- que solo pueda leer/insertar/actualizar en esta base de datos concreta.
+-- DELETE se otorga SOLO sobre pagos_cuota (para que el tesorero pueda
+-- revertir un pago marcado por error / marcar "moroso"); nunca sobre
+-- asociados ni usuarios_admin (esas cuentas se desactivan, no se borran).
 --
 -- Ejecuta estas líneas manualmente (ajusta la contraseña) y usa esas
 -- credenciales en tu archivo .env (DB_USER / DB_PASS):
 --
 -- CREATE USER 'asovegu_app'@'localhost' IDENTIFIED BY 'CAMBIA_ESTA_CLAVE';
 -- GRANT SELECT, INSERT, UPDATE ON asovegu.* TO 'asovegu_app'@'localhost';
+-- GRANT DELETE ON asovegu.pagos_cuota TO 'asovegu_app'@'localhost';
 -- FLUSH PRIVILEGES;
 -- ---------------------------------------------------------------------------

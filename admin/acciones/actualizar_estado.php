@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responder(405, false, 'Método no permitido.');
 }
 
-requerirSesionApi();
+requerirRolesApi(['administrador', 'super_administrador']);
 
 $entrada = json_decode(file_get_contents('php://input'), true);
 if (!is_array($entrada)) {
