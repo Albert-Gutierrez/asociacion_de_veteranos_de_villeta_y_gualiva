@@ -54,3 +54,17 @@ function formatoPesos(float $valor): string
 {
     return '$' . number_format($valor, 0, ',', '.');
 }
+
+/**
+ * Los últimos 12 meses calendario (el actual primero), como pares año/mes.
+ */
+function obtenerUltimos12Meses(): array
+{
+    $meses = [];
+    $hoy = new DateTimeImmutable('first day of this month');
+    for ($i = 0; $i < 12; $i++) {
+        $ref = $hoy->modify("-{$i} months");
+        $meses[] = ['anio' => (int) $ref->format('Y'), 'mes' => (int) $ref->format('n')];
+    }
+    return $meses;
+}

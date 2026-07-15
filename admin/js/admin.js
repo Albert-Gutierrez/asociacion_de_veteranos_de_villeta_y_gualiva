@@ -163,40 +163,72 @@ if (formCambiarPassword) {
     });
 }
 
-// Modal "Gestionar pagos" (cuentas.php)
-const modalPagoEl = document.getElementById('modal-pago');
-if (modalPagoEl) {
-    const modalPago = new bootstrap.Modal(modalPagoEl);
-    const modalNombre = document.getElementById('modal-pago-nombre');
-    const modalAsociadoId = document.getElementById('modal-asociado-id');
-    const modalMesSelect = document.getElementById('modal-mes-select');
-    const modalMensaje = document.getElementById('modal-pago-mensaje');
-    const modalCsrf = document.getElementById('modal-csrf');
+// Modal "Cuotas" con celdas clickeables de los últimos 12 meses
+// (usado desde dashboard.php y cuentas.php)
+const modalCuotasEl = document.getElementById('modal-cuotas');
+if (modalCuotasEl) {
+    const modalCuotas = new bootstrap.Modal(modalCuotasEl);
+    const modalNombre = document.getElementById('modal-cuotas-nombre');
+    const modalAsociadoId = document.getElementById('modal-cuotas-asociado-id');
+    const modalGrid = document.getElementById('modal-cuotas-grid');
+    const modalMensaje = document.getElementById('modal-cuotas-mensaje');
+    const modalCsrf = document.getElementById('modal-cuotas-csrf');
 
-    document.querySelectorAll('.btn-gestionar-pago').forEach((boton) => {
+    function pintarCelda(celda, pagado) {
+        celda.classList.toggle('cuota-mes-pagado', pagado);
+        celda.classList.toggle('cuota-mes-moroso', !pagado);
+        celda.dataset.pagado = pagado ? '1' : '0';
+    }
+
+    function renderizarGrid(meses) {
+        modalGrid.innerHTML = '';
+        meses.forEach((m) => {
+            const celda = document.createElement('button');
+            celda.type = 'button';
+            celda.className = 'cuota-mes-chip';
+            celda.textContent = m.label;
+            celda.dataset.anio = m.anio;
+            celda.dataset.mes = m.mes;
+            pintarCelda(celda, m.pagado);
+            celda.addEventListener('click', () => alClicEnMes(celda));
+            modalGrid.appendChild(celda);
+        });
+    }
+
+    async function alClicEnMes(celda) {
+        const pagado = celda.dataset.pagado === '1';
+        const mensajeConfirmacion = pagado
+            ? 'El usuario tiene un pago registrado para ' + celda.textContent + '. ¿Desea revertirlo?'
+            : 'El usuario aportó la cuota mensual de ' + celda.textContent + '. ¿Desea cambiar el estado a pago?';
+
+        if (!confirm(mensajeConfirmacion)) return;
+
+        const accion = pagado ? 'moroso' : 'pagado';
+        celda.disabled = true;
+
+        const { ok, resultado } = await llamarAccion('acciones/marcar_pago.php', {
+            csrf_token: modalCsrf.value,
+            asociado_id: modalAsociadoId.value,
+            anio: celda.dataset.anio,
+            mes: celda.dataset.mes,
+            accion,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+
+        celda.disabled = false;
+        mostrarMensaje(modalMensaje, resultado.mensaje, ok);
+        if (ok) {
+            pintarCelda(celda, accion === 'pagado');
+        }
+    }
+
+    document.querySelectorAll('.btn-ver-cuotas').forEach((boton) => {
         boton.addEventListener('click', () => {
             modalNombre.textContent = boton.dataset.nombre;
             modalAsociadoId.value = boton.dataset.id;
             modalMensaje.textContent = '';
             modalMensaje.className = 'admin-mensaje-accion';
-            modalPago.show();
+            renderizarGrid(JSON.parse(boton.dataset.meses));
+            modalCuotas.show();
         });
     });
-
-    async function marcarDesdeModal(accion) {
-        const [anio, mes] = modalMesSelect.value.split('-');
-        const { ok, resultado } = await llamarAccion('acciones/marcar_pago.php', {
-            csrf_token: modalCsrf.value,
-            asociado_id: modalAsociadoId.value,
-            anio,
-            mes,
-            accion,
-        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
-
-        mostrarMensaje(modalMensaje, resultado.mensaje, ok);
-        if (ok) setTimeout(() => window.location.reload(), 700);
-    }
-
-    document.getElementById('btn-marcar-pagado').addEventListener('click', () => marcarDesdeModal('pagado'));
-    document.getElementById('btn-marcar-moroso').addEventListener('click', () => marcarDesdeModal('moroso'));
 }

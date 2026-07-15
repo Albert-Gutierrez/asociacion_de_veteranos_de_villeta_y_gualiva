@@ -11,6 +11,8 @@ $csrf = tokenCsrf();
 
 $ciclo = obtenerCicloPago();
 $diaHoy = $ciclo['dia_hoy'];
+$meses12 = obtenerUltimos12Meses();
+$anioMin = end($meses12)['anio'];
 
 $pdo = obtenerConexionBD();
 $stmt = $pdo->prepare(
@@ -21,6 +23,13 @@ $stmt = $pdo->prepare(
 );
 $stmt->execute(['anio' => $ciclo['anio'], 'mes' => $ciclo['mes']]);
 $asociados = $stmt->fetchAll();
+
+$stmtPagos12 = $pdo->prepare('SELECT asociado_id, anio, mes FROM pagos_cuota WHERE anio >= :anio_min');
+$stmtPagos12->execute(['anio_min' => $anioMin]);
+$pagados12 = [];
+foreach ($stmtPagos12->fetchAll() as $p) {
+    $pagados12[$p['asociado_id'] . '-' . $p['anio'] . '-' . $p['mes']] = true;
+}
 
 $totalAprobados = 0;
 $totalPendientesAprobacion = 0;
@@ -36,6 +45,23 @@ foreach ($asociados as &$a) {
         } elseif ($a['cuota_estado'] === 'vencido') {
             $cuotasVencidas++;
         }
+
+        $mesesAsociado = [];
+        $contadorPagados = 0;
+        foreach ($meses12 as $m) {
+            $pagado = isset($pagados12[$a['id'] . '-' . $m['anio'] . '-' . $m['mes']]);
+            if ($pagado) {
+                $contadorPagados++;
+            }
+            $mesesAsociado[] = [
+                'anio' => $m['anio'],
+                'mes' => $m['mes'],
+                'label' => nombreMes($m['mes']) . ' ' . $m['anio'],
+                'pagado' => $pagado,
+            ];
+        }
+        $a['meses_12'] = $mesesAsociado;
+        $a['cuotas_pagadas_12'] = $contadorPagados;
     } elseif ($a['estado'] === 'pendiente') {
         $totalPendientesAprobacion++;
         $a['cuota_estado'] = 'no_aplica';
@@ -119,6 +145,7 @@ require __DIR__ . '/incluye/layout_inicio.php';
                     <th>Teléfono</th>
                     <th>Fecha de inscripción</th>
                     <th>Estado</th>
+                    <th>Cuotas pagadas</th>
                     <th>Cuota (<?= nombreMes($ciclo['mes']) ?>)</th>
                     <th></th>
                 </tr>
@@ -142,6 +169,9 @@ require __DIR__ . '/incluye/layout_inicio.php';
                             </span>
                         </td>
                         <td>
+                            <?= $a['estado'] === 'aprobado' ? (int) $a['cuotas_pagadas_12'] . ' / 12' : '—' ?>
+                        </td>
+                        <td>
                             <?php if ($a['cuota_estado'] === 'no_aplica'): ?>
                                 <span class="badge-cuota badge-cuota-na">No aplica</span>
                             <?php elseif ($a['cuota_estado'] === 'pagado'): ?>
@@ -152,17 +182,27 @@ require __DIR__ . '/incluye/layout_inicio.php';
                                 <span class="badge-cuota badge-cuota-vencido">Vencido</span>
                             <?php endif; ?>
                         </td>
-                        <td>
+                        <td class="admin-acciones-cell">
                             <a href="asociado.php?id=<?= (int) $a['id'] ?>" class="btn-tabla">Ver</a>
+                            <?php if ($a['estado'] === 'aprobado'): ?>
+                                <button type="button" class="btn-tabla btn-ver-cuotas" title="Ver cuotas mes a mes"
+                                    data-id="<?= (int) $a['id'] ?>"
+                                    data-nombre="<?= htmlspecialchars($a['nombres'] . ' ' . $a['apellidos'], ENT_QUOTES, 'UTF-8') ?>"
+                                    data-meses="<?= htmlspecialchars(json_encode($a['meses_12']), ENT_QUOTES, 'UTF-8') ?>">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
                 <?php if ($asociados === []): ?>
-                    <tr><td colspan="7" class="admin-tabla-vacia">Aún no hay asociados registrados.</td></tr>
+                    <tr><td colspan="8" class="admin-tabla-vacia">Aún no hay asociados registrados.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
     </div>
 </div>
+
+<?php require __DIR__ . '/incluye/modal_cuotas.php'; ?>
 
 <?php require __DIR__ . '/incluye/layout_fin.php'; ?>

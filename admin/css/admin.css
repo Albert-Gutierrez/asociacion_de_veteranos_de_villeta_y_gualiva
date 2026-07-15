@@ -504,33 +504,43 @@ body.login-body {
     opacity: .6;
 }
 
-/* MODAL (Bootstrap) ________________________________________________________________ */
-#modal-pago label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--color-texto-oscuro);
+/* MODAL DE CUOTAS (celdas clickeables) _____________________________________________ */
+.cuotas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+    margin: 16px 0 4px;
 }
 
-#modal-pago select {
-    width: 100%;
-    padding: 9px 10px;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    font-size: 13.5px;
+.cuota-mes-chip {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 8px;
+    font-size: 12.5px;
+    font-weight: 700;
     font-family: var(--font-text);
+    cursor: pointer;
+    transition: transform .15s ease, opacity .15s ease;
 }
 
-#btn-marcar-moroso {
+.cuota-mes-chip:hover {
+    transform: translateY(-2px);
+}
+
+.cuota-mes-chip:disabled {
+    opacity: .6;
+    cursor: wait;
+    transform: none;
+}
+
+.cuota-mes-pagado {
+    background: #DFF3E4;
+    color: var(--color-primary);
+}
+
+.cuota-mes-moroso {
     background: #FBE2E1;
     color: var(--color-rojo-patrio);
-    border-color: #FBE2E1;
-}
-
-#btn-marcar-moroso:hover {
-    background: var(--color-rojo-patrio);
-    color: white;
 }
 
 /* FORMULARIOS DEL PANEL __________________________________________________________ */

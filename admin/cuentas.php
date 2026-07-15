@@ -11,13 +11,7 @@ $csrf = tokenCsrf();
 
 $pdo = obtenerConexionBD();
 
-// Últimos 12 meses, el actual primero.
-$meses = [];
-$hoy = new DateTimeImmutable('first day of this month');
-for ($i = 0; $i < 12; $i++) {
-    $ref = $hoy->modify("-{$i} months");
-    $meses[] = ['anio' => (int) $ref->format('Y'), 'mes' => (int) $ref->format('n')];
-}
+$meses = obtenerUltimos12Meses();
 $anioMin = end($meses)['anio'];
 
 $asociados = $pdo->query(
@@ -125,10 +119,21 @@ function e(string $v): string
                             </td>
                         <?php endforeach; ?>
                         <td>
-                            <button type="button" class="btn-tabla btn-gestionar-pago"
+                            <?php
+                            $mesesAsociado = array_map(function ($m) use ($a, $pagados) {
+                                return [
+                                    'anio' => $m['anio'],
+                                    'mes' => $m['mes'],
+                                    'label' => nombreMes($m['mes']) . ' ' . $m['anio'],
+                                    'pagado' => isset($pagados[$a['id'] . '-' . $m['anio'] . '-' . $m['mes']]),
+                                ];
+                            }, $meses);
+                            ?>
+                            <button type="button" class="btn-tabla btn-ver-cuotas" title="Gestionar cuotas mes a mes"
                                 data-id="<?= (int) $a['id'] ?>"
-                                data-nombre="<?= e($a['nombres'] . ' ' . $a['apellidos']) ?>">
-                                Gestionar pagos
+                                data-nombre="<?= e($a['nombres'] . ' ' . $a['apellidos']) ?>"
+                                data-meses="<?= e(json_encode($mesesAsociado)) ?>">
+                                <i class="fas fa-eye"></i> Gestionar
                             </button>
                         </td>
                     </tr>
@@ -141,35 +146,6 @@ function e(string $v): string
     </div>
 </div>
 
-<!-- Modal para marcar pagado/moroso de un mes puntual -->
-<div class="modal fade" id="modal-pago" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Gestionar pagos de <span id="modal-pago-nombre"></span></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="modal-csrf" value="<?= e($csrf) ?>">
-                <input type="hidden" id="modal-asociado-id">
-
-                <label for="modal-mes-select">Mes</label>
-                <select id="modal-mes-select">
-                    <?php foreach ($meses as $m): ?>
-                        <option value="<?= $m['anio'] ?>-<?= $m['mes'] ?>">
-                            <?= nombreMes($m['mes']) ?> <?= $m['anio'] ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
-                <p id="modal-pago-mensaje" class="admin-mensaje-accion"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-tabla" id="btn-marcar-moroso">Marcar moroso</button>
-                <button type="button" class="btn-enviar" id="btn-marcar-pagado">Marcar pagado</button>
-            </div>
-        </div>
-    </div>
-</div>
+<?php require __DIR__ . '/incluye/modal_cuotas.php'; ?>
 
 <?php require __DIR__ . '/incluye/layout_fin.php'; ?>
