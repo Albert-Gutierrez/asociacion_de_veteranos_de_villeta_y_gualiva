@@ -1,0 +1,16 @@
+# Sistema operativo
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editores / IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Archivos de entorno / configuración local
+.env
+.env.local
+
+# Logs
+*.log
