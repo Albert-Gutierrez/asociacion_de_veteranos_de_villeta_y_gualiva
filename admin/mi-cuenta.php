@@ -26,7 +26,7 @@ function e(string $v): string
     <dl class="admin-datos">
         <dt>Nombre</dt><dd><?= e($usuario['nombre']) ?></dd>
         <dt>Correo</dt><dd><?= e($usuario['email']) ?></dd>
-        <dt>Rol</dt><dd><?= $usuario['rol'] === 'super_administrador' ? 'Super administrador' : 'Administrador' ?></dd>
+        <dt>Rol</dt><dd><?= etiquetaRol($usuario['rol']) ?></dd>
     </dl>
 
     <h3 class="admin-subtitulo">Cambiar mi contraseña</h3>
