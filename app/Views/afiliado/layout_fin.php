@@ -1,0 +1,9 @@
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/afiliado.js?v=<?= @filemtime(__DIR__ . '/../../../afiliado/js/afiliado.js') ?: time() ?>"></script>
+</body>
+
+</html>

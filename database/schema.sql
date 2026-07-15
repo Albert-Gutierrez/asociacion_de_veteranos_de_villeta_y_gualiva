@@ -29,10 +29,14 @@ CREATE TABLE IF NOT EXISTS asociados (
     direccion VARCHAR(255) NULL,
     fuerza VARCHAR(100) NOT NULL,
     mensaje TEXT NULL,
-    estado ENUM('pendiente', 'aprobado', 'rechazado') NOT NULL DEFAULT 'pendiente',
+    estado ENUM('pendiente', 'aprobado', 'rechazado', 'inactivo') NOT NULL DEFAULT 'pendiente',
     ip_registro VARCHAR(45) NULL,
     creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_afiliacion DATE NULL COMMENT 'Fecha real en la que se asoció (puede ser anterior a creado_en, que es solo la fecha de registro en el sitio web). Si es NULL, se usa creado_en.',
+    password_hash VARCHAR(255) NULL COMMENT 'Acceso al portal del afiliado; NULL hasta que se aprueba/activa.',
+    intentos_fallidos TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    bloqueado_hasta TIMESTAMP NULL,
+    ultimo_acceso TIMESTAMP NULL,
     UNIQUE KEY uq_asociados_cedula (cedula)
 ) ENGINE=InnoDB;
 
@@ -68,6 +72,24 @@ CREATE TABLE IF NOT EXISTS pagos_cuota (
     UNIQUE KEY uq_pago_mes (asociado_id, anio, mes),
     CONSTRAINT fk_pago_asociado FOREIGN KEY (asociado_id) REFERENCES asociados(id),
     CONSTRAINT fk_pago_admin FOREIGN KEY (registrado_por) REFERENCES usuarios_admin(id)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------------
+-- FASE 5: Portal del afiliado + tickets de soporte
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS tickets (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    asociado_id INT UNSIGNED NOT NULL,
+    mensaje TEXT NOT NULL,
+    imagen_ruta VARCHAR(255) NULL,
+    estado ENUM('abierto', 'resuelto') NOT NULL DEFAULT 'abierto',
+    respuesta TEXT NULL,
+    respondido_por INT UNSIGNED NULL,
+    respondido_en TIMESTAMP NULL,
+    creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_ticket_asociado FOREIGN KEY (asociado_id) REFERENCES asociados(id),
+    CONSTRAINT fk_ticket_admin FOREIGN KEY (respondido_por) REFERENCES usuarios_admin(id)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------------

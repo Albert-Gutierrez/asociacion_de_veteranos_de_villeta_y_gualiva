@@ -49,11 +49,26 @@ function e(string $v): string
                     <option value="pendiente" <?= $asociado['estado'] === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
                     <option value="aprobado" <?= $asociado['estado'] === 'aprobado' ? 'selected' : '' ?>>Aprobado</option>
                     <option value="rechazado" <?= $asociado['estado'] === 'rechazado' ? 'selected' : '' ?>>Rechazado</option>
+                    <option value="inactivo" <?= $asociado['estado'] === 'inactivo' ? 'selected' : '' ?>>Inactivo (se salió de la asociación)</option>
                 </select>
                 <button type="submit" class="btn-tabla">Guardar</button>
             </div>
             <p id="estado-mensaje" class="admin-mensaje-accion"></p>
         </form>
+        <?php endif; ?>
+
+        <?php if ($asociado['estado'] === 'aprobado'): ?>
+            <div class="admin-acceso-portal">
+                <p class="admin-texto-suave">
+                    Acceso al portal del afiliado:
+                    <strong><?= $asociado['password_hash'] ? 'Activo' : 'Sin activar' ?></strong>
+                    <?= $asociado['ultimo_acceso'] ? ' — último ingreso ' . e((new DateTime($asociado['ultimo_acceso']))->format('d/m/Y H:i')) : '' ?>
+                </p>
+                <button type="button" class="btn-tabla" id="btn-generar-acceso" data-id="<?= (int) $asociado['id'] ?>">
+                    <?= $asociado['password_hash'] ? 'Restablecer contraseña del portal' : 'Enviar acceso al portal' ?>
+                </button>
+                <p id="acceso-afiliado-mensaje" class="admin-mensaje-accion"></p>
+            </div>
         <?php endif; ?>
     </div>
 

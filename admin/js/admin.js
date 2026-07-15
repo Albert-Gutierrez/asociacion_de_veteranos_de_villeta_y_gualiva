@@ -81,6 +81,23 @@ if (formFechaAfiliacion) {
     });
 }
 
+// Enviar/restablecer acceso al portal del afiliado (asociado.php)
+const btnGenerarAcceso = document.getElementById('btn-generar-acceso');
+if (btnGenerarAcceso) {
+    btnGenerarAcceso.addEventListener('click', async () => {
+        if (!confirm('¿Generar y enviar por correo una nueva contraseña de acceso al portal?')) return;
+        const csrf = document.querySelector('input[name="csrf_token"]').value;
+        btnGenerarAcceso.disabled = true;
+        const { ok, resultado } = await llamarAccion('acciones/generar_acceso_afiliado.php', {
+            csrf_token: csrf,
+            asociado_id: btnGenerarAcceso.dataset.id,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+        btnGenerarAcceso.disabled = false;
+        mostrarMensaje(document.getElementById('acceso-afiliado-mensaje'), resultado.mensaje, ok);
+        if (ok) setTimeout(() => window.location.reload(), 1200);
+    });
+}
+
 // Marcar cuota como pagada (asociado.php)
 const formPago = document.getElementById('form-pago');
 if (formPago) {
@@ -247,5 +264,36 @@ if (modalCuotasEl) {
             renderizarGrid(JSON.parse(boton.dataset.meses));
             modalCuotas.show();
         });
+    });
+}
+
+// Resolver tickets (admin/tickets.php)
+const modalTicketEl = document.getElementById('modal-ticket');
+if (modalTicketEl) {
+    const modalTicket = new bootstrap.Modal(modalTicketEl);
+    const modalTicketId = document.getElementById('modal-ticket-id');
+    const modalTicketRespuesta = document.getElementById('modal-ticket-respuesta');
+    const modalTicketMensaje = document.getElementById('modal-ticket-mensaje');
+    const modalTicketCsrf = document.getElementById('modal-ticket-csrf');
+
+    document.querySelectorAll('.btn-resolver-ticket').forEach((boton) => {
+        boton.addEventListener('click', () => {
+            modalTicketId.value = boton.dataset.id;
+            modalTicketRespuesta.value = '';
+            modalTicketMensaje.textContent = '';
+            modalTicketMensaje.className = 'admin-mensaje-accion';
+            modalTicket.show();
+        });
+    });
+
+    document.getElementById('btn-confirmar-resolver').addEventListener('click', async () => {
+        const { ok, resultado } = await llamarAccion('acciones/responder_ticket.php', {
+            csrf_token: modalTicketCsrf.value,
+            ticket_id: modalTicketId.value,
+            respuesta: modalTicketRespuesta.value,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+
+        mostrarMensaje(modalTicketMensaje, resultado.mensaje, ok);
+        if (ok) setTimeout(() => window.location.reload(), 800);
     });
 }

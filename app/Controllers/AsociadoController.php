@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Core\Auth;
 use App\Core\Csrf;
+use App\Core\Mailer;
 use App\Core\View;
 use App\Models\Asociado;
 use App\Models\PagoCuota;
@@ -164,12 +165,13 @@ class AsociadoController
         $asociadoId = (int) ($entrada['asociado_id'] ?? 0);
         $estado = (string) ($entrada['estado'] ?? '');
 
-        $estadosValidos = ['pendiente', 'aprobado', 'rechazado'];
+        $estadosValidos = ['pendiente', 'aprobado', 'rechazado', 'inactivo'];
         if ($asociadoId <= 0 || !in_array($estado, $estadosValidos, true)) {
             $this->responder(422, false, 'Datos inválidos.');
         }
 
         $modelo = new Asociado();
+        $asociadoAntes = $modelo->buscarPorId($asociadoId);
 
         try {
             $filas = $modelo->actualizarEstado($asociadoId, $estado);
@@ -182,7 +184,72 @@ class AsociadoController
             $this->responder(404, false, 'Asociado no encontrado.');
         }
 
+        // Al aprobar por primera vez (todavía sin acceso al portal), se activa
+        // y se le envía la contraseña temporal automáticamente.
+        if ($estado === 'aprobado' && $asociadoAntes && empty($asociadoAntes['password_hash'])) {
+            $this->activarAccesoYNotificar($modelo, $asociadoId, $asociadoAntes);
+        }
+
         $this->responder(200, true, 'Estado actualizado.');
+    }
+
+    /**
+     * Botón manual: enviar/restablecer el acceso al portal de un asociado
+     * ya aprobado (primera activación si nunca la tuvo, o reseteo si se
+     * bloqueó/olvidó su contraseña).
+     */
+    public function generarAccesoAfiliado(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        ini_set('display_errors', '0');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->responder(405, false, 'Método no permitido.');
+        }
+
+        Auth::requerirSesionApi();
+
+        $entrada = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($entrada)) {
+            $this->responder(400, false, 'Solicitud inválida.');
+        }
+
+        Csrf::requerirApi($entrada['csrf_token'] ?? null);
+
+        $asociadoId = (int) ($entrada['asociado_id'] ?? 0);
+        if ($asociadoId <= 0) {
+            $this->responder(422, false, 'Datos inválidos.');
+        }
+
+        $modelo = new Asociado();
+        $asociado = $modelo->buscarPorId($asociadoId);
+        if (!$asociado) {
+            $this->responder(404, false, 'Asociado no encontrado.');
+        }
+        if ($asociado['estado'] !== 'aprobado') {
+            $this->responder(422, false, 'Solo los asociados aprobados pueden tener acceso al portal.');
+        }
+
+        $enviado = $this->activarAccesoYNotificar($modelo, $asociadoId, $asociado);
+
+        $this->responder(200, true, $enviado
+            ? 'Se generó y envió la contraseña de acceso por correo.'
+            : 'Se generó la contraseña, pero no se pudo enviar el correo (revisa la configuración de SMTP).');
+    }
+
+    private function activarAccesoYNotificar(Asociado $modelo, int $asociadoId, array $asociado): bool
+    {
+        $passwordTemporal = Auth::generarPasswordTemporal();
+        $modelo->activarAcceso($asociadoId, password_hash($passwordTemporal, PASSWORD_DEFAULT));
+
+        $cuerpo = '<p>Hola ' . htmlspecialchars($asociado['nombres'], ENT_QUOTES, 'UTF-8') . ',</p>'
+            . '<p>Ya puedes ingresar al portal de afiliados de ASOVEGU para ver tu información y el estado de tu cuota.</p>'
+            . '<p>Tu correo de acceso es: <strong>' . htmlspecialchars($asociado['email'], ENT_QUOTES, 'UTF-8') . '</strong></p>'
+            . '<p>Tu contraseña temporal es:</p>'
+            . '<p style="font-size:20px;font-weight:bold;letter-spacing:1px;">' . htmlspecialchars($passwordTemporal, ENT_QUOTES, 'UTF-8') . '</p>'
+            . '<p>Ingresa con ella y cámbiala en cuanto puedas.</p>';
+
+        return Mailer::enviar($asociado['email'], 'Acceso al portal de afiliados - ASOVEGU', $cuerpo);
     }
 
     private function responder(int $codigo, bool $exito, string $mensaje): void

@@ -435,6 +435,12 @@ body.login-body {
     border-color: var(--color-secondary);
 }
 
+.btn-tabla-activo {
+    background: var(--color-secondary);
+    color: white;
+    border-color: var(--color-secondary);
+}
+
 .admin-acciones-cell {
     display: flex;
     gap: 8px;
@@ -464,6 +470,17 @@ body.login-body {
 .badge-rechazado {
     background: #FBE2E1;
     color: var(--color-rojo-patrio);
+}
+
+.badge-inactivo {
+    background: #ECECEC;
+    color: #666;
+}
+
+.admin-acceso-portal {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
 }
 
 .badge-cuota-pagado {

@@ -93,4 +93,51 @@ class Asociado
         $stmt->execute(['fecha' => $fecha, 'id' => $id]);
         return $stmt->rowCount();
     }
+
+    // ------------------------------------------------------------------
+    // Acceso al portal del afiliado (mismo patrón que UsuarioAdmin)
+    // ------------------------------------------------------------------
+
+    public function buscarPorEmail(string $email): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM asociados WHERE email = :email LIMIT 1');
+        $stmt->execute(['email' => $email]);
+        $fila = $stmt->fetch();
+        return $fila ?: null;
+    }
+
+    public function registrarLoginExitoso(int $id): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE asociados SET intentos_fallidos = 0, bloqueado_hasta = NULL, ultimo_acceso = NOW() WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
+    public function incrementarIntentos(int $id, int $intentos): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE asociados SET intentos_fallidos = :intentos WHERE id = :id');
+        $stmt->execute(['intentos' => $intentos, 'id' => $id]);
+    }
+
+    public function bloquear(int $id, int $intentos, string $bloqueadoHastaFormateado): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE asociados SET intentos_fallidos = :intentos, bloqueado_hasta = :bloqueo WHERE id = :id'
+        );
+        $stmt->execute(['intentos' => $intentos, 'bloqueo' => $bloqueadoHastaFormateado, 'id' => $id]);
+    }
+
+    /**
+     * Genera/renueva el acceso al portal: guarda el hash y limpia bloqueos
+     * previos (se usa tanto al aprobar por primera vez como al reactivar
+     * o resetear el acceso de alguien ya aprobado).
+     */
+    public function activarAcceso(int $id, string $hash): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE asociados SET password_hash = :hash, intentos_fallidos = 0, bloqueado_hasta = NULL WHERE id = :id'
+        );
+        $stmt->execute(['hash' => $hash, 'id' => $id]);
+    }
 }
