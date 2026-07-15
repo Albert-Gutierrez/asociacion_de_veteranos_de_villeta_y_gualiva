@@ -36,13 +36,24 @@ $stmtPagos = $pdo->prepare(
 $stmtPagos->execute(['id' => $id]);
 $pagos = $stmtPagos->fetchAll();
 
-$ciclo = obtenerCicloPago();
-$yaPagoCicloActual = false;
+$pagosPorMes = [];
 foreach ($pagos as $p) {
-    if ((int) $p['anio'] === $ciclo['anio'] && (int) $p['mes'] === $ciclo['mes']) {
-        $yaPagoCicloActual = true;
-        break;
-    }
+    $pagosPorMes[$p['anio'] . '-' . $p['mes']] = $p;
+}
+
+$ciclo = obtenerCicloPago();
+$yaPagoCicloActual = isset($pagosPorMes[$ciclo['anio'] . '-' . $ciclo['mes']]);
+
+// Historial mes a mes (últimos 12 meses, igual que en el dashboard y en
+// Cuentas Totales, reflejando exactamente lo que hay guardado en pagos_cuota).
+$historialMeses = [];
+foreach (obtenerUltimos12Meses() as $m) {
+    $pago = $pagosPorMes[$m['anio'] . '-' . $m['mes']] ?? null;
+    $historialMeses[] = [
+        'anio' => $m['anio'],
+        'mes' => $m['mes'],
+        'pago' => $pago,
+    ];
 }
 
 $tituloPagina = 'Detalle del asociado';
@@ -121,19 +132,27 @@ function e(string $v): string
         <h3 class="admin-subtitulo">Historial de pagos</h3>
         <table class="admin-tabla">
             <thead>
-                <tr><th>Mes</th><th>Fecha de pago</th><th>Monto</th><th>Registrado por</th></tr>
+                <tr><th>Mes</th><th>Fecha de pago</th><th>Monto</th><th>Registrado por</th><th>Estado</th></tr>
             </thead>
             <tbody>
-                <?php foreach ($pagos as $p): ?>
-                    <tr>
-                        <td><?= nombreMes((int) $p['mes']) ?> <?= (int) $p['anio'] ?></td>
-                        <td><?= e((new DateTime($p['fecha_pago']))->format('d/m/Y')) ?></td>
-                        <td><?= formatoPesos((float) $p['monto']) ?></td>
-                        <td><?= $p['registrado_por_nombre'] ? e($p['registrado_por_nombre']) : '—' ?></td>
+                <?php foreach ($historialMeses as $h): ?>
+                    <?php $p = $h['pago']; ?>
+                    <tr class="<?= $p ? 'fila-cuota-pagado' : 'fila-cuota-moroso' ?>">
+                        <td><?= nombreMes($h['mes']) ?> <?= $h['anio'] ?></td>
+                        <td><?= $p ? e((new DateTime($p['fecha_pago']))->format('d/m/Y')) : '—' ?></td>
+                        <td><?= $p ? formatoPesos((float) $p['monto']) : '—' ?></td>
+                        <td><?= $p && $p['registrado_por_nombre'] ? e($p['registrado_por_nombre']) : '—' ?></td>
+                        <td>
+                            <?php if ($p): ?>
+                                <span class="badge-cuota badge-cuota-pagado">Pagó</span>
+                            <?php else: ?>
+                                <span class="badge-cuota badge-cuota-vencido">No pagó</span>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
-                <?php if ($pagos === []): ?>
-                    <tr><td colspan="4" class="admin-tabla-vacia">Sin pagos registrados todavía.</td></tr>
+                <?php if ($historialMeses === []): ?>
+                    <tr><td colspan="5" class="admin-tabla-vacia">Sin historial de cuotas todavía.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

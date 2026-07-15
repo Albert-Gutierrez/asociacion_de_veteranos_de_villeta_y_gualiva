@@ -408,6 +408,14 @@ body.login-body {
     padding: 30px !important;
 }
 
+.fila-cuota-pagado {
+    background: #EFFAF1;
+}
+
+.fila-cuota-moroso {
+    background: #FDEDEC;
+}
+
 .btn-tabla {
     display: inline-block;
     background: var(--color-bg-light);
