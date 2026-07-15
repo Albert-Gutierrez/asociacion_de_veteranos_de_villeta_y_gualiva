@@ -95,14 +95,18 @@ function e(string $v): string
             </thead>
             <tbody>
                 <?php foreach ($asociados as $a): ?>
+                    <?php $primerMes = PagoCuota::primerMesElegible(PagoCuota::fechaBaseCuota($a)); ?>
                     <tr>
                         <td>
                             <a href="asociado.php?id=<?= (int) $a['id'] ?>"><?= e($a['nombres'] . ' ' . $a['apellidos']) ?></a>
                         </td>
                         <?php foreach ($meses as $m): ?>
-                            <?php $pago = isset($pagados[$a['id'] . '-' . $m['anio'] . '-' . $m['mes']]); ?>
+                            <?php $elegible = PagoCuota::mesEsElegible($m['anio'], $m['mes'], $primerMes); ?>
+                            <?php $pago = $elegible && isset($pagados[$a['id'] . '-' . $m['anio'] . '-' . $m['mes']]); ?>
                             <td class="celda-cuota">
-                                <?php if ($pago): ?>
+                                <?php if (!$elegible): ?>
+                                    <i class="fas fa-minus celda-no-aplica" title="Aún no era asociado"></i>
+                                <?php elseif ($pago): ?>
                                     <i class="fas fa-circle-check celda-pagado" title="Pagó"></i>
                                 <?php else: ?>
                                     <i class="fas fa-circle-xmark celda-moroso" title="No pagó"></i>
@@ -111,14 +115,18 @@ function e(string $v): string
                         <?php endforeach; ?>
                         <td>
                             <?php
-                            $mesesAsociado = array_map(function ($m) use ($a, $pagados) {
-                                return [
+                            $mesesAsociado = [];
+                            foreach ($meses as $m) {
+                                if (!PagoCuota::mesEsElegible($m['anio'], $m['mes'], $primerMes)) {
+                                    continue;
+                                }
+                                $mesesAsociado[] = [
                                     'anio' => $m['anio'],
                                     'mes' => $m['mes'],
                                     'label' => PagoCuota::nombreMes($m['mes']) . ' ' . $m['anio'],
                                     'pagado' => isset($pagados[$a['id'] . '-' . $m['anio'] . '-' . $m['mes']]),
                                 ];
-                            }, $meses);
+                            }
                             ?>
                             <button type="button" class="btn-tabla btn-ver-cuotas" title="Gestionar cuotas mes a mes"
                                 data-id="<?= (int) $a['id'] ?>"

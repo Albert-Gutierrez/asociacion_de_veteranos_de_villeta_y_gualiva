@@ -43,9 +43,16 @@ class DashboardController
                     $cuotasVencidas++;
                 }
 
+                // Solo desde su afiliación real hasta hoy (tope de 12 meses para
+                // los asociados más antiguos): no tiene sentido pedirle cuota de
+                // meses en los que todavía no era asociado.
+                $primerMes = PagoCuota::primerMesElegible(PagoCuota::fechaBaseCuota($a));
                 $mesesAsociado = [];
                 $contadorPagados = 0;
                 foreach ($meses12 as $m) {
+                    if (!PagoCuota::mesEsElegible($m['anio'], $m['mes'], $primerMes)) {
+                        continue;
+                    }
                     $pagado = isset($pagados12[$a['id'] . '-' . $m['anio'] . '-' . $m['mes']]);
                     if ($pagado) {
                         $contadorPagados++;

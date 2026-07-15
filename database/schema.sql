@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS asociados (
     estado ENUM('pendiente', 'aprobado', 'rechazado') NOT NULL DEFAULT 'pendiente',
     ip_registro VARCHAR(45) NULL,
     creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_afiliacion DATE NULL COMMENT 'Fecha real en la que se asoció (puede ser anterior a creado_en, que es solo la fecha de registro en el sitio web). Si es NULL, se usa creado_en.',
     UNIQUE KEY uq_asociados_cedula (cedula)
 ) ENGINE=InnoDB;
 

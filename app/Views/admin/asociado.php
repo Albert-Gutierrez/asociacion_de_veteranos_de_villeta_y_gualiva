@@ -55,9 +55,28 @@ function e(string $v): string
             <h2>Cuota mensual</h2>
         </div>
 
+        <form id="form-fecha-afiliacion" class="admin-form-inline">
+            <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+            <input type="hidden" name="asociado_id" value="<?= (int) $asociado['id'] ?>">
+            <label for="fecha_afiliacion">Fecha real de afiliación (si es distinta a cuando se registró en el sitio)</label>
+            <div class="admin-form-inline-row">
+                <input type="date" id="fecha_afiliacion" name="fecha_afiliacion"
+                    value="<?= $asociado['fecha_afiliacion'] ? e($asociado['fecha_afiliacion']) : '' ?>">
+                <button type="submit" class="btn-tabla">Guardar</button>
+            </div>
+            <p class="admin-texto-suave">
+                Se usa para calcular desde cuándo debe cuota. Si la dejas vacía, se usa su fecha de registro
+                (<?= e((new DateTime($asociado['creado_en']))->format('d/m/Y')) ?>).
+            </p>
+            <p id="fecha-afiliacion-mensaje" class="admin-mensaje-accion"></p>
+        </form>
+
         <p class="admin-total-historico">
-            Total aportado desde su inscripción: <strong><?= PagoCuota::formatoPesos($totalPagadoHistorico) ?></strong>
+            Total aportado: <strong><?= PagoCuota::formatoPesos($totalPagadoHistorico) ?></strong>
             <span class="admin-texto-suave">(<?= count($pagos) ?> cuota<?= count($pagos) === 1 ? '' : 's' ?> pagada<?= count($pagos) === 1 ? '' : 's' ?>)</span>
+            <br>
+            Total que debe: <strong<?= $totalDebe > 0 ? ' style="color:var(--color-rojo-patrio);"' : '' ?>><?= PagoCuota::formatoPesos($totalDebe) ?></strong>
+            <span class="admin-texto-suave">(<?= $mesesDebe ?> cuota<?= $mesesDebe === 1 ? '' : 's' ?> pendiente<?= $mesesDebe === 1 ? '' : 's' ?> desde que se afilió)</span>
         </p>
 
         <?php if ($asociado['estado'] !== 'aprobado'): ?>

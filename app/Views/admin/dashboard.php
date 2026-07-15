@@ -96,7 +96,7 @@ require __DIR__ . '/layout_inicio.php';
                             </span>
                         </td>
                         <td>
-                            <?= $a['estado'] === 'aprobado' ? (int) $a['cuotas_pagadas_12'] . ' / 12' : '—' ?>
+                            <?= $a['estado'] === 'aprobado' ? (int) $a['cuotas_pagadas_12'] . ' / ' . count($a['meses_12']) : '—' ?>
                         </td>
                         <td>
                             <?php if ($a['cuota_estado'] === 'no_aplica'): ?>

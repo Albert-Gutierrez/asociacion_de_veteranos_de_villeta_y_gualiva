@@ -64,6 +64,23 @@ if (formEstado) {
     });
 }
 
+// Cambiar la fecha real de afiliación (asociado.php)
+const formFechaAfiliacion = document.getElementById('form-fecha-afiliacion');
+if (formFechaAfiliacion) {
+    formFechaAfiliacion.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = {
+            csrf_token: formFechaAfiliacion.csrf_token.value,
+            asociado_id: formFechaAfiliacion.asociado_id.value,
+            fecha_afiliacion: formFechaAfiliacion.fecha_afiliacion.value,
+        };
+        const { ok, resultado } = await llamarAccion('acciones/actualizar_fecha_afiliacion.php', datos)
+            .catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+        mostrarMensaje(document.getElementById('fecha-afiliacion-mensaje'), resultado.mensaje, ok);
+        if (ok) setTimeout(() => window.location.reload(), 800);
+    });
+}
+
 // Marcar cuota como pagada (asociado.php)
 const formPago = document.getElementById('form-pago');
 if (formPago) {

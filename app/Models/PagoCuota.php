@@ -75,6 +75,53 @@ class PagoCuota
     }
 
     /**
+     * El año/mes en que un asociado empieza a deber cuota: el mes de su
+     * inscripción (antes de eso no era asociado, no se le puede exigir cuota).
+     */
+    public static function primerMesElegible(string $fechaInscripcionSql): array
+    {
+        $fecha = new DateTimeImmutable($fechaInscripcionSql);
+        return ['anio' => (int) $fecha->format('Y'), 'mes' => (int) $fecha->format('n')];
+    }
+
+    /**
+     * true si el mes indicado es igual o posterior al mes en que el
+     * asociado se inscribió (es decir, si le aplica cobro de cuota ese mes).
+     */
+    public static function mesEsElegible(int $anio, int $mes, array $primerMes): bool
+    {
+        return ($anio * 12 + $mes) >= ($primerMes['anio'] * 12 + $primerMes['mes']);
+    }
+
+    /**
+     * La fecha que se usa como referencia para calcular desde qué mes debe
+     * cuota un asociado: su fecha de afiliación real si el tesorero la
+     * cargó, o si no, la fecha en que se registró en el sitio web.
+     */
+    public static function fechaBaseCuota(array $asociado): string
+    {
+        return $asociado['fecha_afiliacion'] ?? $asociado['creado_en'];
+    }
+
+    /**
+     * Todos los meses (año/mes) desde $primerMes hasta el mes en curso,
+     * ambos incluidos, sin tope de 12 — para calcular el total que debe un
+     * asociado desde que se afilió, sin importar cuánto tiempo lleve.
+     */
+    public static function obtenerMesesDesde(array $primerMes): array
+    {
+        $cursor = DateTimeImmutable::createFromFormat('Y-n-j', "{$primerMes['anio']}-{$primerMes['mes']}-1");
+        $fin = new DateTimeImmutable('first day of this month');
+
+        $meses = [];
+        while ($cursor <= $fin) {
+            $meses[] = ['anio' => (int) $cursor->format('Y'), 'mes' => (int) $cursor->format('n')];
+            $cursor = $cursor->modify('+1 month');
+        }
+        return $meses;
+    }
+
+    /**
      * Los últimos 12 meses calendario (el actual primero), como pares año/mes.
      */
     public static function obtenerUltimos12Meses(): array

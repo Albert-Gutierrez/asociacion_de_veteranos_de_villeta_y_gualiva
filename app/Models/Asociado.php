@@ -73,7 +73,7 @@ class Asociado
     public function listarAprobados(): array
     {
         return $this->pdo->query(
-            "SELECT id, nombres, apellidos, cedula FROM asociados WHERE estado = 'aprobado' ORDER BY nombres, apellidos"
+            "SELECT id, nombres, apellidos, cedula, creado_en, fecha_afiliacion FROM asociados WHERE estado = 'aprobado' ORDER BY nombres, apellidos"
         )->fetchAll();
     }
 
@@ -81,6 +81,16 @@ class Asociado
     {
         $stmt = $this->pdo->prepare('UPDATE asociados SET estado = :estado WHERE id = :id');
         $stmt->execute(['estado' => $estado, 'id' => $id]);
+        return $stmt->rowCount();
+    }
+
+    /**
+     * @param string|null $fecha formato Y-m-d, o null para volver a usar creado_en como referencia.
+     */
+    public function actualizarFechaAfiliacion(int $id, ?string $fecha): int
+    {
+        $stmt = $this->pdo->prepare('UPDATE asociados SET fecha_afiliacion = :fecha WHERE id = :id');
+        $stmt->execute(['fecha' => $fecha, 'id' => $id]);
         return $stmt->rowCount();
     }
 }

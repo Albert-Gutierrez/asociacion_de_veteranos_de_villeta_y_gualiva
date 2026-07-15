@@ -507,6 +507,10 @@ body.login-body {
     color: var(--color-primary);
 }
 
+.celda-no-aplica {
+    color: #bbb;
+}
+
 .celda-moroso {
     color: var(--color-rojo-patrio);
     opacity: .6;
