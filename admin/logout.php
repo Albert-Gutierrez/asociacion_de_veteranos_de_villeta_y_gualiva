@@ -2,11 +2,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/incluye/auth.php';
+require __DIR__ . '/../app/bootstrap.php';
 
-iniciarSesionSegura();
-$_SESSION = [];
-session_destroy();
-
-header('Location: login.php');
-exit;
+(new App\Controllers\AuthController())->logout();

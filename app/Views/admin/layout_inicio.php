@@ -1,6 +1,8 @@
 <?php
-// Espera que la página incluida defina antes: $tituloPagina, $paginaActiva
-// y haya llamado a requerirSesion()/requerirRol() para obtener $usuario.
+
+use App\Core\Auth;
+
+// Espera que la página incluida defina antes: $tituloPagina, $paginaActiva, $usuario.
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -32,7 +34,7 @@
                 <a href="cuentas.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'cuentas' ? 'active' : '' ?>">
                     <i class="fas fa-sack-dollar"></i> Cuentas Totales
                 </a>
-                <?php if (esSuperAdmin()): ?>
+                <?php if (Auth::esSuperAdmin()): ?>
                 <a href="administradores.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'administradores' ? 'active' : '' ?>">
                     <i class="fas fa-user-shield"></i> Administradores
                 </a>
@@ -50,7 +52,7 @@
                     <i class="fas fa-circle-user"></i>
                     <div>
                         <strong><?= htmlspecialchars($usuario['nombre'], ENT_QUOTES, 'UTF-8') ?></strong>
-                        <span><?= etiquetaRol($usuario['rol']) ?></span>
+                        <span><?= Auth::etiquetaRol($usuario['rol']) ?></span>
                     </div>
                 </div>
                 <a href="logout.php" class="admin-logout-link"><i class="fas fa-right-from-bracket"></i> Cerrar sesión</a>
