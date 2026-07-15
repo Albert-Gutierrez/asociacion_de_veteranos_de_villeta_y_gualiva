@@ -1,6 +1,6 @@
 <?php
 // Modal compartido para gestionar las cuotas mes a mes de un asociado.
-// Requiere que la página que lo incluye ya tenga $csrf definido.
+// Requiere que la vista que lo incluye ya tenga $csrf definido.
 ?>
 <div class="modal fade" id="modal-cuotas" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
