@@ -91,6 +91,16 @@ body.login-body {
     background: var(--color-dorado-honor);
 }
 
+.login-card a {
+    color: var(--color-secondary);
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.login-card a:hover {
+    text-decoration: underline;
+}
+
 /* LAYOUT GENERAL DEL PANEL ____________________________________________________ */
 .admin-layout {
     display: flex;

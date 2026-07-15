@@ -92,6 +92,7 @@ if (formCrearAdmin) {
             accion: 'crear',
             nombre: formCrearAdmin.nombre.value,
             email: formCrearAdmin.email.value,
+            telefono: formCrearAdmin.telefono.value,
             rol: formCrearAdmin.rol.value,
         };
         const { ok, resultado } = await llamarAccion('acciones/gestionar_admin.php', datos)

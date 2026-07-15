@@ -8,8 +8,7 @@ ini_set('display_errors', '0');
 error_reporting(E_ALL);
 
 require_once __DIR__ . '/config/database.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
+require_once __DIR__ . '/config/mailer.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -153,29 +152,10 @@ responder(200, true, 'Solicitud registrada correctamente.');
 function enviarCorreoNotificacion(array $datos): void
 {
     $destinatario = $_ENV['DESTINATARIO_ASOCIADOS'] ?? '';
-    $smtpUser = $_ENV['SMTP_USER'] ?? '';
-    if ($destinatario === '' || $smtpUser === '') {
+    if ($destinatario === '') {
         return;
     }
 
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host = $_ENV['SMTP_HOST'] ?? 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = $smtpUser;
-    $mail->Password = $_ENV['SMTP_PASS'] ?? '';
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port = (int) ($_ENV['SMTP_PORT'] ?? 587);
-    $mail->CharSet = 'UTF-8';
-
-    $mail->setFrom($_ENV['SMTP_FROM'] ?? $smtpUser, $_ENV['SMTP_FROM_NAME'] ?? 'Sitio web ASOVEGU');
-    $mail->addAddress($destinatario);
-    $mail->addReplyTo($datos['email'], $datos['nombres'] . ' ' . $datos['apellidos']);
-
-    $mail->isHTML(true);
-    $mail->Subject = 'Nueva solicitud de afiliación - ' . $datos['nombres'] . ' ' . $datos['apellidos'];
-
-    $filas = '';
     $etiquetas = [
         'nombres' => 'Nombres',
         'apellidos' => 'Apellidos',
@@ -186,13 +166,15 @@ function enviarCorreoNotificacion(array $datos): void
         'fuerza' => 'Fuerza',
         'mensaje' => 'Mensaje',
     ];
+
+    $filas = '';
     foreach ($etiquetas as $campo => $etiqueta) {
         $valor = htmlspecialchars((string) ($datos[$campo] ?? ''), ENT_QUOTES, 'UTF-8');
         $filas .= "<tr><td><strong>{$etiqueta}</strong></td><td>{$valor}</td></tr>";
     }
 
-    $mail->Body = "<h2>Nueva solicitud de afiliación</h2><table cellpadding='6'>{$filas}</table>";
-    $mail->AltBody = strip_tags(str_replace('</tr>', "\n", $filas));
+    $asunto = 'Nueva solicitud de afiliación - ' . $datos['nombres'] . ' ' . $datos['apellidos'];
+    $cuerpo = "<h2>Nueva solicitud de afiliación</h2><table cellpadding='6'>{$filas}</table>";
 
-    $mail->send();
+    enviarCorreo($destinatario, $asunto, $cuerpo, $datos['email'], $datos['nombres'] . ' ' . $datos['apellidos']);
 }

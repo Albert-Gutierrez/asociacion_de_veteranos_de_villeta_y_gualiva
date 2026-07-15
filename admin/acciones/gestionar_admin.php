@@ -34,10 +34,14 @@ $pdo = obtenerConexionBD();
 if ($accion === 'crear') {
     $nombre = trim((string) ($entrada['nombre'] ?? ''));
     $email = trim((string) ($entrada['email'] ?? ''));
+    $telefono = trim((string) ($entrada['telefono'] ?? ''));
     $rol = (string) ($entrada['rol'] ?? 'administrador');
 
     if ($nombre === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || !in_array($rol, ['administrador', 'super_administrador'], true)) {
         responder(422, false, 'Datos inválidos.');
+    }
+    if ($telefono !== '' && !preg_match('/^[0-9+()\s-]{7,20}$/', $telefono)) {
+        responder(422, false, 'El teléfono no es válido.');
     }
 
     $passwordTemporal = generarPasswordTemporal();
@@ -45,9 +49,15 @@ if ($accion === 'crear') {
 
     try {
         $stmt = $pdo->prepare(
-            'INSERT INTO usuarios_admin (nombre, email, password_hash, rol) VALUES (:nombre, :email, :hash, :rol)'
+            'INSERT INTO usuarios_admin (nombre, email, telefono, password_hash, rol) VALUES (:nombre, :email, :telefono, :hash, :rol)'
         );
-        $stmt->execute(['nombre' => $nombre, 'email' => $email, 'hash' => $hash, 'rol' => $rol]);
+        $stmt->execute([
+            'nombre' => $nombre,
+            'email' => $email,
+            'telefono' => $telefono !== '' ? $telefono : null,
+            'hash' => $hash,
+            'rol' => $rol,
+        ]);
     } catch (PDOException $e) {
         if ($e->getCode() === '23000') {
             responder(409, false, 'Ya existe una cuenta con ese correo.');

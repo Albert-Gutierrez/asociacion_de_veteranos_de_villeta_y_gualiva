@@ -43,12 +43,14 @@ CREATE TABLE IF NOT EXISTS usuarios_admin (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
     email VARCHAR(150) NOT NULL,
+    telefono VARCHAR(20) NULL,
     password_hash VARCHAR(255) NOT NULL,
     rol ENUM('administrador', 'super_administrador') NOT NULL DEFAULT 'administrador',
     activo TINYINT(1) NOT NULL DEFAULT 1,
     intentos_fallidos TINYINT UNSIGNED NOT NULL DEFAULT 0,
     bloqueado_hasta TIMESTAMP NULL,
     ultimo_acceso TIMESTAMP NULL,
+    ultimo_reset_solicitado TIMESTAMP NULL,
     creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uq_usuarios_admin_email (email)
 ) ENGINE=InnoDB;

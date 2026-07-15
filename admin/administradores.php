@@ -39,6 +39,10 @@ function e(string $v): string
             <input type="email" id="email" name="email" required>
         </div>
         <div class="campo">
+            <label for="telefono">Teléfono (opcional)</label>
+            <input type="tel" id="telefono" name="telefono">
+        </div>
+        <div class="campo">
             <label for="rol">Rol</label>
             <select id="rol" name="rol">
                 <option value="administrador">Administrador</option>
@@ -58,13 +62,14 @@ function e(string $v): string
     <div class="table-responsive">
         <table class="admin-tabla" id="tabla-admins">
             <thead>
-                <tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Último acceso</th><th>Acciones</th></tr>
+                <tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Rol</th><th>Estado</th><th>Último acceso</th><th>Acciones</th></tr>
             </thead>
             <tbody>
                 <?php foreach ($admins as $a): ?>
                     <tr data-admin-id="<?= (int) $a['id'] ?>">
                         <td><?= e($a['nombre']) ?></td>
                         <td><?= e($a['email']) ?></td>
+                        <td><?= $a['telefono'] ? e($a['telefono']) : '—' ?></td>
                         <td><?= $a['rol'] === 'super_administrador' ? 'Super administrador' : 'Administrador' ?></td>
                         <td>
                             <span class="badge-estado <?= (int) $a['activo'] === 1 ? 'badge-aprobado' : 'badge-rechazado' ?>">

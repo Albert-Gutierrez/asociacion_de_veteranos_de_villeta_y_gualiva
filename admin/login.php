@@ -114,6 +114,8 @@ $csrf = tokenCsrf();
 
             <button type="submit" class="btn-enviar">Ingresar</button>
         </form>
+
+        <p style="margin-top:18px;"><a href="recuperar.php">¿Olvidaste tu contraseña?</a></p>
     </div>
 </body>
 
