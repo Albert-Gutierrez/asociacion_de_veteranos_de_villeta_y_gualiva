@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gracias por contactarnos | Aventura Go</title>
+
+    <!-- Fuentes -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&family=Lato:wght@300;400;700&display=swap"
+        rel="stylesheet">
+
+
+<!-- A T E N C I O N  ---------- A T E N C I O N  --------   A T E N C I O N  -- -- A T E N C I O N  --------   A T E N C I O N  -- -->
+<!-- PAGINA DE PRUEBA SOLO PARA QUE APAREZCA UN MENSAJE DE GRACIAS AL ENVIAR EL FORMULARIO POSTERIORMENTE SERA MODIFICADA O ELIMINADA -->
+
+
+
+
+    <!-- Estilos -->
+    <style>
+        /* ======== ESTILOS GENERALES ======== */
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #F8F9FA;
+            color: #2B2B2B;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 25px;
+        }
+
+        .logo img {
+            width: 160px;
+        }
+
+        h1 {
+            font-family: 'Raleway', sans-serif;
+            color: #2D4059;
+            font-size: 32px;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .btn-volver {
+            background-color: #EA8217;
+            color: #FFFFFF;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-volver:hover {
+            background-color: #2D4059;
+            transform: scale(1.05);
+        }
+
+        footer {
+            position: absolute;
+            bottom: 10px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* ======== ANIMACIÓN DEL CHECK ======== */
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #28a745;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #28a745;
+            animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
+            margin: 10px auto;
+        }
+
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: #28a745;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+
+            0%,
+            100% {
+                transform: none;
+            }
+
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 40px #28a745;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 26px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="logo">
+        <img src="img/escudo sin fondo.png" alt="escudo sin fonde">
+    </div>
+
+    <!-- Ícono animado de check -->
+    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+        <path class="checkmark__check" fill="none" stroke="#fff" stroke-width="3" d="M14 27l7 7 16-16" />
+    </svg>
+
+    <h1>¡Gracias por contactarnos!</h1>
+    <p>Tu mensaje ha sido enviado con éxito.<br>En breve uno de nuestros asesores se comunicará contigo.</p>
+
+    <a href="index.html" class="btn-volver">Volver al inicio</a>
+
+    <footer>
+        © 2025 albert gutierrez - Todos los derechos reservados
+    </footer>
+
+</body>
+
+</html>
