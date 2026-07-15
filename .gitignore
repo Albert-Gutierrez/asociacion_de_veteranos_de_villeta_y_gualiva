@@ -14,3 +14,6 @@ Desktop.ini
 
 # Logs
 *.log
+
+# Dependencias de Composer (se instalan con "composer install")
+/vendor/

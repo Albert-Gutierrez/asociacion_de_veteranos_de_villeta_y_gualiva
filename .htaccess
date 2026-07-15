@@ -1,0 +1,16 @@
+# Bloquea el acceso a cualquier ruta con un componente que empiece por punto
+# (.env, .git/ y todo su contenido, .htaccess, etc.) sin importar la profundidad.
+RewriteEngine On
+RewriteRule "(^|/)\." - [F,L]
+
+# Respaldo para servidores sin mod_rewrite habilitado
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Bloquea el acceso directo a archivos de configuración de Composer
+<FilesMatch "^composer\.(json|lock)$">
+    Require all denied
+</FilesMatch>
+
+Options -Indexes

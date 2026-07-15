@@ -1,0 +1,386 @@
+/* ============================================================================
+   ESTILOS COMUNES — Variables, header/navbar y footer compartidos por todas
+   las páginas del sitio. Se importa ANTES del CSS específico de cada página.
+   ============================================================================ */
+
+/* Fuentes */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+/* Paleta de colores institucional */
+:root {
+    --color-primary: #2D4739;
+    --color-secondary: #002868;
+    --color-dorado-honor: #C8A033;
+    --color-beige-institucional: #F7F2E8;
+    --color-texto-oscuro: #1B1B1B;
+    --color-rojo-patrio: #B31E1B;
+    --color-white: #FFFFFF;
+    --color-bg-light: #F8F9FA;
+    --color-border: #E0E0E0;
+    --color-text: #2b2b2b;
+    --font-titles: 'Raleway', sans-serif;
+    --font-text: 'Lato', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+}
+
+/* NAVBAR ____________________________________________________________________ */
+header {
+    background-color: var(--color-white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    animation: fadeInDown 0.6s ease;
+}
+
+.navbar {
+    padding: 12px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar .container-fluid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.navbar-logo {
+    margin-left: 20px;
+    width: 190px;
+}
+
+.navbar-nav {
+    list-style: none;
+    display: flex;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+    flex-direction: row;
+}
+
+.nav-link {
+    font-family: var(--font-titles);
+    font-weight: 500;
+    color: var(--color-text);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--color-secondary);
+}
+
+.nav-link.active {
+    color: var(--color-texto-oscuro);
+    font-weight: 700;
+}
+
+.nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-dorado-honor);
+    border-radius: 5px;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: 10px;
+}
+
+.btn-login {
+    background-color: var(--color-dorado-honor);
+    color: var(--color-white);
+    font-family: var(--font-titles);
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-login:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.menu-toggle {
+    display: none;
+    font-size: 22px;
+    color: var(--color-primary);
+    cursor: pointer;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes palpitar {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.palpitando {
+    animation: palpitar 1.5s infinite ease-in-out;
+}
+
+/* FOOTER ____________________________________________________________________ */
+.container-fluid {
+    width: 100%;
+    padding: 0;
+}
+
+.footer-top {
+    width: 100%;
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.footer-top .row .col-md-12 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 25px 40px;
+    margin: 0;
+}
+
+.footer-top h2 {
+    color: white;
+    font-family: var(--font-titles);
+    font-size: 26px;
+    font-weight: 400;
+    margin: 0;
+}
+
+.footer-top a {
+    background-color: var(--color-dorado-honor);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 18px;
+    font-family: var(--font-titles);
+    border-radius: 20px;
+    padding: 10px 20px;
+    transition: transform 0.3s ease;
+    white-space: nowrap;
+}
+
+.footer-top a:hover {
+    transform: scale(1.05);
+    text-decoration: none;
+}
+
+.footer-bottom {
+    background-color: var(--color-bg-light);
+    color: white;
+    padding: 40px 20px;
+    font-family: var(--font-text);
+}
+
+.footer-bottom .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+.footer-bottom .col-md-2 {
+    flex: 1;
+    min-width: 160px;
+}
+
+.logo-section img {
+    max-width: 150px;
+    width: 100%;
+}
+
+.description {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--color-text);
+}
+
+.dest-section,
+.enlaces-section,
+.contacto-section,
+.redes-section {
+    font-family: var(--font-text);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    color: var(--color-text);
+}
+
+.footer-bottom .list-unstyled li {
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--color-text);
+}
+
+.footer-bottom .list-unstyled a {
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.footer-bottom .list-unstyled a:hover {
+    color: var(--color-dorado-honor);
+}
+
+.contact-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--color-text);
+    margin-bottom: 8px;
+}
+
+.social-links {
+    display: flex;
+    gap: 12px;
+}
+
+.social-links a {
+    color: var(--color-primary);
+    font-size: 16px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.social-links a:hover {
+    color: var(--color-dorado-honor);
+}
+
+/* RESPONSIVE (≤430px) ________________________________________________________ */
+@media screen and (max-width: 430px) {
+    .navbar {
+        padding: 8px 16px;
+    }
+
+    .navbar-logo {
+        width: 100px;
+        margin-left: 0;
+    }
+
+    .navbar-nav {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 18px;
+        width: 170px;
+        background-color: var(--color-white);
+        box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+        z-index: 1000;
+    }
+
+    .navbar-nav.show {
+        display: flex;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .nav-link {
+        font-size: 14px;
+        text-align: left;
+        width: 100%;
+    }
+
+    .actions {
+        margin-right: 5px;
+        gap: 8px;
+    }
+
+    .btn-login {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 6px;
+    }
+
+    .menu-toggle {
+        display: block;
+        font-size: 20px;
+    }
+
+    .footer-top .row .col-md-12 {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px 15px;
+    }
+
+    .footer-top h2 {
+        font-size: 18px;
+    }
+
+    .footer-bottom {
+        padding: 30px 15px;
+    }
+
+    .footer-bottom .row {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 25px;
+    }
+
+    .contact-list li,
+    .social-links {
+        justify-content: center;
+    }
+}

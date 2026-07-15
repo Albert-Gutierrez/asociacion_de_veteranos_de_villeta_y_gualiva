@@ -1,0 +1,164 @@
+/* Estilos específicos de la página Actividades.
+   Las variables, el header/navbar y el footer están en css/common.css */
+
+#hero-actividades {
+    background-color: var(--color-primary);
+    padding: 160px 20px 70px;
+    text-align: center;
+    color: var(--color-white);
+}
+
+#hero-actividades h1 {
+    font-family: var(--font-titles);
+    font-weight: 800;
+    font-size: 40px;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+}
+
+#hero-actividades p {
+    font-family: var(--font-text);
+    font-size: 18px;
+    max-width: 720px;
+    margin: 0 auto;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* GALERÍA DE ACTIVIDADES ____________________________________________________ */
+#galeria-actividades {
+    background-color: var(--color-bg-light);
+    padding: 70px 20px 90px;
+}
+
+.grid-actividades {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    max-width: 1140px;
+    margin: 0 auto;
+}
+
+.tarjeta-actividad {
+    perspective: 1200px;
+    height: 340px;
+}
+
+.tarjeta-interna {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.tarjeta-actividad {
+    cursor: pointer;
+}
+
+.tarjeta-actividad:hover .tarjeta-interna,
+.tarjeta-actividad:focus-within .tarjeta-interna,
+.tarjeta-actividad.volteada .tarjeta-interna {
+    transform: rotateY(180deg);
+}
+
+.tarjeta-frente,
+.tarjeta-reverso {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.tarjeta-frente {
+    display: flex;
+    align-items: flex-end;
+}
+
+.tarjeta-frente img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tarjeta-frente::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+.tarjeta-frente h3 {
+    position: relative;
+    z-index: 1;
+    color: var(--color-white);
+    font-family: var(--font-titles);
+    font-weight: 700;
+    font-size: 20px;
+    padding: 20px;
+    margin: 0;
+}
+
+.tarjeta-reverso {
+    background: var(--color-primary);
+    color: var(--color-white);
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+}
+
+.tarjeta-reverso h3 {
+    font-family: var(--font-titles);
+    font-weight: 700;
+    font-size: 19px;
+    margin-bottom: 12px;
+    color: var(--color-dorado-honor);
+}
+
+.tarjeta-reverso p {
+    font-family: var(--font-text);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* RESPONSIVE ________________________________________________________________ */
+@media (max-width: 992px) {
+    .grid-actividades {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 430px) {
+    #hero-actividades {
+        padding: 110px 20px 40px;
+    }
+
+    #hero-actividades h1 {
+        font-size: 26px;
+    }
+
+    #hero-actividades p {
+        font-size: 15px;
+    }
+
+    #galeria-actividades {
+        padding: 40px 15px 50px;
+    }
+
+    .grid-actividades {
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    .tarjeta-actividad {
+        height: 280px;
+    }
+}
