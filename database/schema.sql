@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS asociados (
     creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_afiliacion DATE NULL COMMENT 'Fecha real en la que se asoció (puede ser anterior a creado_en, que es solo la fecha de registro en el sitio web). Si es NULL, se usa creado_en.',
     password_hash VARCHAR(255) NULL COMMENT 'Acceso al portal del afiliado; NULL hasta que se aprueba/activa.',
+    debe_cambiar_password TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Obliga a cambiar la contraseña temporal en el primer ingreso.',
     intentos_fallidos TINYINT UNSIGNED NOT NULL DEFAULT 0,
     bloqueado_hasta TIMESTAMP NULL,
     ultimo_acceso TIMESTAMP NULL,

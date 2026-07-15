@@ -60,6 +60,13 @@ if (formEstado) {
         const { ok, resultado } = await llamarAccion('acciones/actualizar_estado.php', datos)
             .catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
         mostrarMensaje(document.getElementById('estado-mensaje'), resultado.mensaje, ok);
+        if (ok && resultado.password_temporal_portal) {
+            alert(
+                'Se aprobó y se activó su acceso al portal de afiliados.\n\n' +
+                'Contraseña temporal: ' + resultado.password_temporal_portal +
+                '\n\nCópiala ahora, no se volverá a mostrar. Se le pedirá cambiarla al ingresar.'
+            );
+        }
         if (ok) setTimeout(() => window.location.reload(), 800);
     });
 }
@@ -94,6 +101,12 @@ if (btnGenerarAcceso) {
         }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
         btnGenerarAcceso.disabled = false;
         mostrarMensaje(document.getElementById('acceso-afiliado-mensaje'), resultado.mensaje, ok);
+        if (ok && resultado.password_temporal) {
+            alert(
+                'Contraseña temporal del portal: ' + resultado.password_temporal +
+                '\n\nCópiala ahora, no se volverá a mostrar. Se le pedirá cambiarla al ingresar.'
+            );
+        }
         if (ok) setTimeout(() => window.location.reload(), 1200);
     });
 }

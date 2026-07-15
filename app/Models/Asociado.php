@@ -131,12 +131,35 @@ class Asociado
     /**
      * Genera/renueva el acceso al portal: guarda el hash y limpia bloqueos
      * previos (se usa tanto al aprobar por primera vez como al reactivar
-     * o resetear el acceso de alguien ya aprobado).
+     * o resetear el acceso de alguien ya aprobado). Queda marcado para que
+     * tenga que cambiarla en su próximo ingreso.
      */
     public function activarAcceso(int $id, string $hash): void
     {
         $stmt = $this->pdo->prepare(
-            'UPDATE asociados SET password_hash = :hash, intentos_fallidos = 0, bloqueado_hasta = NULL WHERE id = :id'
+            'UPDATE asociados
+             SET password_hash = :hash, debe_cambiar_password = 1, intentos_fallidos = 0, bloqueado_hasta = NULL
+             WHERE id = :id'
+        );
+        $stmt->execute(['hash' => $hash, 'id' => $id]);
+    }
+
+    public function obtenerHashPassword(int $id): ?string
+    {
+        $stmt = $this->pdo->prepare('SELECT password_hash FROM asociados WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+        $fila = $stmt->fetch();
+        return $fila ? $fila['password_hash'] : null;
+    }
+
+    /**
+     * Cambio de contraseña hecho por el propio afiliado: ya no queda
+     * marcado como pendiente de cambio.
+     */
+    public function actualizarPassword(int $id, string $hash): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE asociados SET password_hash = :hash, debe_cambiar_password = 0 WHERE id = :id'
         );
         $stmt->execute(['hash' => $hash, 'id' => $id]);
     }

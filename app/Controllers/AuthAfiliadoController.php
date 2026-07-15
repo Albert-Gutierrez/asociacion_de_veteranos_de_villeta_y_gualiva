@@ -59,7 +59,7 @@ class AuthAfiliadoController
                     $_SESSION['afiliado_nombre'] = $asociado['nombres'] . ' ' . $asociado['apellidos'];
                     $_SESSION['afiliado_email'] = $asociado['email'];
 
-                    header('Location: dashboard.php');
+                    header('Location: ' . ((int) $asociado['debe_cambiar_password'] === 1 ? 'cambiar-password.php' : 'dashboard.php'));
                     exit;
                 } elseif ($error === '') {
                     $error = 'Correo o contraseña incorrectos.';

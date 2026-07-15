@@ -11,6 +11,35 @@ function mostrarMensaje(elemento, texto, ok) {
     elemento.className = 'admin-mensaje-accion ' + (ok ? 'ok' : 'error');
 }
 
+// Cambiar contraseña (cambiar-password.php, obligatorio en el primer ingreso)
+const formCambiarPasswordAfiliado = document.getElementById('form-cambiar-password-afiliado');
+if (formCambiarPasswordAfiliado) {
+    formCambiarPasswordAfiliado.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const mensajeEl = document.getElementById('password-afiliado-mensaje');
+        const datos = {
+            csrf_token: formCambiarPasswordAfiliado.csrf_token.value,
+            password_actual: formCambiarPasswordAfiliado.password_actual.value,
+            password_nueva: formCambiarPasswordAfiliado.password_nueva.value,
+            password_confirmar: formCambiarPasswordAfiliado.password_confirmar.value,
+        };
+        try {
+            const respuesta = await fetch('acciones/cambiar_password.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos),
+            });
+            const resultado = await respuesta.json();
+            mostrarMensaje(mensajeEl, resultado.mensaje, respuesta.ok);
+            if (respuesta.ok) {
+                setTimeout(() => { window.location.href = 'dashboard.php'; }, 800);
+            }
+        } catch (error) {
+            mostrarMensaje(mensajeEl, 'No se pudo conectar con el servidor.', false);
+        }
+    });
+}
+
 // Reportar un pago no reflejado (dashboard.php)
 const formTicket = document.getElementById('form-ticket');
 if (formTicket) {

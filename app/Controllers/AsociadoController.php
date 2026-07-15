@@ -186,11 +186,14 @@ class AsociadoController
 
         // Al aprobar por primera vez (todavía sin acceso al portal), se activa
         // y se le envía la contraseña temporal automáticamente.
+        $passwordTemporal = null;
         if ($estado === 'aprobado' && $asociadoAntes && empty($asociadoAntes['password_hash'])) {
-            $this->activarAccesoYNotificar($modelo, $asociadoId, $asociadoAntes);
+            [, $passwordTemporal] = $this->activarAccesoYNotificar($modelo, $asociadoId, $asociadoAntes);
         }
 
-        $this->responder(200, true, 'Estado actualizado.');
+        $this->responder(200, true, 'Estado actualizado.', $passwordTemporal !== null
+            ? ['password_temporal_portal' => $passwordTemporal]
+            : []);
     }
 
     /**
@@ -230,14 +233,19 @@ class AsociadoController
             $this->responder(422, false, 'Solo los asociados aprobados pueden tener acceso al portal.');
         }
 
-        $enviado = $this->activarAccesoYNotificar($modelo, $asociadoId, $asociado);
+        [$enviado, $passwordTemporal] = $this->activarAccesoYNotificar($modelo, $asociadoId, $asociado);
 
-        $this->responder(200, true, $enviado
-            ? 'Se generó y envió la contraseña de acceso por correo.'
-            : 'Se generó la contraseña, pero no se pudo enviar el correo (revisa la configuración de SMTP).');
+        $mensaje = $enviado
+            ? 'Se generó y envió la contraseña de acceso por correo. También la ves abajo por si prefieres dársela tú mismo.'
+            : 'Se generó la contraseña, pero no se pudo enviar el correo (revisa la configuración de SMTP). Dásela tú mismo.';
+
+        $this->responder(200, true, $mensaje, ['password_temporal' => $passwordTemporal]);
     }
 
-    private function activarAccesoYNotificar(Asociado $modelo, int $asociadoId, array $asociado): bool
+    /**
+     * @return array{0: bool, 1: string} [se_envio_el_correo, password_en_texto_plano]
+     */
+    private function activarAccesoYNotificar(Asociado $modelo, int $asociadoId, array $asociado): array
     {
         $passwordTemporal = Auth::generarPasswordTemporal();
         $modelo->activarAcceso($asociadoId, password_hash($passwordTemporal, PASSWORD_DEFAULT));
@@ -247,15 +255,17 @@ class AsociadoController
             . '<p>Tu correo de acceso es: <strong>' . htmlspecialchars($asociado['email'], ENT_QUOTES, 'UTF-8') . '</strong></p>'
             . '<p>Tu contraseña temporal es:</p>'
             . '<p style="font-size:20px;font-weight:bold;letter-spacing:1px;">' . htmlspecialchars($passwordTemporal, ENT_QUOTES, 'UTF-8') . '</p>'
-            . '<p>Ingresa con ella y cámbiala en cuanto puedas.</p>';
+            . '<p>Al ingresar con ella te pediremos que la cambies de inmediato.</p>';
 
-        return Mailer::enviar($asociado['email'], 'Acceso al portal de afiliados - ASOVEGU', $cuerpo);
+        $enviado = Mailer::enviar($asociado['email'], 'Acceso al portal de afiliados - ASOVEGU', $cuerpo);
+
+        return [$enviado, $passwordTemporal];
     }
 
-    private function responder(int $codigo, bool $exito, string $mensaje): void
+    private function responder(int $codigo, bool $exito, string $mensaje, array $extra = []): void
     {
         http_response_code($codigo);
-        echo json_encode(['exito' => $exito, 'mensaje' => $mensaje], JSON_UNESCAPED_UNICODE);
+        echo json_encode(array_merge(['exito' => $exito, 'mensaje' => $mensaje], $extra), JSON_UNESCAPED_UNICODE);
         exit;
     }
 }

@@ -28,6 +28,13 @@ class AfiliadoDashboardController
             exit('No se encontró tu información.');
         }
 
+        // Por si entra directo a esta URL sin pasar por el redireccionamiento
+        // del login (pestaña vieja, marcador, etc.).
+        if ((int) $asociado['debe_cambiar_password'] === 1) {
+            header('Location: cambiar-password.php');
+            exit;
+        }
+
         $pagos = $pagoModelo->historialPorAsociado($asociado['id']);
 
         $pagosPorMes = [];
