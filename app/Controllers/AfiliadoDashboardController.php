@@ -18,31 +18,12 @@ class AfiliadoDashboardController
         $afiliado = AuthAfiliado::requerirSesion();
         $csrf = Csrf::token();
 
-        $asociadoModelo = new Asociado();
+        $asociado = $this->obtenerAsociadoOConEsRedireccion();
         $pagoModelo = new PagoCuota();
         $ticketModelo = new Ticket();
 
-        $asociado = $asociadoModelo->buscarPorId($afiliado['id']);
-        if (!$asociado) {
-            http_response_code(404);
-            exit('No se encontró tu información.');
-        }
-
-        // Por si entra directo a esta URL sin pasar por el redireccionamiento
-        // del login (pestaña vieja, marcador, etc.).
-        if ((int) $asociado['debe_cambiar_password'] === 1) {
-            header('Location: cambiar-password.php');
-            exit;
-        }
-
         $pagos = $pagoModelo->historialPorAsociado($asociado['id']);
-
-        $pagosPorMes = [];
-        $totalPagadoHistorico = 0.0;
-        foreach ($pagos as $p) {
-            $pagosPorMes[$p['anio'] . '-' . $p['mes']] = $p;
-            $totalPagadoHistorico += (float) $p['monto'];
-        }
+        $pagosPorMes = $this->indexarPagosPorMes($pagos);
 
         $ciclo = PagoCuota::obtenerCicloPago();
         $yaPagoCicloActual = isset($pagosPorMes[$ciclo['anio'] . '-' . $ciclo['mes']]);
@@ -62,13 +43,8 @@ class AfiliadoDashboardController
             ];
         }
 
-        $mesesDebe = 0;
-        foreach (PagoCuota::obtenerMesesDesde($primerMes) as $m) {
-            if (!isset($pagosPorMes[$m['anio'] . '-' . $m['mes']])) {
-                $mesesDebe++;
-            }
-        }
-        $totalDebe = $mesesDebe * PagoCuota::MONTO_CUOTA;
+        [$mesesDebe, $totalDebe] = $this->calcularDeuda($pagosPorMes, $primerMes);
+        $totalPagadoHistorico = array_sum(array_map(fn ($p) => (float) $p['monto'], $pagos));
 
         $tickets = $ticketModelo->listarPorAsociado($asociado['id']);
 
@@ -76,6 +52,7 @@ class AfiliadoDashboardController
             'afiliado' => $afiliado,
             'csrf' => $csrf,
             'tituloPagina' => 'Mi información',
+            'paginaActiva' => 'dashboard',
             'asociado' => $asociado,
             'pagos' => $pagos,
             'totalPagadoHistorico' => $totalPagadoHistorico,
@@ -86,5 +63,95 @@ class AfiliadoDashboardController
             'totalDebe' => $totalDebe,
             'tickets' => $tickets,
         ]);
+    }
+
+    public function misPagos(): void
+    {
+        $afiliado = AuthAfiliado::requerirSesion();
+
+        $asociado = $this->obtenerAsociadoOConEsRedireccion();
+        $pagoModelo = new PagoCuota();
+
+        $pagos = $pagoModelo->historialPorAsociado($asociado['id']);
+        $pagosPorMes = $this->indexarPagosPorMes($pagos);
+
+        $fechaBase = PagoCuota::fechaBaseCuota($asociado);
+        $primerMes = PagoCuota::primerMesElegible($fechaBase);
+
+        // A diferencia del historial del dashboard (que omite los meses
+        // anteriores a la afiliación), aquí se muestran los 12 siempre, en
+        // gris los que todavía no le correspondían, para que se vea el año
+        // completo de un vistazo.
+        $mesesGrid = [];
+        foreach (PagoCuota::obtenerUltimos12Meses() as $m) {
+            $elegible = PagoCuota::mesEsElegible($m['anio'], $m['mes'], $primerMes);
+            $pagado = $elegible && isset($pagosPorMes[$m['anio'] . '-' . $m['mes']]);
+            $mesesGrid[] = [
+                'label' => PagoCuota::nombreMes($m['mes']) . ' ' . $m['anio'],
+                'estado' => !$elegible ? 'no_aplica' : ($pagado ? 'pagado' : 'moroso'),
+            ];
+        }
+
+        [$mesesDebe, $totalDebe] = $this->calcularDeuda($pagosPorMes, $primerMes);
+        $totalPagadoHistorico = array_sum(array_map(fn ($p) => (float) $p['monto'], $pagos));
+
+        View::render('afiliado/mis-pagos', [
+            'afiliado' => $afiliado,
+            'tituloPagina' => 'Mis pagos',
+            'paginaActiva' => 'mis-pagos',
+            'mesesGrid' => $mesesGrid,
+            'totalPagadoHistorico' => $totalPagadoHistorico,
+            'totalPagos' => count($pagos),
+            'mesesDebe' => $mesesDebe,
+            'totalDebe' => $totalDebe,
+        ]);
+    }
+
+    /**
+     * Se llama después de requerirSesion(); usa la sesión ya validada para
+     * traer al asociado, y lo manda a cambiar su contraseña si aún la debe.
+     */
+    private function obtenerAsociadoOConEsRedireccion(): array
+    {
+        $afiliado = AuthAfiliado::afiliadoActual();
+
+        $asociadoModelo = new Asociado();
+        $asociado = $asociadoModelo->buscarPorId($afiliado['id']);
+        if (!$asociado) {
+            http_response_code(404);
+            exit('No se encontró tu información.');
+        }
+
+        // Por si entra directo a esta URL sin pasar por el redireccionamiento
+        // del login (pestaña vieja, marcador, etc.).
+        if ((int) $asociado['debe_cambiar_password'] === 1) {
+            header('Location: cambiar-password.php');
+            exit;
+        }
+
+        return $asociado;
+    }
+
+    private function indexarPagosPorMes(array $pagos): array
+    {
+        $pagosPorMes = [];
+        foreach ($pagos as $p) {
+            $pagosPorMes[$p['anio'] . '-' . $p['mes']] = $p;
+        }
+        return $pagosPorMes;
+    }
+
+    /**
+     * @return array{0: int, 1: float} [meses_sin_pagar, total_que_debe]
+     */
+    private function calcularDeuda(array $pagosPorMes, array $primerMes): array
+    {
+        $mesesDebe = 0;
+        foreach (PagoCuota::obtenerMesesDesde($primerMes) as $m) {
+            if (!isset($pagosPorMes[$m['anio'] . '-' . $m['mes']])) {
+                $mesesDebe++;
+            }
+        }
+        return [$mesesDebe, $mesesDebe * PagoCuota::MONTO_CUOTA];
     }
 }

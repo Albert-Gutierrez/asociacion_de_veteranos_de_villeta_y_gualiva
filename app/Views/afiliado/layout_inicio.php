@@ -25,8 +25,11 @@
             </div>
 
             <nav class="admin-nav">
-                <a href="dashboard.php" class="admin-nav-link active">
+                <a href="dashboard.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'dashboard' ? 'active' : '' ?>">
                     <i class="fas fa-gauge-high"></i> Mi información
+                </a>
+                <a href="mis-pagos.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'mis-pagos' ? 'active' : '' ?>">
+                    <i class="fas fa-calendar-check"></i> Mis pagos
                 </a>
                 <a href="../index.html" class="admin-nav-link" target="_blank">
                     <i class="fas fa-arrow-up-right-from-square"></i> Ver sitio público

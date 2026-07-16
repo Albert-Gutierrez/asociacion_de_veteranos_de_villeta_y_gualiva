@@ -578,6 +578,19 @@ body.login-body {
     color: var(--color-rojo-patrio);
 }
 
+.cuota-mes-na {
+    background: #ECECEC;
+    color: #777;
+}
+
+.cuota-mes-estatico {
+    cursor: default;
+}
+
+.cuota-mes-estatico:hover {
+    transform: none;
+}
+
 /* FORMULARIOS DEL PANEL __________________________________________________________ */
 .admin-datos {
     display: grid;
