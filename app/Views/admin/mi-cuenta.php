@@ -21,6 +21,25 @@ function e(string $v): string
         <dt>Rol</dt><dd><?= Auth::etiquetaRol($usuario['rol']) ?></dd>
     </dl>
 
+    <h3 class="admin-subtitulo">Foto de perfil</h3>
+    <div class="admin-foto-perfil-editor">
+        <?php if ($usuario['foto']): ?>
+            <img src="../img/perfiles/<?= e($usuario['foto']) ?>" alt="Tu foto de perfil" class="admin-foto-perfil-preview">
+        <?php else: ?>
+            <i class="fas fa-circle-user admin-foto-perfil-preview-icono"></i>
+        <?php endif; ?>
+
+        <form id="form-foto-perfil" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+            <div class="campo">
+                <label for="foto">Foto (opcional, JPG/PNG/WEBP, máx. 3 MB)</label>
+                <input type="file" id="foto" name="foto" accept="image/png,image/jpeg,image/webp" required>
+            </div>
+            <button type="submit" class="btn-enviar">Subir foto</button>
+        </form>
+    </div>
+    <p id="foto-perfil-mensaje" class="admin-mensaje-accion"></p>
+
     <h3 class="admin-subtitulo">Cambiar mi contraseña</h3>
     <form id="form-cambiar-password">
         <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">

@@ -33,6 +33,7 @@ class Auth
             'nombre' => (string) $_SESSION['admin_nombre'],
             'email' => (string) $_SESSION['admin_email'],
             'rol' => (string) $_SESSION['admin_rol'],
+            'foto' => $_SESSION['admin_foto'] ?? null,
         ];
     }
 

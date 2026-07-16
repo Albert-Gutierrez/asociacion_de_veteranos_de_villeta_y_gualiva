@@ -321,6 +321,14 @@ body.login-body {
     opacity: .85;
 }
 
+.admin-user-chip-foto {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
 .admin-user-chip div {
     display: flex;
     flex-direction: column;
@@ -759,6 +767,46 @@ body.login-body {
 
 .cuota-mes-estatico:hover {
     transform: none;
+}
+
+/* FOTO DE PERFIL (mi-cuenta.php admin / dashboard.php afiliado) ___________________ */
+.admin-foto-perfil-editor {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.admin-foto-perfil-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+    flex-shrink: 0;
+}
+
+.admin-foto-perfil-preview-icono {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--color-bg-light);
+    color: #999;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.admin-foto-perfil-editor form {
+    flex: 1;
+    min-width: 220px;
+}
+
+.admin-foto-perfil-editor .campo {
+    margin-bottom: 10px;
 }
 
 /* FORMULARIOS DEL PANEL __________________________________________________________ */

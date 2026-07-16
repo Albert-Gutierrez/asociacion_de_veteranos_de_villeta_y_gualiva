@@ -99,7 +99,11 @@ $fuerzaInfo = isset($asociado) ? datosFuerzaSidebar($asociado['fuerza'] ?? null)
 
             <div class="admin-sidebar-footer">
                 <div class="admin-user-chip">
-                    <i class="fas fa-circle-user"></i>
+                    <?php if (!empty($asociado['foto_ruta'] ?? null)): ?>
+                        <img src="../img/perfiles/<?= htmlspecialchars($asociado['foto_ruta'], ENT_QUOTES, 'UTF-8') ?>" alt="Foto de perfil" class="admin-user-chip-foto">
+                    <?php else: ?>
+                        <i class="fas fa-circle-user"></i>
+                    <?php endif; ?>
                     <div>
                         <strong><?= htmlspecialchars($afiliado['nombre'], ENT_QUOTES, 'UTF-8') ?></strong>
                         <span>Afiliado</span>

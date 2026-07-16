@@ -126,4 +126,18 @@ class UsuarioAdmin
         $stmt = $this->pdo->prepare('UPDATE usuarios_admin SET password_hash = :hash WHERE id = :id');
         $stmt->execute(['hash' => $hash, 'id' => $id]);
     }
+
+    public function obtenerFoto(int $id): ?string
+    {
+        $stmt = $this->pdo->prepare('SELECT foto_ruta FROM usuarios_admin WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+        $fila = $stmt->fetch();
+        return $fila ? $fila['foto_ruta'] : null;
+    }
+
+    public function actualizarFoto(int $id, ?string $rutaFoto): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE usuarios_admin SET foto_ruta = :foto WHERE id = :id');
+        $stmt->execute(['foto' => $rutaFoto, 'id' => $id]);
+    }
 }

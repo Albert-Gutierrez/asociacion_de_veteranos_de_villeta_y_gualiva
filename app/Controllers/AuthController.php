@@ -58,6 +58,7 @@ class AuthController
                     $_SESSION['admin_nombre'] = $cuenta['nombre'];
                     $_SESSION['admin_email'] = $cuenta['email'];
                     $_SESSION['admin_rol'] = $cuenta['rol'];
+                    $_SESSION['admin_foto'] = $cuenta['foto_ruta'] ?? null;
 
                     header('Location: dashboard.php');
                     exit;

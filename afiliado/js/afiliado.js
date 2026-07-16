@@ -62,6 +62,33 @@ if (formCambiarPasswordAfiliado) {
     });
 }
 
+// Subir foto de perfil (dashboard.php, la única info que edita el afiliado)
+const formFotoPerfil = document.getElementById('form-foto-perfil');
+if (formFotoPerfil) {
+    formFotoPerfil.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const mensajeEl = document.getElementById('foto-perfil-mensaje');
+        const boton = formFotoPerfil.querySelector('button[type="submit"]');
+        boton.disabled = true;
+
+        try {
+            const respuesta = await fetch('acciones/subir_foto.php', {
+                method: 'POST',
+                body: new FormData(formFotoPerfil),
+            });
+            const resultado = await respuesta.json();
+            mostrarMensaje(mensajeEl, resultado.mensaje, respuesta.ok);
+            if (respuesta.ok) {
+                setTimeout(() => window.location.reload(), 800);
+            }
+        } catch (error) {
+            mostrarMensaje(mensajeEl, 'No se pudo conectar con el servidor.', false);
+        } finally {
+            boton.disabled = false;
+        }
+    });
+}
+
 // Reportar un pago no reflejado o pedir corrección de datos (soporte.php)
 document.querySelectorAll('.form-ticket').forEach((formTicket) => {
     const mensajeEl = document.getElementById('ticket-' + formTicket.dataset.tipo + '-mensaje');

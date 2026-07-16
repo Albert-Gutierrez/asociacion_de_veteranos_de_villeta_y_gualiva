@@ -16,6 +16,7 @@ class AfiliadoDashboardController
     public function index(): void
     {
         $afiliado = AuthAfiliado::requerirSesion();
+        $csrf = Csrf::token();
 
         $asociado = $this->obtenerAsociadoOConEsRedireccion();
         $pagoModelo = new PagoCuota();
@@ -46,6 +47,7 @@ class AfiliadoDashboardController
 
         View::render('afiliado/dashboard', [
             'afiliado' => $afiliado,
+            'csrf' => $csrf,
             'tituloPagina' => 'Mi información',
             'paginaActiva' => 'dashboard',
             'asociado' => $asociado,

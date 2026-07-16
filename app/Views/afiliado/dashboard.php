@@ -17,6 +17,25 @@ function e(string $v): string
             <span class="badge-estado badge-<?= e($asociado['estado']) ?>"><?= ucfirst(e($asociado['estado'])) ?></span>
         </div>
 
+        <div class="admin-foto-perfil-editor">
+            <?php if ($asociado['foto_ruta']): ?>
+                <img src="../img/perfiles/<?= e($asociado['foto_ruta']) ?>" alt="Tu foto de perfil" class="admin-foto-perfil-preview">
+            <?php else: ?>
+                <i class="fas fa-circle-user admin-foto-perfil-preview-icono"></i>
+            <?php endif; ?>
+
+            <form id="form-foto-perfil" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+                <div class="campo">
+                    <label for="foto">Tu foto (opcional, JPG/PNG/WEBP, máx. 3 MB)</label>
+                    <input type="file" id="foto" name="foto" accept="image/png,image/jpeg,image/webp" required>
+                </div>
+                <button type="submit" class="btn-enviar">Subir foto</button>
+            </form>
+        </div>
+        <p id="foto-perfil-mensaje" class="admin-mensaje-accion"></p>
+        <p class="admin-texto-suave">Esta es la única información que puedes cambiar tú mismo desde aquí.</p>
+
         <dl class="admin-datos">
             <dt>Cédula</dt><dd><?= e($asociado['cedula']) ?></dd>
             <dt>Fecha de nacimiento</dt>

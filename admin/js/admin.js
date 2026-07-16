@@ -168,6 +168,33 @@ if (btnEditarDatos && formDatosAsociado && vistaDatosAsociado) {
     });
 }
 
+// Subir foto de perfil (mi-cuenta.php)
+const formFotoPerfil = document.getElementById('form-foto-perfil');
+if (formFotoPerfil) {
+    formFotoPerfil.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const mensajeEl = document.getElementById('foto-perfil-mensaje');
+        const boton = formFotoPerfil.querySelector('button[type="submit"]');
+        boton.disabled = true;
+
+        try {
+            const respuesta = await fetch('acciones/subir_foto.php', {
+                method: 'POST',
+                body: new FormData(formFotoPerfil),
+            });
+            const resultado = await respuesta.json();
+            mostrarMensaje(mensajeEl, resultado.mensaje, respuesta.ok);
+            if (respuesta.ok) {
+                setTimeout(() => window.location.reload(), 800);
+            }
+        } catch (error) {
+            mostrarMensaje(mensajeEl, 'No se pudo conectar con el servidor.', false);
+        } finally {
+            boton.disabled = false;
+        }
+    });
+}
+
 // Cambiar la fecha real de afiliación (asociado.php)
 const formFechaAfiliacion = document.getElementById('form-fecha-afiliacion');
 if (formFechaAfiliacion) {

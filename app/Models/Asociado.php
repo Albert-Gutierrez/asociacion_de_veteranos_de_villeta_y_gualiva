@@ -120,6 +120,15 @@ class Asociado
         return $stmt->rowCount();
     }
 
+    /**
+     * Único dato que el propio afiliado puede cambiar desde su portal.
+     */
+    public function actualizarFoto(int $id, ?string $rutaFoto): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE asociados SET foto_ruta = :foto WHERE id = :id');
+        $stmt->execute(['foto' => $rutaFoto, 'id' => $id]);
+    }
+
     // ------------------------------------------------------------------
     // Acceso al portal del afiliado (mismo patrón que UsuarioAdmin)
     // ------------------------------------------------------------------
