@@ -62,12 +62,12 @@ if (formCambiarPasswordAfiliado) {
     });
 }
 
-// Reportar un pago no reflejado (dashboard.php)
-const formTicket = document.getElementById('form-ticket');
-if (formTicket) {
+// Reportar un pago no reflejado o pedir corrección de datos (soporte.php)
+document.querySelectorAll('.form-ticket').forEach((formTicket) => {
+    const mensajeEl = document.getElementById('ticket-' + formTicket.dataset.tipo + '-mensaje');
+
     formTicket.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const mensajeEl = document.getElementById('ticket-mensaje');
         const boton = formTicket.querySelector('button[type="submit"]');
         boton.disabled = true;
 
@@ -88,4 +88,4 @@ if (formTicket) {
             boton.disabled = false;
         }
     });
-}
+});

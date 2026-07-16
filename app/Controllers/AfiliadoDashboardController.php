@@ -16,11 +16,9 @@ class AfiliadoDashboardController
     public function index(): void
     {
         $afiliado = AuthAfiliado::requerirSesion();
-        $csrf = Csrf::token();
 
         $asociado = $this->obtenerAsociadoOConEsRedireccion();
         $pagoModelo = new PagoCuota();
-        $ticketModelo = new Ticket();
 
         $pagos = $pagoModelo->historialPorAsociado($asociado['id']);
         $pagosPorMes = $this->indexarPagosPorMes($pagos);
@@ -46,11 +44,8 @@ class AfiliadoDashboardController
         [$mesesDebe, $totalDebe] = $this->calcularDeuda($pagosPorMes, $primerMes);
         $totalPagadoHistorico = array_sum(array_map(fn ($p) => (float) $p['monto'], $pagos));
 
-        $tickets = $ticketModelo->listarPorAsociado($asociado['id']);
-
         View::render('afiliado/dashboard', [
             'afiliado' => $afiliado,
-            'csrf' => $csrf,
             'tituloPagina' => 'Mi información',
             'paginaActiva' => 'dashboard',
             'asociado' => $asociado,
@@ -61,6 +56,29 @@ class AfiliadoDashboardController
             'historialMeses' => $historialMeses,
             'mesesDebe' => $mesesDebe,
             'totalDebe' => $totalDebe,
+        ]);
+    }
+
+    /**
+     * Pestaña "Soporte": reportar un pago no reflejado (todos los roles de
+     * staff lo atienden) o pedir corrección de datos personales (solo
+     * administrador/super administrador, ver TicketController).
+     */
+    public function soporte(): void
+    {
+        $afiliado = AuthAfiliado::requerirSesion();
+        $csrf = Csrf::token();
+
+        $asociado = $this->obtenerAsociadoOConEsRedireccion();
+        $ticketModelo = new Ticket();
+        $tickets = $ticketModelo->listarPorAsociado($asociado['id']);
+
+        View::render('afiliado/soporte', [
+            'afiliado' => $afiliado,
+            'asociado' => $asociado,
+            'csrf' => $csrf,
+            'tituloPagina' => 'Soporte',
+            'paginaActiva' => 'soporte',
             'tickets' => $tickets,
         ]);
     }
@@ -97,6 +115,7 @@ class AfiliadoDashboardController
 
         View::render('afiliado/mis-pagos', [
             'afiliado' => $afiliado,
+            'asociado' => $asociado,
             'tituloPagina' => 'Mis pagos',
             'paginaActiva' => 'mis-pagos',
             'mesesGrid' => $mesesGrid,

@@ -24,7 +24,8 @@ use App\Core\Auth;
     <div class="admin-layout">
         <aside class="admin-sidebar" id="admin-sidebar">
             <div class="admin-sidebar-logo">
-                <img src="../img/logo_nav.png" alt="ASOVEGU">
+                <img src="../img/escudo sin fondo.png" alt="Escudo ASOVEGU">
+                <span class="admin-sidebar-logo-texto">ASOVEGU</span>
             </div>
 
             <nav class="admin-nav">

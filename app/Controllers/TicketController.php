@@ -37,6 +37,11 @@ class TicketController
 
         Csrf::requerirApi($_POST['csrf_token'] ?? null);
 
+        $tipo = (string) ($_POST['tipo'] ?? 'cuota');
+        if (!in_array($tipo, ['cuota', 'datos'], true)) {
+            $tipo = 'cuota';
+        }
+
         $mensaje = trim((string) ($_POST['mensaje'] ?? ''));
         if ($mensaje === '') {
             $this->responder(422, false, 'Cuéntanos qué pago realizaste.');
@@ -78,7 +83,7 @@ class TicketController
         }
 
         $modelo = new Ticket();
-        $modelo->crear($afiliado['id'], $mensaje, $imagenRuta);
+        $modelo->crear($afiliado['id'], $tipo, $mensaje, $imagenRuta);
 
         $this->responder(200, true, 'Tu reporte fue enviado. La asociación lo revisará pronto.');
     }
@@ -97,8 +102,12 @@ class TicketController
             $filtro = null;
         }
 
+        // Los tickets de corrección de datos personales solo los ve
+        // administrador/super administrador; el tesorero solo ve los de cuota.
+        $tiposVisibles = Auth::puedeGestionarSolicitudes() ? null : ['cuota'];
+
         $modelo = new Ticket();
-        $tickets = $modelo->listarTodos($filtro);
+        $tickets = $modelo->listarTodos($filtro, $tiposVisibles);
 
         View::render('admin/tickets', [
             'usuario' => $usuario,
@@ -136,8 +145,13 @@ class TicketController
         }
 
         $modelo = new Ticket();
-        if (!$modelo->buscarPorId($ticketId)) {
+        $ticket = $modelo->buscarPorId($ticketId);
+        if (!$ticket) {
             $this->responder(404, false, 'Ticket no encontrado.');
+        }
+
+        if ($ticket['tipo'] === 'datos' && !Auth::puedeGestionarSolicitudes()) {
+            $this->responder(403, false, 'Solo un administrador puede resolver tickets de corrección de datos.');
         }
 
         $modelo->marcarResuelto($ticketId, $respuesta !== '' ? $respuesta : null, $usuario['id']);

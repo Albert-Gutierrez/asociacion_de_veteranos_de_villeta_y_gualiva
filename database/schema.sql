@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS pagos_cuota (
 CREATE TABLE IF NOT EXISTS tickets (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     asociado_id INT UNSIGNED NOT NULL,
+    tipo ENUM('cuota', 'datos') NOT NULL DEFAULT 'cuota' COMMENT 'cuota: pago no reflejado (todos los roles). datos: correccion de datos personales (solo admin/super admin).',
     mensaje TEXT NOT NULL,
     imagen_ruta VARCHAR(255) NULL,
     estado ENUM('abierto', 'resuelto') NOT NULL DEFAULT 'abierto',

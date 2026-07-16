@@ -82,49 +82,4 @@ function e(string $v): string
     </div>
 </div>
 
-<div class="admin-panel">
-    <div class="admin-panel-header">
-        <h2>¿Hiciste un pago que no aparece aquí?</h2>
-    </div>
-    <p class="admin-texto-suave">Cuéntanos qué pagaste y adjunta una captura o foto del comprobante; el tesorero o un administrador lo revisará.</p>
-
-    <form id="form-ticket" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
-        <div class="campo">
-            <label for="mensaje">¿Qué pago hiciste?</label>
-            <textarea id="mensaje" name="mensaje" rows="3" required placeholder="Ej: Pagué la cuota de julio por Nequi el día 15..."></textarea>
-        </div>
-        <div class="campo">
-            <label for="imagen">Captura o foto del pago (opcional, JPG/PNG, máx. 5 MB)</label>
-            <input type="file" id="imagen" name="imagen" accept="image/png,image/jpeg,image/webp">
-        </div>
-        <button type="submit" class="btn-enviar">Enviar reporte</button>
-    </form>
-    <p id="ticket-mensaje" class="admin-mensaje-accion"></p>
-
-    <h3 class="admin-subtitulo">Mis reportes</h3>
-    <table class="admin-tabla">
-        <thead>
-            <tr><th>Fecha</th><th>Mensaje</th><th>Estado</th><th>Respuesta</th></tr>
-        </thead>
-        <tbody>
-            <?php foreach ($tickets as $t): ?>
-                <tr>
-                    <td><?= e((new DateTime($t['creado_en']))->format('d/m/Y H:i')) ?></td>
-                    <td><?= nl2br(e($t['mensaje'])) ?></td>
-                    <td>
-                        <span class="badge-cuota <?= $t['estado'] === 'resuelto' ? 'badge-cuota-pagado' : 'badge-cuota-pendiente' ?>">
-                            <?= $t['estado'] === 'resuelto' ? 'Resuelto' : 'Abierto' ?>
-                        </span>
-                    </td>
-                    <td><?= $t['respuesta'] ? nl2br(e($t['respuesta'])) : '—' ?></td>
-                </tr>
-            <?php endforeach; ?>
-            <?php if ($tickets === []): ?>
-                <tr><td colspan="4" class="admin-tabla-vacia">No has enviado ningún reporte todavía.</td></tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-</div>
-
 <?php require __DIR__ . '/layout_fin.php'; ?>

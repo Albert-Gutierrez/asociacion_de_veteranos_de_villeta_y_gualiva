@@ -16,13 +16,14 @@ class Ticket
         $this->pdo = Database::conexion();
     }
 
-    public function crear(int $asociadoId, string $mensaje, ?string $imagenRuta): int
+    public function crear(int $asociadoId, string $tipo, string $mensaje, ?string $imagenRuta): int
     {
         $stmt = $this->pdo->prepare(
-            'INSERT INTO tickets (asociado_id, mensaje, imagen_ruta) VALUES (:asociado_id, :mensaje, :imagen_ruta)'
+            'INSERT INTO tickets (asociado_id, tipo, mensaje, imagen_ruta) VALUES (:asociado_id, :tipo, :mensaje, :imagen_ruta)'
         );
         $stmt->execute([
             'asociado_id' => $asociadoId,
+            'tipo' => $tipo,
             'mensaje' => $mensaje,
             'imagen_ruta' => $imagenRuta,
         ]);
@@ -38,17 +39,31 @@ class Ticket
 
     /**
      * @param string|null $estado 'abierto'|'resuelto'|null (todos)
+     * @param string[]|null $tipos filtro de tipos a incluir ('cuota'/'datos'), o null para todos
      */
-    public function listarTodos(?string $estado = null): array
+    public function listarTodos(?string $estado = null, ?array $tipos = null): array
     {
         $sql = 'SELECT t.*, a.nombres, a.apellidos, a.cedula, u.nombre AS respondido_por_nombre
                 FROM tickets t
                 JOIN asociados a ON a.id = t.asociado_id
                 LEFT JOIN usuarios_admin u ON u.id = t.respondido_por';
+        $condiciones = [];
         $params = [];
         if ($estado !== null) {
-            $sql .= ' WHERE t.estado = :estado';
+            $condiciones[] = 't.estado = :estado';
             $params['estado'] = $estado;
+        }
+        if ($tipos !== null) {
+            $marcadores = [];
+            foreach (array_values($tipos) as $i => $tipo) {
+                $clave = 'tipo' . $i;
+                $marcadores[] = ':' . $clave;
+                $params[$clave] = $tipo;
+            }
+            $condiciones[] = 't.tipo IN (' . implode(', ', $marcadores) . ')';
+        }
+        if ($condiciones !== []) {
+            $sql .= ' WHERE ' . implode(' AND ', $condiciones);
         }
         $sql .= ' ORDER BY t.creado_en DESC';
 

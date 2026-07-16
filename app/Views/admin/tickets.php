@@ -21,7 +21,7 @@ function e(string $v): string
     <div class="table-responsive">
         <table class="admin-tabla">
             <thead>
-                <tr><th>Fecha</th><th>Asociado</th><th>Mensaje</th><th>Imagen</th><th>Estado</th><th>Respuesta</th><th>Acciones</th></tr>
+                <tr><th>Fecha</th><th>Asociado</th><th>Tipo</th><th>Mensaje</th><th>Imagen</th><th>Estado</th><th>Respuesta</th><th>Acciones</th></tr>
             </thead>
             <tbody>
                 <?php foreach ($tickets as $t): ?>
@@ -32,6 +32,11 @@ function e(string $v): string
                                 <?= e($t['nombres'] . ' ' . $t['apellidos']) ?>
                             </a>
                             <div class="admin-texto-suave"><?= e($t['cedula']) ?></div>
+                        </td>
+                        <td>
+                            <span class="badge-cuota <?= $t['tipo'] === 'datos' ? 'badge-cuota-pendiente' : 'badge-cuota-pagado' ?>">
+                                <?= $t['tipo'] === 'datos' ? 'Corrección de datos' : 'Cuota / pago' ?>
+                            </span>
                         </td>
                         <td style="max-width:280px;"><?= nl2br(e($t['mensaje'])) ?></td>
                         <td>

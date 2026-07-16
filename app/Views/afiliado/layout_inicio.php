@@ -1,5 +1,54 @@
 <?php
 // Espera que la página incluida defina antes: $tituloPagina, $afiliado.
+// $asociado es opcional (lo pasan dashboard.php, mis-pagos.php y soporte.php);
+// cuando está disponible, su "fuerza" decide el acento visual del sidebar.
+function datosFuerzaSidebar(?string $fuerza): ?array
+{
+    $f = strtr(mb_strtolower((string) $fuerza, 'UTF-8'), ['é' => 'e', 'á' => 'a', 'í' => 'i', 'ó' => 'o', 'ú' => 'u']);
+
+    $catalogo = [
+        'ejercito' => [
+            'clase' => 'ejercito',
+            'nombre' => 'Ejército Nacional',
+            'mensaje' => 'Honor, lealtad y patria.',
+            'imagen' => 'fondo_ejercito.svg',
+        ],
+        'policia' => [
+            'clase' => 'policia',
+            'nombre' => 'Policía Nacional',
+            'mensaje' => 'Dios y patria, honor y disciplina.',
+            'imagen' => 'fondo_policia.svg',
+        ],
+        'armada' => [
+            'clase' => 'armada',
+            'nombre' => 'Armada Nacional',
+            'mensaje' => 'Vocación naval al servicio de Colombia.',
+            'imagen' => 'fondo_armada.svg',
+        ],
+        'fuerza-aerea' => [
+            'clase' => 'fuerza-aerea',
+            'nombre' => 'Fuerza Aérea Colombiana',
+            'mensaje' => 'Honor y gloria en la defensa del espacio aéreo.',
+            'imagen' => 'fondo_fuerza_aerea.svg',
+        ],
+    ];
+
+    if (str_contains($f, 'ejerc')) {
+        return $catalogo['ejercito'];
+    }
+    if (str_contains($f, 'polic')) {
+        return $catalogo['policia'];
+    }
+    if (str_contains($f, 'armada') || str_contains($f, 'naval') || str_contains($f, 'marina')) {
+        return $catalogo['armada'];
+    }
+    if (str_contains($f, 'aerea') || str_contains($f, 'fac')) {
+        return $catalogo['fuerza-aerea'];
+    }
+    return null;
+}
+
+$fuerzaInfo = isset($asociado) ? datosFuerzaSidebar($asociado['fuerza'] ?? null) : null;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,9 +68,10 @@
 <body class="admin-body">
 
     <div class="admin-layout">
-        <aside class="admin-sidebar" id="admin-sidebar">
+        <aside class="admin-sidebar<?= $fuerzaInfo !== null ? ' sidebar-fuerza-' . $fuerzaInfo['clase'] : '' ?>" id="admin-sidebar">
             <div class="admin-sidebar-logo">
-                <img src="../img/logo_nav.png" alt="ASOVEGU">
+                <img src="../img/escudo sin fondo.png" alt="Escudo ASOVEGU">
+                <span class="admin-sidebar-logo-texto">ASOVEGU</span>
             </div>
 
             <nav class="admin-nav">
@@ -31,9 +81,20 @@
                 <a href="mis-pagos.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'mis-pagos' ? 'active' : '' ?>">
                     <i class="fas fa-calendar-check"></i> Mis pagos
                 </a>
+                <a href="soporte.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'soporte' ? 'active' : '' ?>">
+                    <i class="fas fa-headset"></i> Soporte
+                </a>
                 <a href="../index.html" class="admin-nav-link" target="_blank">
                     <i class="fas fa-arrow-up-right-from-square"></i> Ver sitio público
                 </a>
+
+                <?php if ($fuerzaInfo !== null): ?>
+                <div class="admin-sidebar-fuerza-destacado">
+                    <img src="../img/<?= htmlspecialchars($fuerzaInfo['imagen'], ENT_QUOTES, 'UTF-8') ?>" alt="Escudo <?= htmlspecialchars($fuerzaInfo['nombre'], ENT_QUOTES, 'UTF-8') ?>">
+                    <h3><?= htmlspecialchars($fuerzaInfo['nombre'], ENT_QUOTES, 'UTF-8') ?></h3>
+                    <p><?= htmlspecialchars($fuerzaInfo['mensaje'], ENT_QUOTES, 'UTF-8') ?></p>
+                </div>
+                <?php endif; ?>
             </nav>
 
             <div class="admin-sidebar-footer">
