@@ -11,6 +11,28 @@ function mostrarMensaje(elemento, texto, ok) {
     elemento.className = 'admin-mensaje-accion ' + (ok ? 'ok' : 'error');
 }
 
+// Ojo para mostrar/ocultar en todos los campos de contraseña de la página
+document.querySelectorAll('input[type="password"]').forEach((input) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'campo-password-wrapper';
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'btn-toggle-password';
+    boton.setAttribute('aria-label', 'Mostrar contraseña');
+    boton.innerHTML = '<i class="fas fa-eye"></i>';
+    wrapper.appendChild(boton);
+
+    boton.addEventListener('click', () => {
+        const mostrar = input.type === 'password';
+        input.type = mostrar ? 'text' : 'password';
+        boton.innerHTML = mostrar ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+        boton.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
+});
+
 // Cambiar contraseña (cambiar-password.php, obligatorio en el primer ingreso)
 const formCambiarPasswordAfiliado = document.getElementById('form-cambiar-password-afiliado');
 if (formCambiarPasswordAfiliado) {

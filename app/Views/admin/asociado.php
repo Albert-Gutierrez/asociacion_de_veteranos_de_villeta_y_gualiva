@@ -150,4 +150,22 @@ function e(string $v): string
     </div>
 </div>
 
+<div class="modal fade" id="modal-password-temporal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-password-temporal-titulo">Acceso al portal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-password-temporal-texto"></p>
+                <p class="admin-texto-suave">Cópiala ahora, no se volverá a mostrar. Se le pedirá cambiarla al ingresar.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-enviar" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php require __DIR__ . '/layout_fin.php'; ?>

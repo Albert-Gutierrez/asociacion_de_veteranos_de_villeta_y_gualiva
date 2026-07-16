@@ -11,6 +11,28 @@ function mostrarMensaje(elemento, texto, ok) {
     elemento.className = 'admin-mensaje-accion ' + (ok ? 'ok' : 'error');
 }
 
+// Ojo para mostrar/ocultar en todos los campos de contraseña de la página
+document.querySelectorAll('input[type="password"]').forEach((input) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'campo-password-wrapper';
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'btn-toggle-password';
+    boton.setAttribute('aria-label', 'Mostrar contraseña');
+    boton.innerHTML = '<i class="fas fa-eye"></i>';
+    wrapper.appendChild(boton);
+
+    boton.addEventListener('click', () => {
+        const mostrar = input.type === 'password';
+        input.type = mostrar ? 'text' : 'password';
+        boton.innerHTML = mostrar ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+        boton.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
+});
+
 async function llamarAccion(url, datos) {
     const respuesta = await fetch(url, {
         method: 'POST',
@@ -19,6 +41,31 @@ async function llamarAccion(url, datos) {
     });
     const resultado = await respuesta.json();
     return { ok: respuesta.ok, resultado };
+}
+
+// Modal de contraseña temporal (asociado.php), reemplaza los alert() del navegador
+const modalPasswordEl = document.getElementById('modal-password-temporal');
+let modalPassword = null;
+let modalPasswordAlCerrar = null;
+if (modalPasswordEl) {
+    modalPassword = new bootstrap.Modal(modalPasswordEl);
+    modalPasswordEl.addEventListener('hidden.bs.modal', () => {
+        const callback = modalPasswordAlCerrar;
+        modalPasswordAlCerrar = null;
+        if (callback) callback();
+    });
+}
+
+function mostrarModalPassword(titulo, mensaje, alCerrar) {
+    if (!modalPassword) {
+        alert(mensaje);
+        if (alCerrar) alCerrar();
+        return;
+    }
+    document.getElementById('modal-password-temporal-titulo').textContent = titulo;
+    document.getElementById('modal-password-temporal-texto').textContent = mensaje;
+    modalPasswordAlCerrar = alCerrar;
+    modalPassword.show();
 }
 
 // Filtro de la tabla de asociados (dashboard.php)
@@ -61,13 +108,14 @@ if (formEstado) {
             .catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
         mostrarMensaje(document.getElementById('estado-mensaje'), resultado.mensaje, ok);
         if (ok && resultado.password_temporal_portal) {
-            alert(
-                'Se aprobó y se activó su acceso al portal de afiliados.\n\n' +
-                'Contraseña temporal: ' + resultado.password_temporal_portal +
-                '\n\nCópiala ahora, no se volverá a mostrar. Se le pedirá cambiarla al ingresar.'
+            mostrarModalPassword(
+                'Acceso al portal activado',
+                'Se aprobó y se activó su acceso al portal de afiliados. Contraseña temporal: ' + resultado.password_temporal_portal,
+                () => window.location.reload()
             );
+        } else if (ok) {
+            setTimeout(() => window.location.reload(), 800);
         }
-        if (ok) setTimeout(() => window.location.reload(), 800);
     });
 }
 
@@ -102,12 +150,14 @@ if (btnGenerarAcceso) {
         btnGenerarAcceso.disabled = false;
         mostrarMensaje(document.getElementById('acceso-afiliado-mensaje'), resultado.mensaje, ok);
         if (ok && resultado.password_temporal) {
-            alert(
-                'Contraseña temporal del portal: ' + resultado.password_temporal +
-                '\n\nCópiala ahora, no se volverá a mostrar. Se le pedirá cambiarla al ingresar.'
+            mostrarModalPassword(
+                'Contraseña temporal generada',
+                'Contraseña temporal del portal: ' + resultado.password_temporal,
+                () => window.location.reload()
             );
+        } else if (ok) {
+            setTimeout(() => window.location.reload(), 1200);
         }
-        if (ok) setTimeout(() => window.location.reload(), 1200);
     });
 }
 

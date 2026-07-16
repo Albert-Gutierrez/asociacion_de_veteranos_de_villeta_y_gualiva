@@ -73,6 +73,34 @@ body.login-body {
     box-shadow: 0 0 5px rgba(0, 40, 104, .3);
 }
 
+/* MOSTRAR/OCULTAR CONTRASEÑA (todos los campos type="password") ___________________ */
+.campo-password-wrapper {
+    position: relative;
+}
+
+.campo-password-wrapper input {
+    width: 100%;
+    padding-right: 40px;
+}
+
+.btn-toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 15px;
+    line-height: 1;
+}
+
+.btn-toggle-password:hover {
+    color: var(--color-primary);
+}
+
 .login-card .btn-enviar {
     width: 100%;
     margin-top: 20px;

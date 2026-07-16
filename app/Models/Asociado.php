@@ -106,6 +106,14 @@ class Asociado
         return $fila ?: null;
     }
 
+    public function buscarPorCedula(string $cedula): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM asociados WHERE cedula = :cedula LIMIT 1');
+        $stmt->execute(['cedula' => $cedula]);
+        $fila = $stmt->fetch();
+        return $fila ?: null;
+    }
+
     public function registrarLoginExitoso(int $id): void
     {
         $stmt = $this->pdo->prepare(

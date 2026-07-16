@@ -82,6 +82,15 @@ class FormularioController
 
         $modelo = new Asociado();
 
+        // Verificar de una vez si la cédula o el correo ya están en el sistema,
+        // para dar un mensaje claro en vez de un error genérico de base de datos.
+        if ($modelo->buscarPorCedula($cedula) !== null) {
+            $this->responder(409, false, 'Ya existe una solicitud registrada con ese número de cédula en el sistema.');
+        }
+        if ($modelo->buscarPorEmail($email) !== null) {
+            $this->responder(409, false, 'Ya existe una solicitud registrada con ese correo electrónico en el sistema.');
+        }
+
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
         // Límite simple: máximo 3 envíos por IP en los últimos 10 minutos.

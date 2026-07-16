@@ -90,7 +90,7 @@ class AuthAfiliadoController
         Auth::iniciarSesionSegura();
         unset($_SESSION['afiliado_id'], $_SESSION['afiliado_nombre'], $_SESSION['afiliado_email']);
 
-        header('Location: login.php');
+        header('Location: ../index.html');
         exit;
     }
 }

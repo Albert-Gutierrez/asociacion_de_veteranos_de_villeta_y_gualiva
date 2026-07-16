@@ -40,6 +40,8 @@
             Si no la tienes, contacta a la asociación.
         </p>
     </div>
+
+    <script src="js/afiliado.js?v=<?= @filemtime(__DIR__ . '/../../../afiliado/js/afiliado.js') ?: time() ?>"></script>
 </body>
 
 </html>
