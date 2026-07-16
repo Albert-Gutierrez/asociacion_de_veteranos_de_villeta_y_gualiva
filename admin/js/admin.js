@@ -119,6 +119,55 @@ if (formEstado) {
     });
 }
 
+// Editar datos personales del asociado (asociado.php)
+const btnEditarDatos = document.getElementById('btn-editar-datos');
+const formDatosAsociado = document.getElementById('form-datos-asociado');
+const vistaDatosAsociado = document.getElementById('datos-asociado-vista');
+if (btnEditarDatos && formDatosAsociado && vistaDatosAsociado) {
+    const btnCancelarEditarDatos = document.getElementById('btn-cancelar-editar-datos');
+
+    btnEditarDatos.addEventListener('click', () => {
+        vistaDatosAsociado.style.display = 'none';
+        btnEditarDatos.style.display = 'none';
+        formDatosAsociado.style.display = '';
+    });
+
+    btnCancelarEditarDatos.addEventListener('click', () => {
+        formDatosAsociado.style.display = 'none';
+        vistaDatosAsociado.style.display = '';
+        btnEditarDatos.style.display = '';
+    });
+
+    formDatosAsociado.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = {
+            csrf_token: formDatosAsociado.csrf_token.value,
+            asociado_id: formDatosAsociado.asociado_id.value,
+            nombres: formDatosAsociado.nombres.value,
+            apellidos: formDatosAsociado.apellidos.value,
+            cedula: formDatosAsociado.cedula.value,
+            fecha_nacimiento: formDatosAsociado.fecha_nacimiento.value,
+            telefono: formDatosAsociado.telefono.value,
+            email: formDatosAsociado.email.value,
+            direccion: formDatosAsociado.direccion.value,
+            fuerza: formDatosAsociado.fuerza.value,
+            mensaje: formDatosAsociado.mensaje.value,
+        };
+        const { ok, resultado } = await llamarAccion('acciones/actualizar_datos_asociado.php', datos)
+            .catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+        mostrarMensaje(document.getElementById('datos-asociado-mensaje'), resultado.mensaje, ok);
+        if (ok && resultado.password_temporal_portal) {
+            mostrarModalPassword(
+                'Correo corregido: nueva contraseña generada',
+                'Como cambió el correo de acceso, la contraseña anterior quedó invalidada. Nueva contraseña temporal: ' + resultado.password_temporal_portal,
+                () => window.location.reload()
+            );
+        } else if (ok) {
+            setTimeout(() => window.location.reload(), 800);
+        }
+    });
+}
+
 // Cambiar la fecha real de afiliación (asociado.php)
 const formFechaAfiliacion = document.getElementById('form-fecha-afiliacion');
 if (formFechaAfiliacion) {

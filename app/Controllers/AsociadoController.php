@@ -144,6 +144,128 @@ class AsociadoController
         $this->responder(200, true, 'Fecha de afiliación actualizada.');
     }
 
+    /**
+     * Corrección de datos personales por un administrador/super administrador
+     * (el asociado los digitó mal en el formulario público).
+     */
+    public function actualizarDatos(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        ini_set('display_errors', '0');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->responder(405, false, 'Método no permitido.');
+        }
+
+        Auth::requerirRolesApi(['administrador', 'super_administrador']);
+
+        $entrada = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($entrada)) {
+            $this->responder(400, false, 'Solicitud inválida.');
+        }
+
+        Csrf::requerirApi($entrada['csrf_token'] ?? null);
+
+        $asociadoId = (int) ($entrada['asociado_id'] ?? 0);
+        if ($asociadoId <= 0) {
+            $this->responder(422, false, 'Datos inválidos.');
+        }
+
+        $modelo = new Asociado();
+        $asociadoAntes = $modelo->buscarPorId($asociadoId);
+        if (!$asociadoAntes) {
+            $this->responder(404, false, 'Asociado no encontrado.');
+        }
+
+        $nombres = $this->limpiarTexto($entrada['nombres'] ?? '', 100);
+        $apellidos = $this->limpiarTexto($entrada['apellidos'] ?? '', 100);
+        $cedula = $this->limpiarTexto($entrada['cedula'] ?? '', 20);
+        $fechaNacimientoRaw = trim((string) ($entrada['fecha_nacimiento'] ?? ''));
+        $telefono = $this->limpiarTexto($entrada['telefono'] ?? '', 20);
+        $email = trim((string) ($entrada['email'] ?? ''));
+        $direccion = $this->limpiarTexto($entrada['direccion'] ?? '', 255);
+        $fuerza = $this->limpiarTexto($entrada['fuerza'] ?? '', 100);
+        $mensaje = $this->limpiarTexto($entrada['mensaje'] ?? '', 2000);
+
+        $errores = [];
+        if ($nombres === '') {
+            $errores[] = 'El nombre es obligatorio.';
+        }
+        if ($apellidos === '') {
+            $errores[] = 'El apellido es obligatorio.';
+        }
+        if (!preg_match('/^[0-9]{5,20}$/', $cedula)) {
+            $errores[] = 'La cédula debe contener solo números (5 a 20 dígitos).';
+        }
+        $fechaNacimiento = null;
+        if ($fechaNacimientoRaw !== '') {
+            $fecha = \DateTime::createFromFormat('Y-m-d', $fechaNacimientoRaw);
+            if (!$fecha || $fecha->format('Y-m-d') !== $fechaNacimientoRaw) {
+                $errores[] = 'La fecha de nacimiento no es válida.';
+            } else {
+                $fechaNacimiento = $fechaNacimientoRaw;
+            }
+        }
+        if (!preg_match('/^[0-9+()\s-]{7,20}$/', $telefono)) {
+            $errores[] = 'El teléfono no es válido.';
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errores[] = 'El correo electrónico no es válido.';
+        }
+        if ($fuerza === '') {
+            $errores[] = 'La fuerza en la que sirvió es obligatoria.';
+        }
+
+        if ($errores !== []) {
+            $this->responder(422, false, implode(' ', $errores));
+        }
+
+        $otroConEsaCedula = $modelo->buscarPorCedula($cedula);
+        if ($otroConEsaCedula && (int) $otroConEsaCedula['id'] !== $asociadoId) {
+            $this->responder(409, false, 'Ya existe otro asociado registrado con ese número de cédula.');
+        }
+        $otroConEseEmail = $modelo->buscarPorEmail($email);
+        if ($otroConEseEmail && (int) $otroConEseEmail['id'] !== $asociadoId) {
+            $this->responder(409, false, 'Ya existe otro asociado registrado con ese correo electrónico.');
+        }
+
+        try {
+            $modelo->actualizarDatos($asociadoId, [
+                'nombres' => $nombres,
+                'apellidos' => $apellidos,
+                'cedula' => $cedula,
+                'fecha_nacimiento' => $fechaNacimiento,
+                'telefono' => $telefono,
+                'email' => $email,
+                'direccion' => $direccion !== '' ? $direccion : null,
+                'fuerza' => $fuerza,
+                'mensaje' => $mensaje !== '' ? $mensaje : null,
+            ]);
+        } catch (PDOException $e) {
+            if ($e->getCode() === '23000') {
+                $this->responder(409, false, 'Ya existe otro asociado registrado con ese número de cédula.');
+            }
+            error_log('Error actualizando datos del asociado: ' . $e->getMessage());
+            $this->responder(500, false, 'No se pudo guardar los cambios.');
+        }
+
+        // Si le corrigieron el correo (es su usuario de acceso al portal) y ya
+        // tenía una contraseña activa, esa contraseña queda huérfana: se
+        // invalida y se genera una nueva para el correo correcto.
+        $passwordTemporal = null;
+        if ($email !== $asociadoAntes['email'] && !empty($asociadoAntes['password_hash'])) {
+            $asociadoActualizado = $modelo->buscarPorId($asociadoId);
+            [, $passwordTemporal] = $this->activarAccesoYNotificar($modelo, $asociadoId, $asociadoActualizado);
+        }
+
+        $mensajeExito = 'Datos actualizados correctamente.'
+            . ($passwordTemporal !== null ? ' Como cambió el correo, se generó una nueva contraseña de acceso al portal.' : '');
+
+        $this->responder(200, true, $mensajeExito, $passwordTemporal !== null
+            ? ['password_temporal_portal' => $passwordTemporal]
+            : []);
+    }
+
     public function actualizarEstado(): void
     {
         header('Content-Type: application/json; charset=utf-8');
@@ -260,6 +382,16 @@ class AsociadoController
         $enviado = Mailer::enviar($asociado['email'], 'Acceso al portal de afiliados - ASOVEGU', $cuerpo);
 
         return [$enviado, $passwordTemporal];
+    }
+
+    /**
+     * @param mixed $valor
+     */
+    private function limpiarTexto($valor, int $maxLength): string
+    {
+        $valor = trim((string) ($valor ?? ''));
+        $valor = strip_tags($valor);
+        return mb_substr($valor, 0, $maxLength);
     }
 
     private function responder(int $codigo, bool $exito, string $mensaje, array $extra = []): void

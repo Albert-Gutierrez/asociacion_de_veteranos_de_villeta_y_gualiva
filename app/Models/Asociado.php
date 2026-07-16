@@ -94,6 +94,32 @@ class Asociado
         return $stmt->rowCount();
     }
 
+    /**
+     * Corrección de datos personales por parte de un administrador
+     * (nombres, apellidos, cédula, etc. mal digitados por el asociado).
+     *
+     * @param array<string, mixed> $datos
+     */
+    public function actualizarDatos(int $id, array $datos): int
+    {
+        $datos['id'] = $id;
+        $stmt = $this->pdo->prepare(
+            'UPDATE asociados SET
+                nombres = :nombres,
+                apellidos = :apellidos,
+                cedula = :cedula,
+                fecha_nacimiento = :fecha_nacimiento,
+                telefono = :telefono,
+                email = :email,
+                direccion = :direccion,
+                fuerza = :fuerza,
+                mensaje = :mensaje
+             WHERE id = :id'
+        );
+        $stmt->execute($datos);
+        return $stmt->rowCount();
+    }
+
     // ------------------------------------------------------------------
     // Acceso al portal del afiliado (mismo patrón que UsuarioAdmin)
     // ------------------------------------------------------------------
