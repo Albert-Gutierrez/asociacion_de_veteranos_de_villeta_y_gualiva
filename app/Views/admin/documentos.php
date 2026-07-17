@@ -40,22 +40,22 @@ function e(string $v): string
     <div class="table-responsive">
         <table class="admin-tabla">
             <thead>
-                <tr><th>Título</th><th>Archivo</th><th>Subido por</th><th>Fecha</th><th>Acciones</th></tr>
+                <tr><th>Título</th><th>Subido por</th><th>Fecha</th><th>Acciones</th></tr>
             </thead>
             <tbody>
                 <?php foreach ($documentos as $d): ?>
                     <tr>
                         <td><?= e($d['titulo']) ?></td>
-                        <td><a href="../descargar_documento.php?id=<?= (int) $d['id'] ?>" target="_blank" class="btn-tabla">Ver</a></td>
                         <td><?= e($d['subido_por_nombre'] ?? '—') ?></td>
                         <td><?= e((new DateTime($d['creado_en']))->format('d/m/Y H:i')) ?></td>
-                        <td>
+                        <td class="admin-acciones-cell">
+                            <a href="../descargar_documento.php?id=<?= (int) $d['id'] ?>" target="_blank" class="btn-tabla">Ver</a>
                             <button type="button" class="btn-tabla btn-eliminar-documento" data-id="<?= (int) $d['id'] ?>">Eliminar</button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
                 <?php if ($documentos === []): ?>
-                    <tr><td colspan="5" class="admin-tabla-vacia">Aún no se ha subido ningún documento.</td></tr>
+                    <tr><td colspan="4" class="admin-tabla-vacia">Aún no se ha subido ningún documento.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
