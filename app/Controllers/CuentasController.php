@@ -96,6 +96,8 @@ class CuentasController
         $pagados = $pagoModelo->obtenerMapaPagosDesde($anio);
 
         $filas = [];
+        $totalPagadoGeneral = 0.0;
+        $totalDebeGeneral = 0.0;
         foreach ($asociados as $a) {
             $primerMes = PagoCuota::primerMesElegible(PagoCuota::fechaBaseCuota($a));
 
@@ -120,18 +122,26 @@ class CuentasController
                 }
             }
 
+            $totalPagadoFila = $mesesPagados * PagoCuota::MONTO_CUOTA;
+            $totalDebeFila = $mesesDebe * PagoCuota::MONTO_CUOTA;
+            $totalPagadoGeneral += $totalPagadoFila;
+            $totalDebeGeneral += $totalDebeFila;
+
             $filas[] = [
                 'nombre' => $a['nombres'] . ' ' . $a['apellidos'],
                 'cedula' => $a['cedula'],
                 'meses' => $mesesEstado,
-                'totalPagado' => $mesesPagados * PagoCuota::MONTO_CUOTA,
-                'totalDebe' => $mesesDebe * PagoCuota::MONTO_CUOTA,
+                'totalPagado' => $totalPagadoFila,
+                'totalDebe' => $totalDebeFila,
             ];
         }
 
         $html = View::renderToString('pdf/reporte_general_pdf', [
             'anio' => $anio,
             'filas' => $filas,
+            'totalAsociados' => count($asociados),
+            'totalPagadoGeneral' => $totalPagadoGeneral,
+            'totalDebeGeneral' => $totalDebeGeneral,
         ]);
 
         $dompdf = new \Dompdf\Dompdf();

@@ -440,6 +440,7 @@ if (modalDescargaEl) {
             for (let a = anioActual; a >= anioMin; a--) {
                 const opcion = document.createElement('option');
                 opcion.value = String(a);
+                opcion.textContent = String(a);
                 modalDescargaAnio.appendChild(opcion);
             }
 
