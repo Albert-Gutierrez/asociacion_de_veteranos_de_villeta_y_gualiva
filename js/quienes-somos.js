@@ -44,6 +44,14 @@ fetch('testimonios_publicos.php')
                 + '</div>';
         }).join('');
 
+        // Con una sola tarjeta no tiene sentido armar un carrusel: se
+        // muestra centrada y ya. El carrusel (Slick) solo entra en juego
+        // cuando hay más de una, que es cuando aporta algo.
+        if (testimonios.length === 1) {
+            contenedor.classList.add('testimonios-una-tarjeta');
+            return;
+        }
+
         $('.slider-testimonios').slick({
             slidesToShow: Math.min(3, testimonios.length),
             slidesToScroll: 1,

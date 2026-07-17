@@ -31,7 +31,7 @@ $etiquetasEstado = [
     </p>
 
     <?php if ($testimonio && $testimonio['foto_ruta']): ?>
-        <img src="../uploads/<?= e($testimonio['foto_ruta']) ?>" alt="Tu foto" class="admin-foto-perfil-preview" style="margin-bottom:14px;">
+        <img src="../ver_foto_testimonio.php?ruta=<?= urlencode($testimonio['foto_ruta']) ?>" alt="Tu foto" class="admin-foto-perfil-preview" style="margin-bottom:14px;">
     <?php endif; ?>
 
     <form id="form-testimonio" enctype="multipart/form-data">
