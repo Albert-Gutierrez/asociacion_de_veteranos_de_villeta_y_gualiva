@@ -80,6 +80,16 @@ function e(string $v): string
 <div class="admin-panel">
     <div class="admin-panel-header">
         <h2>Cuotas mes a mes (últimos 12 meses)</h2>
+        <div class="admin-filtros">
+            <select id="reporte-general-anio">
+                <?php foreach ($aniosDisponibles as $a): ?>
+                    <option value="<?= $a ?>" <?= $a === $anioSeleccionado ? 'selected' : '' ?>><?= $a ?></option>
+                <?php endforeach; ?>
+            </select>
+            <button type="button" id="btn-reporte-general" class="btn-tabla">
+                <i class="fas fa-file-pdf"></i> Descargar PDF general
+            </button>
+        </div>
     </div>
 
     <div class="table-responsive">
@@ -134,6 +144,12 @@ function e(string $v): string
                                 data-meses="<?= e(json_encode($mesesAsociado)) ?>">
                                 <i class="fas fa-eye"></i> Gestionar
                             </button>
+                            <button type="button" class="btn-tabla btn-descargar-cuenta" title="Descargar reporte de pagos en PDF"
+                                data-id="<?= (int) $a['id'] ?>"
+                                data-nombre="<?= e($a['nombres'] . ' ' . $a['apellidos']) ?>"
+                                data-anio-min="<?= (int) $primerMes['anio'] ?>">
+                                <i class="fas fa-file-pdf"></i>
+                            </button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -146,5 +162,6 @@ function e(string $v): string
 </div>
 
 <?php require __DIR__ . '/partials/modal_cuotas.php'; ?>
+<?php require __DIR__ . '/partials/modal_descarga_cuenta.php'; ?>
 
 <?php require __DIR__ . '/layout_fin.php'; ?>

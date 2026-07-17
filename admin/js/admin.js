@@ -406,6 +406,61 @@ if (modalCuotasEl) {
     });
 }
 
+// Descargar PDF general de cuentas (admin/cuentas.php)
+const btnReporteGeneral = document.getElementById('btn-reporte-general');
+if (btnReporteGeneral) {
+    btnReporteGeneral.addEventListener('click', () => {
+        const anio = document.getElementById('reporte-general-anio').value;
+        window.open('descargar_reporte_general.php?anio=' + encodeURIComponent(anio), '_blank');
+    });
+}
+
+// Descargar PDF de un asociado (admin/cuentas.php)
+const modalDescargaEl = document.getElementById('modal-descarga-cuenta');
+if (modalDescargaEl) {
+    const modalDescarga = new bootstrap.Modal(modalDescargaEl);
+    const modalDescargaNombre = document.getElementById('modal-descarga-nombre');
+    const modalDescargaAsociadoId = document.getElementById('modal-descarga-asociado-id');
+    const modalDescargaTipo = document.getElementById('modal-descarga-tipo');
+    const modalDescargaCampoAnio = document.getElementById('modal-descarga-campo-anio');
+    const modalDescargaAnio = document.getElementById('modal-descarga-anio');
+
+    modalDescargaTipo.addEventListener('change', () => {
+        modalDescargaCampoAnio.style.display = modalDescargaTipo.value === 'anio' ? '' : 'none';
+    });
+
+    document.querySelectorAll('.btn-descargar-cuenta').forEach((boton) => {
+        boton.addEventListener('click', () => {
+            modalDescargaNombre.textContent = boton.dataset.nombre;
+            modalDescargaAsociadoId.value = boton.dataset.id;
+
+            const anioMin = parseInt(boton.dataset.anioMin, 10);
+            const anioActual = new Date().getFullYear();
+            modalDescargaAnio.innerHTML = '';
+            for (let a = anioActual; a >= anioMin; a--) {
+                const opcion = document.createElement('option');
+                opcion.value = String(a);
+                modalDescargaAnio.appendChild(opcion);
+            }
+
+            modalDescargaTipo.value = 'todo';
+            modalDescargaCampoAnio.style.display = 'none';
+            modalDescarga.show();
+        });
+    });
+
+    document.getElementById('btn-confirmar-descarga-cuenta').addEventListener('click', () => {
+        const params = new URLSearchParams({
+            id: modalDescargaAsociadoId.value,
+            tipo: modalDescargaTipo.value,
+        });
+        if (modalDescargaTipo.value === 'anio') {
+            params.set('anio', modalDescargaAnio.value);
+        }
+        window.open('descargar_reporte_asociado.php?' + params.toString(), '_blank');
+    });
+}
+
 // Resolver tickets (admin/tickets.php)
 const modalTicketEl = document.getElementById('modal-ticket');
 if (modalTicketEl) {

@@ -221,7 +221,7 @@ class AfiliadoDashboardController
         }
         $totalDebe = $mesesDebe * PagoCuota::MONTO_CUOTA;
 
-        $html = View::renderToString('afiliado/reporte_pagos_pdf', [
+        $html = View::renderToString('pdf/reporte_pagos_pdf', [
             'asociado' => $asociado,
             'titulo' => $titulo,
             'filas' => $filas,
