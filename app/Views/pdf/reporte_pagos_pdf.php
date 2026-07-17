@@ -9,7 +9,6 @@ function e(string $v): string
 }
 
 $escudo = PdfAssets::escudoDataUri();
-$emblemas = PdfAssets::emblemasDataUri();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -31,39 +30,13 @@ $emblemas = PdfAssets::emblemasDataUri();
 
         /* ENCABEZADO ________________________________________________________ */
         .pdf-header {
-            position: relative;
-            overflow: hidden;
             background-color: #2D4739;
             border-bottom: 4px solid #C8A033;
             margin: -26px -30px 20px -30px;
             padding: 18px 30px;
         }
 
-        .pdf-header-emblema {
-            position: absolute;
-            top: 4px;
-            width: 78px;
-            opacity: .15;
-        }
-
-        .pdf-header-emblema-1 {
-            left: 12%;
-        }
-
-        .pdf-header-emblema-2 {
-            left: 38%;
-        }
-
-        .pdf-header-emblema-3 {
-            left: 62%;
-        }
-
-        .pdf-header-emblema-4 {
-            left: 86%;
-        }
-
         .pdf-header-tabla {
-            position: relative;
             width: 100%;
             border-collapse: collapse;
         }
@@ -105,6 +78,22 @@ $emblemas = PdfAssets::emblemasDataUri();
             white-space: nowrap;
         }
 
+        .pdf-header-fecha-celda strong {
+            display: block;
+            font-size: 8.5px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: rgba(255, 255, 255, .65);
+            font-weight: normal;
+        }
+
+        /* DESCRIPCIÓN _________________________________________________________ */
+        .descripcion {
+            font-size: 11px;
+            color: #555;
+            margin: 0 0 14px;
+        }
+
         /* DATOS DEL ASOCIADO _________________________________________________ */
         .datos-asociado {
             width: 100%;
@@ -126,7 +115,7 @@ $emblemas = PdfAssets::emblemasDataUri();
         .stats-fila {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 18px;
+            margin-top: 4px;
         }
 
         .stat-celda {
@@ -197,6 +186,16 @@ $emblemas = PdfAssets::emblemasDataUri();
             font-weight: bold;
         }
 
+        .monto-pagado {
+            color: #2D4739;
+            font-weight: bold;
+        }
+
+        .monto-adeudado {
+            color: #B31E1B;
+            font-weight: bold;
+        }
+
         .pie {
             margin-top: 24px;
             font-size: 9.5px;
@@ -208,9 +207,6 @@ $emblemas = PdfAssets::emblemasDataUri();
 
 <body>
     <div class="pdf-header">
-        <?php foreach ($emblemas as $i => $emblema): ?>
-            <img src="<?= $emblema ?>" class="pdf-header-emblema pdf-header-emblema-<?= $i + 1 ?>" alt="">
-        <?php endforeach; ?>
         <table class="pdf-header-tabla">
             <tr>
                 <td class="pdf-header-escudo-celda">
@@ -223,11 +219,17 @@ $emblemas = PdfAssets::emblemasDataUri();
                     <p class="pdf-header-subtitulo1"><?= e($titulo) ?></p>
                 </td>
                 <td class="pdf-header-fecha-celda">
+                    <strong>Fecha del reporte</strong>
                     <?= e((new DateTime())->format('d/m/Y H:i')) ?>
                 </td>
             </tr>
         </table>
     </div>
+
+    <p class="descripcion">
+        Este documento presenta el detalle mes a mes de la cuota mensual del asociado para el período indicado,
+        con el monto aportado en cada mes pagado y el monto pendiente en cada mes adeudado.
+    </p>
 
     <table class="datos-asociado">
         <tr>
@@ -238,6 +240,33 @@ $emblemas = PdfAssets::emblemasDataUri();
             <td class="etiqueta">Cédula</td>
             <td><?= e($asociado['cedula']) ?></td>
         </tr>
+    </table>
+
+    <table class="pagos">
+        <thead>
+            <tr>
+                <th>Mes</th>
+                <th>Estado</th>
+                <th>Fecha de pago</th>
+                <th>Monto pagado</th>
+                <th>Monto adeudado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($filas as $f): ?>
+                <?php $pago = $f['pago']; ?>
+                <tr>
+                    <td><?= e(PagoCuota::nombreMes($f['mes'])) ?> <?= (int) $f['anio'] ?></td>
+                    <td class="<?= $pago ? 'estado-pagado' : 'estado-moroso' ?>"><?= $pago ? 'Pagó' : 'No pagó' ?></td>
+                    <td><?= $pago ? e((new DateTime($pago['fecha_pago']))->format('d/m/Y')) : '—' ?></td>
+                    <td class="monto-pagado"><?= $pago ? PagoCuota::formatoPesos((float) $pago['monto']) : '—' ?></td>
+                    <td class="monto-adeudado"><?= $pago ? '—' : PagoCuota::formatoPesos(PagoCuota::MONTO_CUOTA) ?></td>
+                </tr>
+            <?php endforeach; ?>
+            <?php if ($filas === []): ?>
+                <tr><td colspan="5">No hay meses que reportar en el período seleccionado.</td></tr>
+            <?php endif; ?>
+        </tbody>
     </table>
 
     <table class="stats-fila">
@@ -255,31 +284,6 @@ $emblemas = PdfAssets::emblemasDataUri();
                 </div>
             </td>
         </tr>
-    </table>
-
-    <table class="pagos">
-        <thead>
-            <tr>
-                <th>Mes</th>
-                <th>Estado</th>
-                <th>Fecha de pago</th>
-                <th>Monto</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($filas as $f): ?>
-                <?php $pago = $f['pago']; ?>
-                <tr>
-                    <td><?= e(PagoCuota::nombreMes($f['mes'])) ?> <?= (int) $f['anio'] ?></td>
-                    <td class="<?= $pago ? 'estado-pagado' : 'estado-moroso' ?>"><?= $pago ? 'Pagó' : 'No pagó' ?></td>
-                    <td><?= $pago ? e((new DateTime($pago['fecha_pago']))->format('d/m/Y')) : '—' ?></td>
-                    <td><?= $pago ? PagoCuota::formatoPesos((float) $pago['monto']) : '—' ?></td>
-                </tr>
-            <?php endforeach; ?>
-            <?php if ($filas === []): ?>
-                <tr><td colspan="4">No hay meses que reportar en el período seleccionado.</td></tr>
-            <?php endif; ?>
-        </tbody>
     </table>
 
     <p class="pie">Asociación de Veteranos de las Fuerzas Militares y de Policía de la Región de Villeta y Gualivá — Documento generado automáticamente</p>

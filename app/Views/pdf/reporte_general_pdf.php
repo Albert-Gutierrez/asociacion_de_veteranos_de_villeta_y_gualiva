@@ -9,7 +9,6 @@ function e(string $v): string
 }
 
 $escudo = PdfAssets::escudoDataUri();
-$emblemas = PdfAssets::emblemasDataUri();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -31,39 +30,13 @@ $emblemas = PdfAssets::emblemasDataUri();
 
         /* ENCABEZADO ________________________________________________________ */
         .pdf-header {
-            position: relative;
-            overflow: hidden;
             background-color: #2D4739;
             border-bottom: 4px solid #C8A033;
             margin: -22px -24px 16px -24px;
             padding: 16px 24px;
         }
 
-        .pdf-header-emblema {
-            position: absolute;
-            top: 4px;
-            width: 70px;
-            opacity: .15;
-        }
-
-        .pdf-header-emblema-1 {
-            left: 12%;
-        }
-
-        .pdf-header-emblema-2 {
-            left: 38%;
-        }
-
-        .pdf-header-emblema-3 {
-            left: 62%;
-        }
-
-        .pdf-header-emblema-4 {
-            left: 86%;
-        }
-
         .pdf-header-tabla {
-            position: relative;
             width: 100%;
             border-collapse: collapse;
         }
@@ -103,6 +76,15 @@ $emblemas = PdfAssets::emblemasDataUri();
             font-size: 8.5px;
             color: rgba(255, 255, 255, .8);
             white-space: nowrap;
+        }
+
+        .pdf-header-fecha-celda strong {
+            display: block;
+            font-size: 7.5px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: rgba(255, 255, 255, .65);
+            font-weight: normal;
         }
 
         /* TARJETAS DE RESUMEN ________________________________________________ */
@@ -225,9 +207,6 @@ $emblemas = PdfAssets::emblemasDataUri();
 
 <body>
     <div class="pdf-header">
-        <?php foreach ($emblemas as $i => $emblema): ?>
-            <img src="<?= $emblema ?>" class="pdf-header-emblema pdf-header-emblema-<?= $i + 1 ?>" alt="">
-        <?php endforeach; ?>
         <table class="pdf-header-tabla">
             <tr>
                 <td class="pdf-header-escudo-celda">
@@ -240,6 +219,7 @@ $emblemas = PdfAssets::emblemasDataUri();
                     <p class="pdf-header-subtitulo1">Año <?= (int) $anio ?></p>
                 </td>
                 <td class="pdf-header-fecha-celda">
+                    <strong>Fecha del reporte</strong>
                     <?= e((new DateTime())->format('d/m/Y H:i')) ?>
                 </td>
             </tr>

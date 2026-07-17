@@ -16,20 +16,6 @@ class PdfAssets
         return self::dataUri(__DIR__ . '/../../img/escudo sin fondo.png', 'image/png');
     }
 
-    /**
-     * @return string[] las 4 imágenes de fuerza, en el mismo orden en que se
-     *                   usan como fondo difuminado en el sitio público.
-     */
-    public static function emblemasDataUri(): array
-    {
-        return array_filter([
-            self::dataUri(__DIR__ . '/../../img/fondo_ejercito.svg', 'image/svg+xml'),
-            self::dataUri(__DIR__ . '/../../img/fondo_policia.svg', 'image/svg+xml'),
-            self::dataUri(__DIR__ . '/../../img/fondo_armada.svg', 'image/svg+xml'),
-            self::dataUri(__DIR__ . '/../../img/fondo_fuerza_aerea.svg', 'image/svg+xml'),
-        ]);
-    }
-
     private static function dataUri(string $ruta, string $mime): string
     {
         if (!is_file($ruta)) {
