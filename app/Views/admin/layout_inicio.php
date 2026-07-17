@@ -42,6 +42,9 @@ use App\Core\Auth;
                 <a href="testimonios.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'testimonios' ? 'active' : '' ?>">
                     <i class="fas fa-quote-left"></i> Testimonios
                 </a>
+                <a href="documentos.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'documentos' ? 'active' : '' ?>">
+                    <i class="fas fa-file-lines"></i> Documentos
+                </a>
                 <?php endif; ?>
                 <?php if (Auth::esSuperAdmin()): ?>
                 <a href="administradores.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'administradores' ? 'active' : '' ?>">

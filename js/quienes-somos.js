@@ -76,3 +76,29 @@ function escaparHtml(texto) {
     div.textContent = texto;
     return div.innerHTML;
 }
+
+// Documentos públicos: los sube el administrador desde el panel
+// (admin/documentos.php); si todavía no hay ninguno, se muestra un mensaje.
+fetch('documentos_publicos.php')
+    .then((respuesta) => respuesta.json())
+    .then((datos) => {
+        const contenedor = document.getElementById('documentos-grid');
+        const documentos = datos.documentos || [];
+
+        if (documentos.length === 0) {
+            contenedor.outerHTML = '<p class="testimonios-vacio">Todavía no hay documentos publicados.</p>';
+            return;
+        }
+
+        contenedor.innerHTML = documentos.map((d) => {
+            return '<a class="documento-card disponible" href="' + d.url + '" target="_blank" rel="noopener">'
+                + '<i class="fas fa-file-lines documento-icono"></i>'
+                + '<h3>' + escaparHtml(d.titulo) + '</h3>'
+                + '<span>Ver documento</span>'
+                + '</a>';
+        }).join('');
+    })
+    .catch(() => {
+        const contenedor = document.getElementById('documentos-grid');
+        contenedor.outerHTML = '<p class="testimonios-vacio">No se pudieron cargar los documentos en este momento.</p>';
+    });

@@ -468,3 +468,51 @@ if (testimoniosCsrfEl) {
         });
     });
 }
+
+// Subir documento público (admin/documentos.php)
+const formSubirDocumento = document.getElementById('form-subir-documento');
+if (formSubirDocumento) {
+    formSubirDocumento.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const mensajeEl = document.getElementById('documento-mensaje');
+        const boton = formSubirDocumento.querySelector('button[type="submit"]');
+        boton.disabled = true;
+
+        try {
+            const respuesta = await fetch('acciones/subir_documento.php', {
+                method: 'POST',
+                body: new FormData(formSubirDocumento),
+            });
+            const resultado = await respuesta.json();
+            mostrarMensaje(mensajeEl, resultado.mensaje, respuesta.ok);
+            if (respuesta.ok) {
+                formSubirDocumento.reset();
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        } catch (error) {
+            mostrarMensaje(mensajeEl, 'No se pudo conectar con el servidor.', false);
+        } finally {
+            boton.disabled = false;
+        }
+    });
+}
+
+// Eliminar documento público (admin/documentos.php)
+document.querySelectorAll('.btn-eliminar-documento').forEach((boton) => {
+    boton.addEventListener('click', async () => {
+        if (!confirm('¿Eliminar este documento? Dejará de verse en el sitio público.')) return;
+        boton.disabled = true;
+        const csrf = document.querySelector('input[name="csrf_token"]').value;
+        const { ok, resultado } = await llamarAccion('acciones/eliminar_documento.php', {
+            csrf_token: csrf,
+            documento_id: boton.dataset.id,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+
+        if (ok) {
+            window.location.reload();
+        } else {
+            boton.disabled = false;
+            alert(resultado.mensaje);
+        }
+    });
+});

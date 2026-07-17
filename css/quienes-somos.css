@@ -331,16 +331,6 @@
     box-shadow: 0 12px 26px rgba(0, 0, 0, .12);
 }
 
-.documento-card.proximamente {
-    opacity: .65;
-    cursor: default;
-}
-
-.documento-card.proximamente span {
-    color: var(--color-dorado-honor);
-    font-weight: 600;
-}
-
 /* RESPONSIVE ______________________________________________________________________ */
 @media screen and (max-width: 430px) {
     #pagina-hero {

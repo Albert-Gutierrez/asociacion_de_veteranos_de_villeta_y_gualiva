@@ -114,13 +114,27 @@ CREATE TABLE IF NOT EXISTS testimonios (
     CONSTRAINT fk_testimonio_admin FOREIGN KEY (aprobado_por) REFERENCES usuarios_admin(id)
 ) ENGINE=InnoDB;
 
+-- Documentos públicos de la asociación (Cámara de Comercio, RUT, estatutos,
+-- etc.), gestionados por administrador/super administrador y mostrados en
+-- quienes-somos.html.
+CREATE TABLE IF NOT EXISTS documentos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    archivo_ruta VARCHAR(255) NOT NULL,
+    archivo_nombre_original VARCHAR(255) NOT NULL,
+    subido_por INT UNSIGNED NOT NULL,
+    creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_documento_admin FOREIGN KEY (subido_por) REFERENCES usuarios_admin(id)
+) ENGINE=InnoDB;
+
 -- ---------------------------------------------------------------------------
 -- Usuario de base de datos de mínimo privilegio para la aplicación web.
 -- No uses la cuenta "root" en el .env de producción: crea un usuario dedicado
 -- que solo pueda leer/insertar/actualizar en esta base de datos concreta.
--- DELETE se otorga SOLO sobre pagos_cuota (para que el tesorero pueda
--- revertir un pago marcado por error / marcar "moroso"); nunca sobre
--- asociados ni usuarios_admin (esas cuentas se desactivan, no se borran).
+-- DELETE se otorga sobre pagos_cuota (para que el tesorero pueda revertir un
+-- pago marcado por error / marcar "moroso") y sobre documentos (para poder
+-- quitar un documento público desactualizado); nunca sobre asociados ni
+-- usuarios_admin (esas cuentas se desactivan, no se borran).
 --
 -- Ejecuta estas líneas manualmente (ajusta la contraseña) y usa esas
 -- credenciales en tu archivo .env (DB_USER / DB_PASS):
@@ -128,5 +142,6 @@ CREATE TABLE IF NOT EXISTS testimonios (
 -- CREATE USER 'asovegu_app'@'localhost' IDENTIFIED BY 'CAMBIA_ESTA_CLAVE';
 -- GRANT SELECT, INSERT, UPDATE ON asovegu.* TO 'asovegu_app'@'localhost';
 -- GRANT DELETE ON asovegu.pagos_cuota TO 'asovegu_app'@'localhost';
+-- GRANT DELETE ON asovegu.documentos TO 'asovegu_app'@'localhost';
 -- FLUSH PRIVILEGES;
 -- ---------------------------------------------------------------------------
