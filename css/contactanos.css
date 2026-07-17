@@ -113,6 +113,7 @@ label {
 
 /* Inputs */
 input,
+select,
 textarea {
     padding: 12px;
     border: 1px solid #D3D3D3;
@@ -121,9 +122,11 @@ textarea {
     font-family: var(--font-text);
     background: var(--color-white, #fff);
     transition: .2s;
+    width: 100%;
 }
 
 input:focus,
+select:focus,
 textarea:focus {
     border-color: var(--color-secondary, #002868);
     box-shadow: 0 0 5px rgba(0, 40, 104, .35);

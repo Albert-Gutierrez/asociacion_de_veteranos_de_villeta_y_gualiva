@@ -12,6 +12,13 @@ use Throwable;
 
 class FormularioController
 {
+    private const FUERZAS_VALIDAS = [
+        'Ejército Nacional',
+        'Policía Nacional',
+        'Armada Nacional',
+        'Fuerza Aérea Colombiana',
+    ];
+
     public function store(): void
     {
         // Nunca mostrar errores de PHP al visitante, sin importar la
@@ -58,7 +65,9 @@ class FormularioController
             $errores[] = 'La cédula debe contener solo números (5 a 20 dígitos).';
         }
         $fechaNacimiento = null;
-        if ($fechaNacimientoRaw !== '') {
+        if ($fechaNacimientoRaw === '') {
+            $errores[] = 'La fecha de nacimiento es obligatoria.';
+        } else {
             $fecha = DateTime::createFromFormat('Y-m-d', $fechaNacimientoRaw);
             if (!$fecha || $fecha->format('Y-m-d') !== $fechaNacimientoRaw) {
                 $errores[] = 'La fecha de nacimiento no es válida.';
@@ -72,8 +81,11 @@ class FormularioController
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errores[] = 'El correo electrónico no es válido.';
         }
-        if ($fuerza === '') {
-            $errores[] = 'La fuerza en la que sirvió es obligatoria.';
+        if ($direccion === '') {
+            $errores[] = 'La dirección de residencia es obligatoria.';
+        }
+        if (!in_array($fuerza, self::FUERZAS_VALIDAS, true)) {
+            $errores[] = 'Selecciona una fuerza válida de la lista.';
         }
 
         if ($errores !== []) {
@@ -110,7 +122,7 @@ class FormularioController
                 'fecha_nacimiento' => $fechaNacimiento,
                 'telefono' => $telefono,
                 'email' => $email,
-                'direccion' => $direccion !== '' ? $direccion : null,
+                'direccion' => $direccion,
                 'fuerza' => $fuerza,
                 'mensaje' => $mensaje !== '' ? $mensaje : null,
                 'ip' => $ip,
