@@ -168,6 +168,6 @@ if (btnDescargarReporte) {
         if (tipo === 'mes') {
             params.set('mes', document.getElementById('reporte-mes').value);
         }
-        window.location.href = 'descargar_reporte_pagos.php?' + params.toString();
+        window.open('descargar_reporte_pagos.php?' + params.toString(), '_blank');
     });
 }
