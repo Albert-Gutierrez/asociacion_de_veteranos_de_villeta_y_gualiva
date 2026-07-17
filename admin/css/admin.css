@@ -205,6 +205,13 @@ body.login-body {
     opacity: .16;
 }
 
+/* Sidebar del panel de staff (admin/super admin/tesorero): escudo de la
+   asociación como fondo difuminado, igual que el de fuerza del afiliado. */
+.admin-sidebar.sidebar-asovegu::before {
+    background-image: url('../../img/escudo sin fondo.png');
+    opacity: .14;
+}
+
 .admin-sidebar > * {
     position: relative;
     z-index: 1;

@@ -22,7 +22,7 @@ use App\Core\Auth;
 <body class="admin-body">
 
     <div class="admin-layout">
-        <aside class="admin-sidebar" id="admin-sidebar">
+        <aside class="admin-sidebar sidebar-asovegu" id="admin-sidebar">
             <div class="admin-sidebar-logo">
                 <img src="../img/escudo sin fondo.png" alt="Escudo ASOVEGU">
                 <span class="admin-sidebar-logo-texto">ASOVEGU</span>

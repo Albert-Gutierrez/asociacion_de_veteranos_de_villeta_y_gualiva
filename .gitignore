@@ -17,3 +17,7 @@ Desktop.ini
 
 # Dependencias de Composer (se instalan con "composer install")
 /vendor/
+
+# Contenido subido por usuarios (fotos de perfil, imágenes de tickets)
+/img/perfiles/*
+/uploads/tickets/*
