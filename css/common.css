@@ -197,10 +197,11 @@ header {
 }
 
 .footer-top-emblemas {
+    flex: 1;
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
+    justify-content: space-evenly;
+    min-width: 0;
 }
 
 .footer-top-emblemas img {
@@ -222,9 +223,11 @@ header {
     margin: 0;
 }
 
-.footer-top-texto {
-    flex: 1;
-    min-width: 220px;
+.footer-top-derecha {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-shrink: 0;
 }
 
 .footer-top h2 {
@@ -410,6 +413,13 @@ header {
 
     .footer-top-emblemas {
         order: -1;
+        flex: none;
+        width: 100%;
+    }
+
+    .footer-top-derecha {
+        flex-direction: column;
+        gap: 14px;
     }
 
     .footer-top-emblemas img {
