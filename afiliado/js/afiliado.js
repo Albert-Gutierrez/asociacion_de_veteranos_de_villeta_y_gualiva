@@ -89,6 +89,33 @@ if (formFotoPerfil) {
     });
 }
 
+// Enviar/editar mi testimonio (testimonio.php)
+const formTestimonio = document.getElementById('form-testimonio');
+if (formTestimonio) {
+    formTestimonio.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const mensajeEl = document.getElementById('testimonio-mensaje');
+        const boton = formTestimonio.querySelector('button[type="submit"]');
+        boton.disabled = true;
+
+        try {
+            const respuesta = await fetch('acciones/guardar_testimonio.php', {
+                method: 'POST',
+                body: new FormData(formTestimonio),
+            });
+            const resultado = await respuesta.json();
+            mostrarMensaje(mensajeEl, resultado.mensaje, respuesta.ok);
+            if (respuesta.ok) {
+                setTimeout(() => window.location.reload(), 1200);
+            }
+        } catch (error) {
+            mostrarMensaje(mensajeEl, 'No se pudo conectar con el servidor.', false);
+        } finally {
+            boton.disabled = false;
+        }
+    });
+}
+
 // Reportar un pago no reflejado o pedir corrección de datos (soporte.php)
 document.querySelectorAll('.form-ticket').forEach((formTicket) => {
     const mensajeEl = document.getElementById('ticket-' + formTicket.dataset.tipo + '-mensaje');

@@ -96,6 +96,24 @@ CREATE TABLE IF NOT EXISTS tickets (
     CONSTRAINT fk_ticket_admin FOREIGN KEY (respondido_por) REFERENCES usuarios_admin(id)
 ) ENGINE=InnoDB;
 
+-- Testimonio público del afiliado ("¿Qué opinan nuestros asociados?" en el
+-- sitio público). Uno por asociado (se edita/reenvía, no se acumulan varios);
+-- solo se muestra en el carrusel público cuando estado = 'aprobado'.
+CREATE TABLE IF NOT EXISTS testimonios (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    asociado_id INT UNSIGNED NOT NULL,
+    mensaje TEXT NOT NULL,
+    foto_ruta VARCHAR(255) NULL,
+    estado ENUM('pendiente', 'aprobado', 'rechazado') NOT NULL DEFAULT 'pendiente',
+    aprobado_por INT UNSIGNED NULL,
+    aprobado_en TIMESTAMP NULL,
+    creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_testimonio_asociado (asociado_id),
+    CONSTRAINT fk_testimonio_asociado FOREIGN KEY (asociado_id) REFERENCES asociados(id),
+    CONSTRAINT fk_testimonio_admin FOREIGN KEY (aprobado_por) REFERENCES usuarios_admin(id)
+) ENGINE=InnoDB;
+
 -- ---------------------------------------------------------------------------
 -- Usuario de base de datos de mínimo privilegio para la aplicación web.
 -- No uses la cuenta "root" en el .env de producción: crea un usuario dedicado

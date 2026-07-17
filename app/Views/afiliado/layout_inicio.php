@@ -84,6 +84,9 @@ $fuerzaInfo = isset($asociado) ? datosFuerzaSidebar($asociado['fuerza'] ?? null)
                 <a href="soporte.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'soporte' ? 'active' : '' ?>">
                     <i class="fas fa-headset"></i> Soporte
                 </a>
+                <a href="testimonio.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'testimonio' ? 'active' : '' ?>">
+                    <i class="fas fa-quote-left"></i> Mi testimonio
+                </a>
                 <a href="../index.html" class="admin-nav-link" target="_blank">
                     <i class="fas fa-arrow-up-right-from-square"></i> Ver sitio público
                 </a>

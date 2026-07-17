@@ -436,3 +436,35 @@ if (modalTicketEl) {
         if (ok) setTimeout(() => window.location.reload(), 800);
     });
 }
+
+// Aprobar/rechazar testimonios (admin/testimonios.php)
+const testimoniosCsrfEl = document.getElementById('testimonios-csrf');
+if (testimoniosCsrfEl) {
+    async function actualizarTestimonio(boton, estado) {
+        boton.disabled = true;
+        const { ok, resultado } = await llamarAccion('acciones/actualizar_testimonio.php', {
+            csrf_token: testimoniosCsrfEl.value,
+            testimonio_id: boton.dataset.id,
+            estado,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+
+        if (ok) {
+            window.location.reload();
+        } else {
+            boton.disabled = false;
+            alert(resultado.mensaje);
+        }
+    }
+
+    document.querySelectorAll('.btn-testimonio-aprobar').forEach((boton) => {
+        boton.addEventListener('click', () => actualizarTestimonio(boton, 'aprobado'));
+    });
+
+    document.querySelectorAll('.btn-testimonio-rechazar').forEach((boton) => {
+        boton.addEventListener('click', () => {
+            if (confirm('¿Rechazar este testimonio? No se publicará en el sitio.')) {
+                actualizarTestimonio(boton, 'rechazado');
+            }
+        });
+    });
+}

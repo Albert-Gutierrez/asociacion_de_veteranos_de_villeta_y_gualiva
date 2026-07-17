@@ -11,21 +11,8 @@
     <!-- bootstrap para el carrusel -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Bootstrap Icons (para las estrellas) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-    <!-- Slick CSS -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-
-    <!-- Tema opcional slick carrousel -->
-    <link rel="stylesheet" type="text/css"
-        href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
-
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- LIBRERIA AOS ANIMATE -->
-    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/index.css">
@@ -45,6 +32,7 @@
                 <!-- Menú principal -->
                 <ul class="navbar-nav" id="navbarNav">
                     <li><a class="nav-link active" href="index.html">Inicio</a></li>
+                    <li><a class="nav-link" href="quienes-somos.html">Quiénes somos</a></li>
                     <li><a class="nav-link" href="actividades.html">Actividades</a></li>
                     <li><a class="nav-link" href="contactanos.html">Contáctanos</a></li>
                 </ul>
@@ -76,7 +64,14 @@
 
         <div class="container-fluid">
 
-            <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2500">
+            <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
+
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                    <button type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide-to="3" aria-label="Slide 4"></button>
+                </div>
 
                 <div class="carousel-inner">
 
@@ -84,10 +79,7 @@
                         <img src="img/condecoracion_asociacion1.jpg" class="d-block w-100" alt="Turismo en bote">
                         <div class="carousel-caption">
                             <h2>Esparcimiento</h2>
-                            <p class="parrafo1">Actividades de esparcimiento con otras asociaciones de veteranos del
-                                pais
-                            </p>
-
+                            <p class="parrafo1">Actividades de esparcimiento con otras asociaciones de veteranos del pais</p>
                         </div>
                     </div>
 
@@ -96,8 +88,6 @@
                         <div class="carousel-caption">
                             <h2>Acompañamiento</h2>
                             <p class="parrafo1">Acompañamiento en actividades</p>
-                            </p>
-
                         </div>
                     </div>
 
@@ -108,15 +98,13 @@
                             <p class="parrafo1">condecoracion a la asociacion</p>
                         </div>
                     </div>
-                </div>
 
-                <div class="carousel-item">
-                    <img src="img/20juliojeep.jpg" class="d-block w-100" alt="...">
-                    <div class="carousel-caption">
-                        <h2>Acompañamiento</h2>
-                        <p class="parrafo1">Acompañamiento en actividades</p>
-                        </p>
-
+                    <div class="carousel-item">
+                        <img src="img/20juliojeep.jpg" class="d-block w-100" alt="...">
+                        <div class="carousel-caption">
+                            <h2>Acompañamiento</h2>
+                            <p class="parrafo1">Acompañamiento en actividades</p>
+                        </div>
                     </div>
                 </div>
 
@@ -131,74 +119,6 @@
                     data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 </button>
-            </div>
-        </div>
-    </section>
-
-
-
-    <!-- Sección Características____________________________________________________________________________________________________________ -->
-    <section id="mision">
-
-        <div class="container-fluid">
-
-            <h2>ASOCIACIÓN DE VETERANOS DE LAS FUERZAS MILITARES Y DE POLICÍA <br> DE LA REGIÓN DE VILLETA Y DE GUALIVA
-            </h2>
-            <p class="subtitle">Mision, Vision, Valores</p>
-
-            <div class="container">
-                <div class="row justify-content-center"> <!-- Añadí justify-content-center -->
-
-                    <!-- Card 1 -->
-                    <div class="col-12 col-md-4 mb-4 d-flex" data-aos="zoom-in" data-aos-duration="1500">
-                        <!-- Añadí d-flex -->
-                        <div class="feature-card1 p-4 shadow-sm w-100"> <!-- Añadí w-100 -->
-                            <h3>Mision</h3>
-                            <p>Promover el bienestar integral de los veteranos de las fuerzas militares y de policía de
-                                la región de Villeta y Gualiva, a través de la intermediación en salud, el desarrollo de
-                                programas sociales, y la defensa de sus derechos, fomentando la unión, el apoyo mutuo y
-                                el sentido de pertenencia.</p>
-                        </div>
-                    </div>
-
-                    <!-- Card 2 -->
-                    <div class="col-12 col-md-4 mb-4 d-flex" data-aos="zoom-in" data-aos-duration="2500">
-                        <!-- Añadí d-flex -->
-                        <div class="feature-card2 p-4 shadow-sm w-100"> <!-- Añadí w-100 -->
-                            <h3>Vision</h3>
-                            <p>Ser la asociación líder en la región de Villeta y Gualiva en la representación y apoyo a
-                                los veteranos, reconocida por su compromiso con el bienestar de sus asociados, su
-                                transparencia administrativa y su contribución al desarrollo social y comunitario.</p>
-                        </div>
-                    </div>
-
-                    <!-- Card 3 -->
-                    <div class="col-12 col-md-4 mb-4 d-flex" data-aos="zoom-in" data-aos-duration="3000">
-                        <!-- Añadí d-flex -->
-                        <div class="feature-card3 p-4 shadow-sm w-100"> <!-- Añadí w-100 -->
-                            <h3>Valores</h3>
-                            <p><strong>Honor:</strong> Actuar con integridad, rectitud y respeto, honrando la
-                                trayectoria y los principios castrenses y policiales.<br>
-                                <strong>Lealtad:</strong> Mantener fidelidad a los compañeros y a los fines de la
-                                asociación. <br>
-                                <strong>Patria:</strong>Servir con amor a la nación y contribuir al bienestar de la
-                                comunidad.<br>
-                                <strong>Solidaridad:</strong>Apoyar y acompañar a los asociados<br>
-                                <strong>Transparencia:</strong>Garantizar una gestión clara, ética y responsable de los
-                                recursos.
-
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="features-description mt-4">
-                <p> <strong>Objetivo Principal:</strong>
-                    Promover el bienestar integral y la defensa de los derechos de los veteranos de las fuerzas
-                    militares y de policía de la región de Villeta y Gualiva, a través de la intermediación en salud, la
-                    ejecución de programas sociales y el fortalecimiento del apoyo mutuo entre sus miembros.</p>
             </div>
         </div>
     </section>
@@ -229,89 +149,6 @@
 
 
 
-    <!-- seccion testimonios____________________________________________________________________________________________________________________ -->
-    <section id="testimonios">
-
-        <div class="container-fluid">
-
-            <!-- Título-->
-            <div class="col-12 d-flex align-items-center justify-content-center">
-                <h2>¿Qué opinan nuestros asociados?</h2>
-            </div>
-
-            <div class="row">
-
-                <!-- Contenido principal -->
-                <div class="col-12 col-md-10">
-                    <div class="slider-testimonios">
-
-                        <!-- Card 1 -->
-                        <div class="card-testimonio">
-                            <div class="cont-img">
-                                <img src="img/80054439.jpg" alt="foto albert">
-                            </div>
-                            <div class="cont-info">
-                                <h3>Albert gutierrez</h3>
-                                <p>Orgulloso de pertenecer a esta gran familia de héroes que siguen sirviendo a la
-                                    comunidad.</p>
-                            </div>
-                        </div>
-
-                        <!-- Card 2 -->
-                        <div class="card-testimonio">
-                            <div class="cont-img">
-                                <i class="fas fa-user-circle" aria-hidden="true"></i>
-                            </div>
-                            <div class="cont-info">
-                                <h3>Alejandro Catro </h3>
-                                <p>Excelente labor la que realiza la asociación en apoyo a nuestros veteranos y sus
-                                    familias.</p>
-                            </div>
-                        </div>
-
-                        <!-- Card 3 -->
-                        <div class="card-testimonio">
-                            <div class="cont-img">
-                                <i class="fas fa-user-circle" aria-hidden="true"></i>
-                            </div>
-                            <div class="cont-info">
-                                <h3>claudia Sachica</h3>
-                                <p>Un espacio de unión, respeto y camaradería entre quienes entregaron todo por la
-                                    patria.</p>
-                            </div>
-                        </div>
-
-                        <!-- Card 4 -->
-                        <div class="card-testimonio">
-                            <div class="cont-img">
-                                <i class="fas fa-user-circle" aria-hidden="true"></i>
-                            </div>
-                            <div class="cont-info">
-                                <h3>Juana Mendoza</h3>
-                                <p>Las actividades son muy bien organizadas, se siente el compromiso y la hermandad</p>
-                            </div>
-                        </div>
-
-                        <!-- Card 5 -->
-                        <div class="card-testimonio">
-                            <div class="cont-img">
-                                <i class="fas fa-user-circle" aria-hidden="true"></i>
-                            </div>
-                            <div class="cont-info">
-                                <h3>Alberto Gongora</h3>
-                                <p>Gracias por mantener viva la memoria y el espíritu de servicio de nuestros
-                                    compañeros.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-
-
     <!-- F O O T E R_____________________________________________________________________________________________________________________________ -->
     <footer id="footer">
 
@@ -319,6 +156,12 @@
 
             <!-- footer superior -->
             <div class="footer-top">
+                <div class="footer-top-emblemas" aria-hidden="true">
+                    <img src="img/fondo_ejercito.svg" alt="">
+                    <img src="img/fondo_policia.svg" alt="">
+                    <img src="img/fondo_armada.svg" alt="">
+                    <img src="img/fondo_fuerza_aerea.svg" alt="">
+                </div>
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <h2 class="palpitando">Veterano de la region del Gualiva ¿Quieres asociarte?</h2>
@@ -388,16 +231,6 @@
 
     <!-- Abootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- JavaScript de Slick -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-
-    <!-- aos animate -->
-    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-    <script>
-        AOS.init();
-    </script>
 
     <script src="js/index.js"></script>
 

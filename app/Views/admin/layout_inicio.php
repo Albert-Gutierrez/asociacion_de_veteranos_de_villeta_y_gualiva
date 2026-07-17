@@ -38,6 +38,11 @@ use App\Core\Auth;
                 <a href="tickets.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'tickets' ? 'active' : '' ?>">
                     <i class="fas fa-ticket"></i> Tickets
                 </a>
+                <?php if (Auth::puedeGestionarSolicitudes()): ?>
+                <a href="testimonios.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'testimonios' ? 'active' : '' ?>">
+                    <i class="fas fa-quote-left"></i> Testimonios
+                </a>
+                <?php endif; ?>
                 <?php if (Auth::esSuperAdmin()): ?>
                 <a href="administradores.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'administradores' ? 'active' : '' ?>">
                     <i class="fas fa-user-shield"></i> Administradores

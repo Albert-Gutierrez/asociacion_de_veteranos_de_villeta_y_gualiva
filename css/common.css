@@ -190,17 +190,39 @@ header {
 
 .footer-top {
     width: 100%;
-    background-color: var(--color-primary);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(120deg, var(--color-primary) 0%, #16261d 100%);
     color: white;
 }
 
+.footer-top-emblemas {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 0 20px;
+    opacity: .16;
+    filter: blur(1px);
+    pointer-events: none;
+}
+
+.footer-top-emblemas img {
+    width: 84px;
+    height: 84px;
+    object-fit: contain;
+}
+
 .footer-top .row .col-md-12 {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: 20px;
-    padding: 25px 40px;
+    padding: 30px 40px;
     margin: 0;
 }
 
@@ -382,6 +404,10 @@ header {
         flex-direction: column;
         text-align: center;
         padding: 20px 15px;
+    }
+
+    .footer-top-emblemas {
+        display: none;
     }
 
     .footer-top h2 {

@@ -9,6 +9,7 @@ use App\Core\Csrf;
 use App\Core\View;
 use App\Models\Asociado;
 use App\Models\PagoCuota;
+use App\Models\Testimonio;
 use App\Models\Ticket;
 
 class AfiliadoDashboardController
@@ -82,6 +83,30 @@ class AfiliadoDashboardController
             'tituloPagina' => 'Soporte',
             'paginaActiva' => 'soporte',
             'tickets' => $tickets,
+        ]);
+    }
+
+    /**
+     * Pestaña "Mi testimonio": el afiliado escribe/edita el testimonio que
+     * aparece (una vez aprobado) en el carrusel público "¿Qué opinan
+     * nuestros asociados?" de quienes-somos.html.
+     */
+    public function testimonio(): void
+    {
+        $afiliado = AuthAfiliado::requerirSesion();
+        $csrf = Csrf::token();
+
+        $asociado = $this->obtenerAsociadoOConEsRedireccion();
+        $testimonioModelo = new Testimonio();
+        $testimonio = $testimonioModelo->buscarPorAsociado($asociado['id']);
+
+        View::render('afiliado/testimonio', [
+            'afiliado' => $afiliado,
+            'asociado' => $asociado,
+            'csrf' => $csrf,
+            'tituloPagina' => 'Mi testimonio',
+            'paginaActiva' => 'testimonio',
+            'testimonio' => $testimonio,
         ]);
     }
 
