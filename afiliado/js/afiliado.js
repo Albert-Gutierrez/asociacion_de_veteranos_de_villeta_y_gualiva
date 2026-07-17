@@ -143,3 +143,31 @@ document.querySelectorAll('.form-ticket').forEach((formTicket) => {
         }
     });
 });
+
+// Descargar reporte de pagos en PDF (mis-pagos.php)
+const btnDescargarReporte = document.getElementById('btn-descargar-reporte');
+if (btnDescargarReporte) {
+    const reporteTipo = document.getElementById('reporte-tipo');
+    const campoReporteAnio = document.getElementById('campo-reporte-anio');
+    const campoReporteMes = document.getElementById('campo-reporte-mes');
+
+    function actualizarCamposReporte() {
+        const tipo = reporteTipo.value;
+        campoReporteAnio.style.display = (tipo === 'anio' || tipo === 'mes') ? '' : 'none';
+        campoReporteMes.style.display = (tipo === 'mes') ? '' : 'none';
+    }
+    reporteTipo.addEventListener('change', actualizarCamposReporte);
+    actualizarCamposReporte();
+
+    btnDescargarReporte.addEventListener('click', () => {
+        const tipo = reporteTipo.value;
+        const params = new URLSearchParams({ tipo });
+        if (tipo === 'anio' || tipo === 'mes') {
+            params.set('anio', document.getElementById('reporte-anio').value);
+        }
+        if (tipo === 'mes') {
+            params.set('mes', document.getElementById('reporte-mes').value);
+        }
+        window.location.href = 'descargar_reporte_pagos.php?' + params.toString();
+    });
+}

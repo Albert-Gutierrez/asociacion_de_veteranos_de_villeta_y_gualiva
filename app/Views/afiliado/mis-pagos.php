@@ -49,4 +49,47 @@ function e(string $v): string
     </div>
 </div>
 
+<div class="admin-panel">
+    <div class="admin-panel-header">
+        <h2>Descargar reporte de pagos</h2>
+    </div>
+    <p class="admin-texto-suave">
+        Genera un PDF con el detalle mes a mes, el total aportado y el total pendiente del período que elijas.
+    </p>
+
+    <div class="admin-form-inline-row" style="flex-wrap:wrap; align-items:flex-end; gap:14px;">
+        <div class="campo" style="max-width:220px; margin-bottom:0;">
+            <label for="reporte-tipo">Período</label>
+            <select id="reporte-tipo">
+                <option value="anio_actual">Año en curso (<?= (int) $anioActual ?>)</option>
+                <option value="anio">Un año específico</option>
+                <option value="mes">Un mes específico</option>
+                <option value="todo">Desde que me afilié</option>
+            </select>
+        </div>
+
+        <div class="campo" id="campo-reporte-anio" style="max-width:150px; margin-bottom:0; display:none;">
+            <label for="reporte-anio">Año</label>
+            <select id="reporte-anio">
+                <?php for ($a = (int) $anioActual; $a >= (int) $anioAfiliacion; $a--): ?>
+                    <option value="<?= $a ?>"><?= $a ?></option>
+                <?php endfor; ?>
+            </select>
+        </div>
+
+        <div class="campo" id="campo-reporte-mes" style="max-width:170px; margin-bottom:0; display:none;">
+            <label for="reporte-mes">Mes</label>
+            <select id="reporte-mes">
+                <?php for ($m = 1; $m <= 12; $m++): ?>
+                    <option value="<?= $m ?>"><?= e(PagoCuota::nombreMes($m)) ?></option>
+                <?php endfor; ?>
+            </select>
+        </div>
+
+        <button type="button" id="btn-descargar-reporte" class="btn-enviar">
+            <i class="fas fa-file-pdf"></i> Descargar PDF
+        </button>
+    </div>
+</div>
+
 <?php require __DIR__ . '/layout_fin.php'; ?>
