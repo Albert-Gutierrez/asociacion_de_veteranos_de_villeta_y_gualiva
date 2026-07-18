@@ -20,31 +20,6 @@ class AfiliadoDashboardController
         $csrf = Csrf::token();
 
         $asociado = $this->obtenerAsociadoOConEsRedireccion();
-        $pagoModelo = new PagoCuota();
-
-        $pagos = $pagoModelo->historialPorAsociado($asociado['id']);
-        $pagosPorMes = $this->indexarPagosPorMes($pagos);
-
-        $ciclo = PagoCuota::obtenerCicloPago();
-        $yaPagoCicloActual = isset($pagosPorMes[$ciclo['anio'] . '-' . $ciclo['mes']]);
-
-        $fechaBase = PagoCuota::fechaBaseCuota($asociado);
-        $primerMes = PagoCuota::primerMesElegible($fechaBase);
-
-        $historialMeses = [];
-        foreach (PagoCuota::obtenerUltimos12Meses() as $m) {
-            if (!PagoCuota::mesEsElegible($m['anio'], $m['mes'], $primerMes)) {
-                continue;
-            }
-            $historialMeses[] = [
-                'anio' => $m['anio'],
-                'mes' => $m['mes'],
-                'pago' => $pagosPorMes[$m['anio'] . '-' . $m['mes']] ?? null,
-            ];
-        }
-
-        [$mesesDebe, $totalDebe] = $this->calcularDeuda($pagosPorMes, $primerMes);
-        $totalPagadoHistorico = array_sum(array_map(fn ($p) => (float) $p['monto'], $pagos));
 
         View::render('afiliado/dashboard', [
             'afiliado' => $afiliado,
@@ -52,13 +27,6 @@ class AfiliadoDashboardController
             'tituloPagina' => 'Mi información',
             'paginaActiva' => 'dashboard',
             'asociado' => $asociado,
-            'pagos' => $pagos,
-            'totalPagadoHistorico' => $totalPagadoHistorico,
-            'ciclo' => $ciclo,
-            'yaPagoCicloActual' => $yaPagoCicloActual,
-            'historialMeses' => $historialMeses,
-            'mesesDebe' => $mesesDebe,
-            'totalDebe' => $totalDebe,
         ]);
     }
 
@@ -123,8 +91,11 @@ class AfiliadoDashboardController
         $fechaBase = PagoCuota::fechaBaseCuota($asociado);
         $primerMes = PagoCuota::primerMesElegible($fechaBase);
 
-        // A diferencia del historial del dashboard (que omite los meses
-        // anteriores a la afiliación), aquí se muestran los 12 siempre, en
+        $ciclo = PagoCuota::obtenerCicloPago();
+        $yaPagoCicloActual = isset($pagosPorMes[$ciclo['anio'] . '-' . $ciclo['mes']]);
+
+        // A diferencia del historial de abajo (que omite los meses
+        // anteriores a la afiliación), la grilla muestra los 12 siempre, en
         // gris los que todavía no le correspondían, para que se vea el año
         // completo de un vistazo.
         $mesesGrid = [];
@@ -134,6 +105,18 @@ class AfiliadoDashboardController
             $mesesGrid[] = [
                 'label' => PagoCuota::nombreMes($m['mes']) . ' ' . $m['anio'],
                 'estado' => !$elegible ? 'no_aplica' : ($pagado ? 'pagado' : 'moroso'),
+            ];
+        }
+
+        $historialMeses = [];
+        foreach (PagoCuota::obtenerUltimos12Meses() as $m) {
+            if (!PagoCuota::mesEsElegible($m['anio'], $m['mes'], $primerMes)) {
+                continue;
+            }
+            $historialMeses[] = [
+                'anio' => $m['anio'],
+                'mes' => $m['mes'],
+                'pago' => $pagosPorMes[$m['anio'] . '-' . $m['mes']] ?? null,
             ];
         }
 
@@ -152,6 +135,9 @@ class AfiliadoDashboardController
             'totalDebe' => $totalDebe,
             'anioAfiliacion' => $primerMes['anio'],
             'anioActual' => (int) date('Y'),
+            'ciclo' => $ciclo,
+            'yaPagoCicloActual' => $yaPagoCicloActual,
+            'historialMeses' => $historialMeses,
         ]);
     }
 

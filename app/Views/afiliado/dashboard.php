@@ -53,51 +53,28 @@ function e(string $v): string
 
     <div class="admin-panel">
         <div class="admin-panel-header">
-            <h2>Mi cuota mensual</h2>
+            <h2>Cambiar mi contraseña</h2>
         </div>
 
-        <p class="admin-total-historico">
-            Total aportado: <strong><?= PagoCuota::formatoPesos($totalPagadoHistorico) ?></strong>
-            <span class="admin-texto-suave">(<?= count($pagos) ?> cuota<?= count($pagos) === 1 ? '' : 's' ?> pagada<?= count($pagos) === 1 ? '' : 's' ?>)</span>
-            <br>
-            Total que debo: <strong<?= $totalDebe > 0 ? ' style="color:var(--color-rojo-patrio);"' : '' ?>><?= PagoCuota::formatoPesos($totalDebe) ?></strong>
-            <span class="admin-texto-suave">(<?= $mesesDebe ?> cuota<?= $mesesDebe === 1 ? '' : 's' ?> pendiente<?= $mesesDebe === 1 ? '' : 's' ?>)</span>
-        </p>
+        <form id="form-cambiar-password-afiliado">
+            <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
 
-        <?php if ($asociado['estado'] === 'aprobado'): ?>
-            <p>Ciclo vigente: <strong><?= PagoCuota::nombreMes($ciclo['mes']) ?> <?= $ciclo['anio'] ?></strong> — <?= PagoCuota::formatoPesos(PagoCuota::MONTO_CUOTA) ?></p>
-            <?php if ($yaPagoCicloActual): ?>
-                <p class="badge-cuota badge-cuota-pagado">Ya pagaste la cuota de este ciclo</p>
-            <?php else: ?>
-                <p class="badge-cuota badge-cuota-vencido">Aún no se registra el pago de este ciclo</p>
-            <?php endif; ?>
-        <?php endif; ?>
-
-        <h3 class="admin-subtitulo">Historial de pagos</h3>
-        <table class="admin-tabla">
-            <thead>
-                <tr><th>Mes</th><th>Fecha de pago</th><th>Estado</th></tr>
-            </thead>
-            <tbody>
-                <?php foreach ($historialMeses as $h): ?>
-                    <?php $p = $h['pago']; ?>
-                    <tr class="<?= $p ? 'fila-cuota-pagado' : 'fila-cuota-moroso' ?>">
-                        <td><?= PagoCuota::nombreMes($h['mes']) ?> <?= $h['anio'] ?></td>
-                        <td><?= $p ? e((new DateTime($p['fecha_pago']))->format('d/m/Y')) : '—' ?></td>
-                        <td>
-                            <?php if ($p): ?>
-                                <span class="badge-cuota badge-cuota-pagado">Pagó</span>
-                            <?php else: ?>
-                                <span class="badge-cuota badge-cuota-vencido">No pagó</span>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                <?php if ($historialMeses === []): ?>
-                    <tr><td colspan="3" class="admin-tabla-vacia">Sin historial de cuotas todavía.</td></tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+            <div class="campo">
+                <label for="password_actual">Contraseña actual</label>
+                <input type="password" id="password_actual" name="password_actual" required>
+            </div>
+            <div class="campo">
+                <label for="password_nueva">Nueva contraseña</label>
+                <input type="password" id="password_nueva" name="password_nueva" required minlength="10">
+                <span class="admin-texto-suave">Mínimo 10 caracteres, con al menos una mayúscula y un carácter especial. Sin números repetidos como 222.</span>
+            </div>
+            <div class="campo">
+                <label for="password_confirmar">Confirmar nueva contraseña</label>
+                <input type="password" id="password_confirmar" name="password_confirmar" required minlength="10">
+            </div>
+            <button type="submit" class="btn-enviar">Actualizar contraseña</button>
+        </form>
+        <p id="password-afiliado-mensaje" class="admin-mensaje-accion"></p>
     </div>
 </div>
 

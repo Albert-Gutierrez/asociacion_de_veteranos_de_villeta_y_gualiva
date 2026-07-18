@@ -51,6 +51,46 @@ function e(string $v): string
 
 <div class="admin-panel">
     <div class="admin-panel-header">
+        <h2>Historial de pagos</h2>
+    </div>
+
+    <?php if ($asociado['estado'] === 'aprobado'): ?>
+        <p>Ciclo vigente: <strong><?= PagoCuota::nombreMes($ciclo['mes']) ?> <?= $ciclo['anio'] ?></strong> — <?= PagoCuota::formatoPesos(PagoCuota::MONTO_CUOTA) ?></p>
+        <?php if ($yaPagoCicloActual): ?>
+            <p class="badge-cuota badge-cuota-pagado">Ya pagaste la cuota de este ciclo</p>
+        <?php else: ?>
+            <p class="badge-cuota badge-cuota-vencido">Aún no se registra el pago de este ciclo</p>
+        <?php endif; ?>
+    <?php endif; ?>
+
+    <table class="admin-tabla">
+        <thead>
+            <tr><th>Mes</th><th>Fecha de pago</th><th>Estado</th></tr>
+        </thead>
+        <tbody>
+            <?php foreach ($historialMeses as $h): ?>
+                <?php $p = $h['pago']; ?>
+                <tr class="<?= $p ? 'fila-cuota-pagado' : 'fila-cuota-moroso' ?>">
+                    <td><?= PagoCuota::nombreMes($h['mes']) ?> <?= $h['anio'] ?></td>
+                    <td><?= $p ? e((new DateTime($p['fecha_pago']))->format('d/m/Y')) : '—' ?></td>
+                    <td>
+                        <?php if ($p): ?>
+                            <span class="badge-cuota badge-cuota-pagado">Pagó</span>
+                        <?php else: ?>
+                            <span class="badge-cuota badge-cuota-vencido">No pagó</span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            <?php if ($historialMeses === []): ?>
+                <tr><td colspan="3" class="admin-tabla-vacia">Sin historial de cuotas todavía.</td></tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
+
+<div class="admin-panel">
+    <div class="admin-panel-header">
         <h2>Descargar reporte de pagos</h2>
     </div>
     <p class="admin-texto-suave">
