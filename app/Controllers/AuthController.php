@@ -14,7 +14,7 @@ use DateTimeImmutable;
 class AuthController
 {
     private const MAX_INTENTOS = 5;
-    private const BLOQUEO_MINUTOS = 15;
+    private const BLOQUEO_MINUTOS = 5;
     private const MINUTOS_ENTRE_SOLICITUDES = 5;
 
     public function login(): void
@@ -58,6 +58,7 @@ class AuthController
                     $_SESSION['admin_nombre'] = $cuenta['nombre'];
                     $_SESSION['admin_email'] = $cuenta['email'];
                     $_SESSION['admin_rol'] = $cuenta['rol'];
+                    $_SESSION['admin_foto'] = $cuenta['foto_ruta'] ?? null;
 
                     header('Location: dashboard.php');
                     exit;
@@ -91,7 +92,7 @@ class AuthController
         $_SESSION = [];
         session_destroy();
 
-        header('Location: login.php');
+        header('Location: ../index.html');
         exit;
     }
 

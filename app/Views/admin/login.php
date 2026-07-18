@@ -37,6 +37,8 @@
 
         <p style="margin-top:18px;"><a href="recuperar.php">¿Olvidaste tu contraseña?</a></p>
     </div>
+
+    <script src="js/admin.js?v=<?= @filemtime(__DIR__ . '/../../../admin/js/admin.js') ?: time() ?>"></script>
 </body>
 
 </html>

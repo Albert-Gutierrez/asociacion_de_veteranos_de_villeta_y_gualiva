@@ -28,11 +28,17 @@ CREATE TABLE IF NOT EXISTS asociados (
     email VARCHAR(150) NOT NULL,
     direccion VARCHAR(255) NULL,
     fuerza VARCHAR(100) NOT NULL,
+    foto_ruta VARCHAR(255) NULL COMMENT 'Foto de perfil opcional, ruta relativa dentro de img/perfiles/. Es el único dato que el propio afiliado puede cambiar.',
     mensaje TEXT NULL,
-    estado ENUM('pendiente', 'aprobado', 'rechazado') NOT NULL DEFAULT 'pendiente',
+    estado ENUM('pendiente', 'aprobado', 'rechazado', 'inactivo') NOT NULL DEFAULT 'pendiente',
     ip_registro VARCHAR(45) NULL,
     creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_afiliacion DATE NULL COMMENT 'Fecha real en la que se asoció (puede ser anterior a creado_en, que es solo la fecha de registro en el sitio web). Si es NULL, se usa creado_en.',
+    password_hash VARCHAR(255) NULL COMMENT 'Acceso al portal del afiliado; NULL hasta que se aprueba/activa.',
+    debe_cambiar_password TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Obliga a cambiar la contraseña temporal en el primer ingreso.',
+    intentos_fallidos TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    bloqueado_hasta TIMESTAMP NULL,
+    ultimo_acceso TIMESTAMP NULL,
     UNIQUE KEY uq_asociados_cedula (cedula)
 ) ENGINE=InnoDB;
 
@@ -47,6 +53,7 @@ CREATE TABLE IF NOT EXISTS usuarios_admin (
     telefono VARCHAR(20) NULL,
     password_hash VARCHAR(255) NOT NULL,
     rol ENUM('administrador', 'super_administrador', 'tesorero') NOT NULL DEFAULT 'administrador',
+    foto_ruta VARCHAR(255) NULL COMMENT 'Foto de perfil opcional, ruta relativa dentro de img/perfiles/.',
     activo TINYINT(1) NOT NULL DEFAULT 1,
     intentos_fallidos TINYINT UNSIGNED NOT NULL DEFAULT 0,
     bloqueado_hasta TIMESTAMP NULL,
@@ -71,12 +78,63 @@ CREATE TABLE IF NOT EXISTS pagos_cuota (
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------------
+-- FASE 5: Portal del afiliado + tickets de soporte
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS tickets (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    asociado_id INT UNSIGNED NOT NULL,
+    tipo ENUM('cuota', 'datos') NOT NULL DEFAULT 'cuota' COMMENT 'cuota: pago no reflejado (todos los roles). datos: correccion de datos personales (solo admin/super admin).',
+    mensaje TEXT NOT NULL,
+    imagen_ruta VARCHAR(255) NULL,
+    estado ENUM('abierto', 'resuelto') NOT NULL DEFAULT 'abierto',
+    respuesta TEXT NULL,
+    respondido_por INT UNSIGNED NULL,
+    respondido_en TIMESTAMP NULL,
+    creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_ticket_asociado FOREIGN KEY (asociado_id) REFERENCES asociados(id),
+    CONSTRAINT fk_ticket_admin FOREIGN KEY (respondido_por) REFERENCES usuarios_admin(id)
+) ENGINE=InnoDB;
+
+-- Testimonio público del afiliado ("¿Qué opinan nuestros asociados?" en el
+-- sitio público). Uno por asociado (se edita/reenvía, no se acumulan varios);
+-- solo se muestra en el carrusel público cuando estado = 'aprobado'.
+CREATE TABLE IF NOT EXISTS testimonios (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    asociado_id INT UNSIGNED NOT NULL,
+    mensaje TEXT NOT NULL,
+    foto_ruta VARCHAR(255) NULL,
+    estado ENUM('pendiente', 'aprobado', 'rechazado') NOT NULL DEFAULT 'pendiente',
+    aprobado_por INT UNSIGNED NULL,
+    aprobado_en TIMESTAMP NULL,
+    creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    actualizado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_testimonio_asociado (asociado_id),
+    CONSTRAINT fk_testimonio_asociado FOREIGN KEY (asociado_id) REFERENCES asociados(id),
+    CONSTRAINT fk_testimonio_admin FOREIGN KEY (aprobado_por) REFERENCES usuarios_admin(id)
+) ENGINE=InnoDB;
+
+-- Documentos públicos de la asociación (Cámara de Comercio, RUT, estatutos,
+-- etc.), gestionados por administrador/super administrador y mostrados en
+-- quienes-somos.html.
+CREATE TABLE IF NOT EXISTS documentos (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    archivo_ruta VARCHAR(255) NOT NULL,
+    archivo_nombre_original VARCHAR(255) NOT NULL,
+    subido_por INT UNSIGNED NOT NULL,
+    creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_documento_admin FOREIGN KEY (subido_por) REFERENCES usuarios_admin(id)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------------
 -- Usuario de base de datos de mínimo privilegio para la aplicación web.
 -- No uses la cuenta "root" en el .env de producción: crea un usuario dedicado
 -- que solo pueda leer/insertar/actualizar en esta base de datos concreta.
--- DELETE se otorga SOLO sobre pagos_cuota (para que el tesorero pueda
--- revertir un pago marcado por error / marcar "moroso"); nunca sobre
--- asociados ni usuarios_admin (esas cuentas se desactivan, no se borran).
+-- DELETE se otorga sobre pagos_cuota (para que el tesorero pueda revertir un
+-- pago marcado por error / marcar "moroso") y sobre documentos (para poder
+-- quitar un documento público desactualizado); nunca sobre asociados ni
+-- usuarios_admin (esas cuentas se desactivan, no se borran).
 --
 -- Ejecuta estas líneas manualmente (ajusta la contraseña) y usa esas
 -- credenciales en tu archivo .env (DB_USER / DB_PASS):
@@ -84,5 +142,6 @@ CREATE TABLE IF NOT EXISTS pagos_cuota (
 -- CREATE USER 'asovegu_app'@'localhost' IDENTIFIED BY 'CAMBIA_ESTA_CLAVE';
 -- GRANT SELECT, INSERT, UPDATE ON asovegu.* TO 'asovegu_app'@'localhost';
 -- GRANT DELETE ON asovegu.pagos_cuota TO 'asovegu_app'@'localhost';
+-- GRANT DELETE ON asovegu.documentos TO 'asovegu_app'@'localhost';
 -- FLUSH PRIVILEGES;
 -- ---------------------------------------------------------------------------

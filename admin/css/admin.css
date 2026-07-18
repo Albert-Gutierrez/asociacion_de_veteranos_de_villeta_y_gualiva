@@ -73,22 +73,69 @@ body.login-body {
     box-shadow: 0 0 5px rgba(0, 40, 104, .3);
 }
 
-.login-card .btn-enviar {
+/* MOSTRAR/OCULTAR CONTRASEÑA (todos los campos type="password") ___________________ */
+.campo-password-wrapper {
+    position: relative;
+}
+
+.campo-password-wrapper input {
     width: 100%;
-    margin-top: 20px;
+    padding-right: 40px;
+}
+
+.btn-toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 4px;
+    font-size: 15px;
+    line-height: 1;
+}
+
+.btn-toggle-password:hover {
+    color: var(--color-primary);
+}
+
+.btn-enviar {
     background: var(--color-secondary);
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 13px;
+    padding: 12px 22px;
     font-weight: bold;
-    font-size: 15px;
+    font-size: 14.5px;
+    font-family: var(--font-text);
     cursor: pointer;
-    transition: background-color .2s ease;
+    box-shadow: 0 3px 10px rgba(0, 40, 104, .18);
+    transition: background-color .2s ease, transform .12s ease, box-shadow .2s ease;
 }
 
-.login-card .btn-enviar:hover {
+.btn-enviar:hover {
     background: var(--color-dorado-honor);
+    box-shadow: 0 5px 14px rgba(200, 160, 51, .3);
+    transform: translateY(-1px);
+}
+
+.btn-enviar:active {
+    transform: translateY(0);
+}
+
+.btn-enviar:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.login-card .btn-enviar {
+    width: 100%;
+    margin-top: 20px;
+    padding: 13px;
+    font-size: 15px;
 }
 
 .login-card a {
@@ -110,7 +157,7 @@ body.login-body {
 .admin-sidebar {
     width: 250px;
     flex-shrink: 0;
-    background: var(--color-primary);
+    background: linear-gradient(175deg, var(--color-primary) 0%, #1d3327 100%);
     color: var(--color-white);
     display: flex;
     flex-direction: column;
@@ -119,16 +166,77 @@ body.login-body {
     left: 0;
     bottom: 0;
     z-index: 1000;
+    overflow: hidden;
     transition: transform .25s ease;
 }
 
+/* Fondo difuminado según la fuerza del afiliado (solo portal del afiliado,
+   cuando la vista tiene el dato disponible); ver claseFuerzaSidebar(). */
+.admin-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: -15%;
+    background-repeat: no-repeat;
+    background-position: center 55%;
+    background-size: 130%;
+    filter: blur(7px);
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.admin-sidebar.sidebar-fuerza-ejercito::before {
+    background-image: url('../../img/fondo_ejercito.svg');
+    opacity: .16;
+}
+
+.admin-sidebar.sidebar-fuerza-policia::before {
+    background-image: url('../../img/fondo_policia.svg');
+    opacity: .16;
+}
+
+.admin-sidebar.sidebar-fuerza-armada::before {
+    background-image: url('../../img/fondo_armada.svg');
+    opacity: .16;
+}
+
+.admin-sidebar.sidebar-fuerza-fuerza-aerea::before {
+    background-image: url('../../img/fondo_fuerza_aerea.svg');
+    opacity: .16;
+}
+
+/* Sidebar del panel de staff (admin/super admin/tesorero): escudo de la
+   asociación como fondo difuminado, igual que el de fuerza del afiliado. */
+.admin-sidebar.sidebar-asovegu::before {
+    background-image: url('../../img/escudo sin fondo.png');
+    opacity: .14;
+}
+
+.admin-sidebar > * {
+    position: relative;
+    z-index: 1;
+}
+
 .admin-sidebar-logo {
-    padding: 24px 20px;
+    padding: 26px 20px 20px;
     text-align: center;
 }
 
 .admin-sidebar-logo img {
-    width: 90px;
+    width: 68px;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px;
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .35));
+}
+
+.admin-sidebar-logo-texto {
+    display: block;
+    color: var(--color-white);
+    font-family: var(--font-titles);
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: .1em;
 }
 
 .admin-nav {
@@ -158,14 +266,48 @@ body.login-body {
 }
 
 .admin-nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     color: white;
+    transform: translateX(2px);
 }
 
 .admin-nav-link.active {
     background: var(--color-dorado-honor);
     color: white;
     font-weight: 600;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .2);
+}
+
+/* Destacado de la fuerza del afiliado, en el espacio libre del sidebar
+   (portal del afiliado únicamente; ver datosFuerzaSidebar()). */
+.admin-sidebar-fuerza-destacado {
+    margin-top: auto;
+    padding: 18px 14px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, .12);
+}
+
+.admin-sidebar-fuerza-destacado img {
+    width: 58px;
+    height: auto;
+    margin: 0 auto 10px;
+    display: block;
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, .35));
+}
+
+.admin-sidebar-fuerza-destacado h3 {
+    font-family: var(--font-titles);
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--color-white);
+    margin: 0 0 6px;
+}
+
+.admin-sidebar-fuerza-destacado p {
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, .75);
+    margin: 0;
+    line-height: 1.4;
 }
 
 .admin-sidebar-footer {
@@ -184,6 +326,14 @@ body.login-body {
 .admin-user-chip i {
     font-size: 26px;
     opacity: .85;
+}
+
+.admin-user-chip-foto {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
 }
 
 .admin-user-chip div {
@@ -219,12 +369,16 @@ body.login-body {
 }
 
 .admin-topbar {
-    background: var(--color-white);
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(6px);
     padding: 18px 30px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     display: flex;
     align-items: center;
     gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 500;
 }
 
 .admin-topbar h1 {
@@ -246,6 +400,19 @@ body.login-body {
 
 .admin-content {
     padding: 30px;
+    animation: admin-content-fade-in .35s ease;
+}
+
+@keyframes admin-content-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* TARJETAS DE ESTADÍSTICAS _____________________________________________________ */
@@ -264,6 +431,12 @@ body.login-body {
     align-items: center;
     gap: 16px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
 }
 
 .stat-icon {
@@ -276,6 +449,7 @@ body.login-body {
     font-size: 20px;
     color: white;
     flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .12);
 }
 
 .icon-verde {
@@ -314,6 +488,7 @@ body.login-body {
     border-radius: 14px;
     padding: 24px;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    transition: box-shadow .2s ease;
     margin-bottom: 24px;
 }
 
@@ -388,6 +563,10 @@ body.login-body {
     vertical-align: middle;
 }
 
+.admin-tabla tbody tr {
+    transition: background-color .12s ease;
+}
+
 .admin-tabla tbody tr:hover {
     background: var(--color-bg-light);
 }
@@ -417,19 +596,30 @@ body.login-body {
 }
 
 .btn-tabla {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     background: var(--color-bg-light);
     color: var(--color-texto-oscuro);
     border: 1px solid var(--color-border);
-    border-radius: 6px;
-    padding: 6px 12px;
+    border-radius: 8px;
+    padding: 7px 14px;
     font-size: 12.5px;
+    font-weight: 600;
     text-decoration: none;
     cursor: pointer;
     transition: all .15s ease;
 }
 
 .btn-tabla:hover {
+    background: var(--color-secondary);
+    color: white;
+    border-color: var(--color-secondary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 40, 104, .18);
+}
+
+.btn-tabla-activo {
     background: var(--color-secondary);
     color: white;
     border-color: var(--color-secondary);
@@ -445,10 +635,11 @@ body.login-body {
 .badge-estado,
 .badge-cuota {
     display: inline-block;
-    padding: 4px 11px;
+    padding: 5px 13px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 700;
+    letter-spacing: .02em;
 }
 
 .badge-pendiente {
@@ -464,6 +655,17 @@ body.login-body {
 .badge-rechazado {
     background: #FBE2E1;
     color: var(--color-rojo-patrio);
+}
+
+.badge-inactivo {
+    background: #ECECEC;
+    color: #666;
+}
+
+.admin-acceso-portal {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
 }
 
 .badge-cuota-pagado {
@@ -561,6 +763,59 @@ body.login-body {
     color: var(--color-rojo-patrio);
 }
 
+.cuota-mes-na {
+    background: #ECECEC;
+    color: #777;
+}
+
+.cuota-mes-estatico {
+    cursor: default;
+}
+
+.cuota-mes-estatico:hover {
+    transform: none;
+}
+
+/* FOTO DE PERFIL (mi-cuenta.php admin / dashboard.php afiliado) ___________________ */
+.admin-foto-perfil-editor {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.admin-foto-perfil-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+    flex-shrink: 0;
+}
+
+.admin-foto-perfil-preview-icono {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--color-bg-light);
+    color: #999;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.admin-foto-perfil-editor form {
+    flex: 1;
+    min-width: 220px;
+}
+
+.admin-foto-perfil-editor .campo {
+    margin-bottom: 10px;
+}
+
 /* FORMULARIOS DEL PANEL __________________________________________________________ */
 .admin-datos {
     display: grid;
@@ -595,6 +850,7 @@ body.login-body {
     gap: 10px;
 }
 
+.admin-form-inline input,
 .admin-form-inline select,
 .admin-form-crear input,
 .admin-form-crear select {
@@ -604,6 +860,16 @@ body.login-body {
     font-size: 13.5px;
     font-family: var(--font-text);
     width: 100%;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.admin-form-inline input:focus,
+.admin-form-inline select:focus,
+.admin-form-crear input:focus,
+.admin-form-crear select:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(0, 40, 104, .12);
 }
 
 .admin-form-crear {
@@ -611,6 +877,63 @@ body.login-body {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 14px;
     align-items: end;
+}
+
+/* Campos sueltos usados en tickets, mi-cuenta, cambiar contraseña, editar
+   datos del asociado, etc. (misma estructura <div class="campo">). */
+.campo {
+    margin-bottom: 16px;
+}
+
+.campo label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--color-texto-oscuro);
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-family: var(--font-text);
+    background: var(--color-white);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.campo textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(0, 40, 104, .12);
+}
+
+.campo input[type="file"] {
+    padding: 8px;
+    background: var(--color-bg-light);
+    cursor: pointer;
+}
+
+.form-error {
+    background: #FCE8E8;
+    color: var(--color-rojo-patrio);
+    border: 1px solid rgba(179, 30, 27, .3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 15px;
+    font-size: 13.5px;
+    text-align: left;
 }
 
 .admin-mensaje-accion {
@@ -665,6 +988,34 @@ body.login-body {
 .admin-total-historico strong {
     color: var(--color-primary);
     font-size: 16px;
+}
+
+/* MODALES (bootstrap) ______________________________________________________________ */
+.modal-content {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--color-border);
+    padding: 18px 22px;
+}
+
+.modal-header .modal-title {
+    font-family: var(--font-titles);
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--color-texto-oscuro);
+}
+
+.modal-body {
+    padding: 20px 22px;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--color-border);
+    padding: 14px 22px;
 }
 
 /* RESPONSIVE _______________________________________________________________________ */

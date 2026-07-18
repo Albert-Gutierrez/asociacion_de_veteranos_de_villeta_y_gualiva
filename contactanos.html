@@ -45,6 +45,7 @@
                 <!-- Menú principal -->
                 <ul class="navbar-nav" id="navbarNav">
                     <li><a class="nav-link" href="index.html">Inicio</a></li>
+                    <li><a class="nav-link" href="quienes-somos.html">Quiénes somos</a></li>
                     <li><a class="nav-link" href="actividades.html">Actividades</a></li>
                     <li><a class="nav-link active" href="contactanos.html">Contáctanos</a></li>
                 </ul>
@@ -52,6 +53,9 @@
                 <!-- Botones y menú móvil -->
                 <div class="actions">
                     <a href="contactanos.html" class="btn-login">Asociate</a>
+                    <a href="afiliado/login.php" class="btn-admin" title="Portal de afiliados">
+                        <i class="fas fa-id-card"></i>
+                    </a>
                     <a href="admin/login.php" class="btn-admin" title="Acceso administrativo">
                         <i class="fas fa-user-shield"></i>
                     </a>
@@ -68,18 +72,8 @@
 
     <!-- HERO CONTACTANOS_______________________________________________________________________________________________ -->
     <section id="hero-contactanos">
-
-        <div class="container-fluid">
-
-            <div class="row hero-img">
-                <div class="col-12 header-arriba">
-                    <img src="img/CONTACTANOS.png" alt="img contactanos">
-                    <h1> ASOCIACIÓN DE VETERANOS DE LAS FUERZAS MILITARES Y DE POLICÍA <br> DE LA REGIÓN DE VILLETA Y DE
-                        GUALIVA</h1>
-                    <h2 class="palpitando">CONTACTANOS</h2>
-                </div>
-            </div>
-        </div>
+        <h1>Contáctanos</h1>
+        <p>¿Tienes preguntas o quieres asociarte? Escríbenos y te responderemos lo antes posible.</p>
     </section>
 
 
@@ -89,7 +83,7 @@
 
         <div class="container">
 
-            <h2 class="titulo-principal">Aclarámos tus dudas, escríbenos</h2>
+            <h2 class="titulo-principal">¿Quieres asociarte? Cuéntanos de ti</h2>
 
             <div class="formulario-completo">
 
@@ -110,47 +104,53 @@
 
                         <div class="fila-campos">
                             <div class="campo">
-                                <label>Nombres</label>
+                                <label>Nombres *</label>
                                 <input type="text" id="nombres" placeholder="Ej: María" required>
                             </div>
 
                             <div class="campo">
-                                <label>Apellidos</label>
+                                <label>Apellidos *</label>
                                 <input type="text" id="apellidos" placeholder="Ej: Pérez" required>
                             </div>
 
                             <div class="campo">
-                                <label>Cédula</label>
+                                <label>Cédula *</label>
                                 <input type="text" id="cedula" inputmode="numeric" placeholder="Ej: 1012345678" required>
                             </div>
                         </div>
 
                         <div class="fila-campos">
                             <div class="campo">
-                                <label>Fecha de nacimiento</label>
-                                <input type="date" id="fecha_nacimiento">
+                                <label>Fecha de nacimiento *</label>
+                                <input type="date" id="fecha_nacimiento" required>
                             </div>
 
                             <div class="campo">
-                                <label>Teléfono</label>
+                                <label>Teléfono *</label>
                                 <input type="tel" id="telefono" placeholder="Ej: +57 320 123 4567" required>
                             </div>
 
                             <div class="campo">
-                                <label>Email</label>
+                                <label>Email *</label>
                                 <input type="email" id="email" placeholder="Ej: sucorreo@correo.com" required>
                             </div>
                         </div>
 
                         <div class="fila-campos">
                             <div class="campo">
-                                <label>Fuerza en la que sirvió</label>
-                                <input type="text" id="fuerza" placeholder="Ej: Ejército" required>
+                                <label>Fuerza en la que sirvió *</label>
+                                <select id="fuerza" required>
+                                    <option value="" disabled selected>Selecciona una opción</option>
+                                    <option value="Ejército Nacional">Ejército</option>
+                                    <option value="Policía Nacional">Policía</option>
+                                    <option value="Armada Nacional">Armada</option>
+                                    <option value="Fuerza Aérea Colombiana">Fuerza Aérea</option>
+                                </select>
                             </div>
 
                             <div class="campo">
-                                <label>Dirección de residencia</label>
-                                <input type="text" id="direccion" placeholder="Ej: Cra 5 # 10-20, Villeta">
+                                <label>Dirección de residencia *</label>
+                                <input type="text" id="direccion" placeholder="Ej: Cra 5 # 10-20, Villeta" required>
                             </div>
                         </div>
 
@@ -202,8 +202,18 @@
             <div class="footer-top">
                 <div class="row align-items-center">
                     <div class="col-md-12">
-                        <h2 class="palpitando">¿Quieres asociarte?</h2>
-                        <a href="contactanos.html">Da click aca</a>
+                        <div class="footer-top-emblemas" aria-hidden="true">
+                            <img src="img/fondo_ejercito.svg" alt="">
+                            <img src="img/fondo_policia.svg" alt="">
+                            <img src="img/fondo_armada.svg" alt="">
+                            <img src="img/fondo_fuerza_aerea.svg" alt="">
+                        </div>
+                        <div class="footer-top-derecha">
+                            <div class="footer-top-texto">
+                                <h2 class="palpitando">Veteranos de la región de Gualivá<br>¿Quieres asociarte?</h2>
+                            </div>
+                            <a href="contactanos.html">Da click aca</a>
+                        </div>
                     </div>
                 </div>
             </div>

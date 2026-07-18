@@ -33,6 +33,7 @@ class Auth
             'nombre' => (string) $_SESSION['admin_nombre'],
             'email' => (string) $_SESSION['admin_email'],
             'rol' => (string) $_SESSION['admin_rol'],
+            'foto' => $_SESSION['admin_foto'] ?? null,
         ];
     }
 
@@ -134,6 +135,30 @@ class Auth
             'administrador' => 'Administrador',
         ];
         return $etiquetas[$rol] ?? 'Administrador';
+    }
+
+    /**
+     * Reglas para cualquier contraseña que un usuario elige (staff o
+     * afiliado, desde "Mi cuenta"/"Cambiar contraseña"): mínimo 10
+     * caracteres, al menos una mayúscula, al menos un carácter especial, y
+     * sin 3 o más dígitos iguales seguidos (ej. 222). Devuelve el primer
+     * mensaje de error encontrado, o null si la contraseña cumple todo.
+     */
+    public static function validarPassword(string $password): ?string
+    {
+        if (strlen($password) < 10) {
+            return 'La contraseña debe tener al menos 10 caracteres.';
+        }
+        if (!preg_match('/[A-Z]/', $password)) {
+            return 'La contraseña debe incluir al menos una letra mayúscula.';
+        }
+        if (!preg_match('/[^a-zA-Z0-9]/', $password)) {
+            return 'La contraseña debe incluir al menos un carácter especial.';
+        }
+        if (preg_match('/(\d)\1\1/', $password)) {
+            return 'La contraseña no puede tener un número repetido tres o más veces seguidas (ej. 222).';
+        }
+        return null;
     }
 
     public static function generarPasswordTemporal(): string

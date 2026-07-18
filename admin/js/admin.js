@@ -11,6 +11,28 @@ function mostrarMensaje(elemento, texto, ok) {
     elemento.className = 'admin-mensaje-accion ' + (ok ? 'ok' : 'error');
 }
 
+// Ojo para mostrar/ocultar en todos los campos de contraseña de la página
+document.querySelectorAll('input[type="password"]').forEach((input) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'campo-password-wrapper';
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'btn-toggle-password';
+    boton.setAttribute('aria-label', 'Mostrar contraseña');
+    boton.innerHTML = '<i class="fas fa-eye"></i>';
+    wrapper.appendChild(boton);
+
+    boton.addEventListener('click', () => {
+        const mostrar = input.type === 'password';
+        input.type = mostrar ? 'text' : 'password';
+        boton.innerHTML = mostrar ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+        boton.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
+});
+
 async function llamarAccion(url, datos) {
     const respuesta = await fetch(url, {
         method: 'POST',
@@ -19,6 +41,31 @@ async function llamarAccion(url, datos) {
     });
     const resultado = await respuesta.json();
     return { ok: respuesta.ok, resultado };
+}
+
+// Modal de contraseña temporal (asociado.php), reemplaza los alert() del navegador
+const modalPasswordEl = document.getElementById('modal-password-temporal');
+let modalPassword = null;
+let modalPasswordAlCerrar = null;
+if (modalPasswordEl) {
+    modalPassword = new bootstrap.Modal(modalPasswordEl);
+    modalPasswordEl.addEventListener('hidden.bs.modal', () => {
+        const callback = modalPasswordAlCerrar;
+        modalPasswordAlCerrar = null;
+        if (callback) callback();
+    });
+}
+
+function mostrarModalPassword(titulo, mensaje, alCerrar) {
+    if (!modalPassword) {
+        alert(mensaje);
+        if (alCerrar) alCerrar();
+        return;
+    }
+    document.getElementById('modal-password-temporal-titulo').textContent = titulo;
+    document.getElementById('modal-password-temporal-texto').textContent = mensaje;
+    modalPasswordAlCerrar = alCerrar;
+    modalPassword.show();
 }
 
 // Filtro de la tabla de asociados (dashboard.php)
@@ -60,7 +107,91 @@ if (formEstado) {
         const { ok, resultado } = await llamarAccion('acciones/actualizar_estado.php', datos)
             .catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
         mostrarMensaje(document.getElementById('estado-mensaje'), resultado.mensaje, ok);
-        if (ok) setTimeout(() => window.location.reload(), 800);
+        if (ok && resultado.password_temporal_portal) {
+            mostrarModalPassword(
+                'Acceso al portal activado',
+                'Se aprobó y se activó su acceso al portal de afiliados. Contraseña temporal: ' + resultado.password_temporal_portal,
+                () => window.location.reload()
+            );
+        } else if (ok) {
+            setTimeout(() => window.location.reload(), 800);
+        }
+    });
+}
+
+// Editar datos personales del asociado (asociado.php)
+const btnEditarDatos = document.getElementById('btn-editar-datos');
+const formDatosAsociado = document.getElementById('form-datos-asociado');
+const vistaDatosAsociado = document.getElementById('datos-asociado-vista');
+if (btnEditarDatos && formDatosAsociado && vistaDatosAsociado) {
+    const btnCancelarEditarDatos = document.getElementById('btn-cancelar-editar-datos');
+
+    btnEditarDatos.addEventListener('click', () => {
+        vistaDatosAsociado.style.display = 'none';
+        btnEditarDatos.style.display = 'none';
+        formDatosAsociado.style.display = '';
+    });
+
+    btnCancelarEditarDatos.addEventListener('click', () => {
+        formDatosAsociado.style.display = 'none';
+        vistaDatosAsociado.style.display = '';
+        btnEditarDatos.style.display = '';
+    });
+
+    formDatosAsociado.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = {
+            csrf_token: formDatosAsociado.csrf_token.value,
+            asociado_id: formDatosAsociado.asociado_id.value,
+            nombres: formDatosAsociado.nombres.value,
+            apellidos: formDatosAsociado.apellidos.value,
+            cedula: formDatosAsociado.cedula.value,
+            fecha_nacimiento: formDatosAsociado.fecha_nacimiento.value,
+            telefono: formDatosAsociado.telefono.value,
+            email: formDatosAsociado.email.value,
+            direccion: formDatosAsociado.direccion.value,
+            fuerza: formDatosAsociado.fuerza.value,
+            mensaje: formDatosAsociado.mensaje.value,
+        };
+        const { ok, resultado } = await llamarAccion('acciones/actualizar_datos_asociado.php', datos)
+            .catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+        mostrarMensaje(document.getElementById('datos-asociado-mensaje'), resultado.mensaje, ok);
+        if (ok && resultado.password_temporal_portal) {
+            mostrarModalPassword(
+                'Correo corregido: nueva contraseña generada',
+                'Como cambió el correo de acceso, la contraseña anterior quedó invalidada. Nueva contraseña temporal: ' + resultado.password_temporal_portal,
+                () => window.location.reload()
+            );
+        } else if (ok) {
+            setTimeout(() => window.location.reload(), 800);
+        }
+    });
+}
+
+// Subir foto de perfil (mi-cuenta.php)
+const formFotoPerfil = document.getElementById('form-foto-perfil');
+if (formFotoPerfil) {
+    formFotoPerfil.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const mensajeEl = document.getElementById('foto-perfil-mensaje');
+        const boton = formFotoPerfil.querySelector('button[type="submit"]');
+        boton.disabled = true;
+
+        try {
+            const respuesta = await fetch('acciones/subir_foto.php', {
+                method: 'POST',
+                body: new FormData(formFotoPerfil),
+            });
+            const resultado = await respuesta.json();
+            mostrarMensaje(mensajeEl, resultado.mensaje, respuesta.ok);
+            if (respuesta.ok) {
+                setTimeout(() => window.location.reload(), 800);
+            }
+        } catch (error) {
+            mostrarMensaje(mensajeEl, 'No se pudo conectar con el servidor.', false);
+        } finally {
+            boton.disabled = false;
+        }
     });
 }
 
@@ -78,6 +209,31 @@ if (formFechaAfiliacion) {
             .catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
         mostrarMensaje(document.getElementById('fecha-afiliacion-mensaje'), resultado.mensaje, ok);
         if (ok) setTimeout(() => window.location.reload(), 800);
+    });
+}
+
+// Enviar/restablecer acceso al portal del afiliado (asociado.php)
+const btnGenerarAcceso = document.getElementById('btn-generar-acceso');
+if (btnGenerarAcceso) {
+    btnGenerarAcceso.addEventListener('click', async () => {
+        if (!confirm('¿Generar y enviar por correo una nueva contraseña de acceso al portal?')) return;
+        const csrf = document.querySelector('input[name="csrf_token"]').value;
+        btnGenerarAcceso.disabled = true;
+        const { ok, resultado } = await llamarAccion('acciones/generar_acceso_afiliado.php', {
+            csrf_token: csrf,
+            asociado_id: btnGenerarAcceso.dataset.id,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+        btnGenerarAcceso.disabled = false;
+        mostrarMensaje(document.getElementById('acceso-afiliado-mensaje'), resultado.mensaje, ok);
+        if (ok && resultado.password_temporal) {
+            mostrarModalPassword(
+                'Contraseña temporal generada',
+                'Contraseña temporal del portal: ' + resultado.password_temporal,
+                () => window.location.reload()
+            );
+        } else if (ok) {
+            setTimeout(() => window.location.reload(), 1200);
+        }
     });
 }
 
@@ -249,3 +405,170 @@ if (modalCuotasEl) {
         });
     });
 }
+
+// Descargar PDF general de cuentas (admin/cuentas.php)
+const btnReporteGeneral = document.getElementById('btn-reporte-general');
+if (btnReporteGeneral) {
+    btnReporteGeneral.addEventListener('click', () => {
+        const anio = document.getElementById('reporte-general-anio').value;
+        window.open('descargar_reporte_general.php?anio=' + encodeURIComponent(anio), '_blank');
+    });
+}
+
+// Descargar PDF de un asociado (admin/cuentas.php)
+const modalDescargaEl = document.getElementById('modal-descarga-cuenta');
+if (modalDescargaEl) {
+    const modalDescarga = new bootstrap.Modal(modalDescargaEl);
+    const modalDescargaNombre = document.getElementById('modal-descarga-nombre');
+    const modalDescargaAsociadoId = document.getElementById('modal-descarga-asociado-id');
+    const modalDescargaTipo = document.getElementById('modal-descarga-tipo');
+    const modalDescargaCampoAnio = document.getElementById('modal-descarga-campo-anio');
+    const modalDescargaAnio = document.getElementById('modal-descarga-anio');
+
+    modalDescargaTipo.addEventListener('change', () => {
+        modalDescargaCampoAnio.style.display = modalDescargaTipo.value === 'anio' ? '' : 'none';
+    });
+
+    document.querySelectorAll('.btn-descargar-cuenta').forEach((boton) => {
+        boton.addEventListener('click', () => {
+            modalDescargaNombre.textContent = boton.dataset.nombre;
+            modalDescargaAsociadoId.value = boton.dataset.id;
+
+            const anioMin = parseInt(boton.dataset.anioMin, 10);
+            const anioActual = new Date().getFullYear();
+            modalDescargaAnio.innerHTML = '';
+            for (let a = anioActual; a >= anioMin; a--) {
+                const opcion = document.createElement('option');
+                opcion.value = String(a);
+                opcion.textContent = String(a);
+                modalDescargaAnio.appendChild(opcion);
+            }
+
+            modalDescargaTipo.value = 'todo';
+            modalDescargaCampoAnio.style.display = 'none';
+            modalDescarga.show();
+        });
+    });
+
+    document.getElementById('btn-confirmar-descarga-cuenta').addEventListener('click', () => {
+        const params = new URLSearchParams({
+            id: modalDescargaAsociadoId.value,
+            tipo: modalDescargaTipo.value,
+        });
+        if (modalDescargaTipo.value === 'anio') {
+            params.set('anio', modalDescargaAnio.value);
+        }
+        window.open('descargar_reporte_asociado.php?' + params.toString(), '_blank');
+    });
+}
+
+// Resolver tickets (admin/tickets.php)
+const modalTicketEl = document.getElementById('modal-ticket');
+if (modalTicketEl) {
+    const modalTicket = new bootstrap.Modal(modalTicketEl);
+    const modalTicketId = document.getElementById('modal-ticket-id');
+    const modalTicketRespuesta = document.getElementById('modal-ticket-respuesta');
+    const modalTicketMensaje = document.getElementById('modal-ticket-mensaje');
+    const modalTicketCsrf = document.getElementById('modal-ticket-csrf');
+
+    document.querySelectorAll('.btn-resolver-ticket').forEach((boton) => {
+        boton.addEventListener('click', () => {
+            modalTicketId.value = boton.dataset.id;
+            modalTicketRespuesta.value = '';
+            modalTicketMensaje.textContent = '';
+            modalTicketMensaje.className = 'admin-mensaje-accion';
+            modalTicket.show();
+        });
+    });
+
+    document.getElementById('btn-confirmar-resolver').addEventListener('click', async () => {
+        const { ok, resultado } = await llamarAccion('acciones/responder_ticket.php', {
+            csrf_token: modalTicketCsrf.value,
+            ticket_id: modalTicketId.value,
+            respuesta: modalTicketRespuesta.value,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+
+        mostrarMensaje(modalTicketMensaje, resultado.mensaje, ok);
+        if (ok) setTimeout(() => window.location.reload(), 800);
+    });
+}
+
+// Aprobar/rechazar testimonios (admin/testimonios.php)
+const testimoniosCsrfEl = document.getElementById('testimonios-csrf');
+if (testimoniosCsrfEl) {
+    async function actualizarTestimonio(boton, estado) {
+        boton.disabled = true;
+        const { ok, resultado } = await llamarAccion('acciones/actualizar_testimonio.php', {
+            csrf_token: testimoniosCsrfEl.value,
+            testimonio_id: boton.dataset.id,
+            estado,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+
+        if (ok) {
+            window.location.reload();
+        } else {
+            boton.disabled = false;
+            alert(resultado.mensaje);
+        }
+    }
+
+    document.querySelectorAll('.btn-testimonio-aprobar').forEach((boton) => {
+        boton.addEventListener('click', () => actualizarTestimonio(boton, 'aprobado'));
+    });
+
+    document.querySelectorAll('.btn-testimonio-rechazar').forEach((boton) => {
+        boton.addEventListener('click', () => {
+            if (confirm('¿Rechazar este testimonio? No se publicará en el sitio.')) {
+                actualizarTestimonio(boton, 'rechazado');
+            }
+        });
+    });
+}
+
+// Subir documento público (admin/documentos.php)
+const formSubirDocumento = document.getElementById('form-subir-documento');
+if (formSubirDocumento) {
+    formSubirDocumento.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const mensajeEl = document.getElementById('documento-mensaje');
+        const boton = formSubirDocumento.querySelector('button[type="submit"]');
+        boton.disabled = true;
+
+        try {
+            const respuesta = await fetch('acciones/subir_documento.php', {
+                method: 'POST',
+                body: new FormData(formSubirDocumento),
+            });
+            const resultado = await respuesta.json();
+            mostrarMensaje(mensajeEl, resultado.mensaje, respuesta.ok);
+            if (respuesta.ok) {
+                formSubirDocumento.reset();
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        } catch (error) {
+            mostrarMensaje(mensajeEl, 'No se pudo conectar con el servidor.', false);
+        } finally {
+            boton.disabled = false;
+        }
+    });
+}
+
+// Eliminar documento público (admin/documentos.php)
+document.querySelectorAll('.btn-eliminar-documento').forEach((boton) => {
+    boton.addEventListener('click', async () => {
+        if (!confirm('¿Eliminar este documento? Dejará de verse en el sitio público.')) return;
+        boton.disabled = true;
+        const csrf = document.querySelector('input[name="csrf_token"]').value;
+        const { ok, resultado } = await llamarAccion('acciones/eliminar_documento.php', {
+            csrf_token: csrf,
+            documento_id: boton.dataset.id,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+
+        if (ok) {
+            window.location.reload();
+        } else {
+            boton.disabled = false;
+            alert(resultado.mensaje);
+        }
+    });
+});

@@ -1,52 +1,28 @@
 /* Estilos específicos de la página Contáctanos.
    Las variables, el header/navbar y el footer están en css/common.css */
 
-/* Sección Hero Contactanos______________________________________________________________________________________________ */
+/* Sección Hero Contactanos (mismo estilo que #hero-actividades / #pagina-hero) __________________________________________ */
 #hero-contactanos {
-    background-color: #ffffff;
-    font-family: 'Lato', sans-serif;
-    color: #2B2B2B;
-    margin: 100px 20px;
-}
-
-/* Contenedor principal de la imagen */
-#hero-contactanos .header-arriba {
-    position: relative;
+    background-color: var(--color-primary);
+    padding: 160px 20px 70px;
     text-align: center;
-    border-radius: 20px;
-    overflow: hidden;
+    color: var(--color-white);
 }
 
-#hero-contactanos .header-arriba img {
-    width: 95%;
-    height: 800px;
-    border-radius: 20px;
-    filter: brightness(100%);
-    object-fit: cover;
-}
-
-/* Título central sobre la imagen */
-#hero-contactanos .header-arriba h1 {
-    position: absolute;
-    top: 20%;
-    left: 39%;
-    font-family: 'Raleway', sans-serif;
+#hero-contactanos h1 {
+    font-family: var(--font-titles);
     font-weight: 800;
-    color: #7c7c7c;
-    font-size: 48px;
-    letter-spacing: 2px;
-    padding: 0 85px 0 208px;
+    font-size: 40px;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
 }
 
-#hero-contactanos .header-arriba h2 {
-    position: absolute;
-    top: 80%;
-    left: 60%;
-    font-family: 'Raleway', sans-serif;
-    font-weight: 800;
-    color: var(--color-dorado-honor, #C8A033);
-    font-size: 48px;
-    letter-spacing: 2px;
+#hero-contactanos p {
+    font-family: var(--font-text);
+    font-size: 18px;
+    max-width: 720px;
+    margin: 0 auto;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 /* SECCION FORMULARIO DE CONTACTO___________________________________________________________________________________ */
@@ -137,6 +113,7 @@ label {
 
 /* Inputs */
 input,
+select,
 textarea {
     padding: 12px;
     border: 1px solid #D3D3D3;
@@ -145,9 +122,11 @@ textarea {
     font-family: var(--font-text);
     background: var(--color-white, #fff);
     transition: .2s;
+    width: 100%;
 }
 
 input:focus,
+select:focus,
 textarea:focus {
     border-color: var(--color-secondary, #002868);
     box-shadow: 0 0 5px rgba(0, 40, 104, .35);
@@ -224,29 +203,15 @@ textarea:focus {
 
     /* RESPONSIVE - Hero Contactanos */
     #hero-contactanos {
-        padding: 30px 0;
-        margin: 0;
+        padding: 110px 20px 40px;
     }
 
-    #hero-contactanos .header-arriba img {
-        height: 250px;
-        width: 95%;
-        margin-top: 70px;
-        border-radius: 15px;
+    #hero-contactanos h1 {
+        font-size: 26px;
     }
 
-    #hero-contactanos .header-arriba h1 {
-        font-size: 28px;
-        left: 20%;
-        top: 45%;
-        letter-spacing: 0.5px;
-        padding: 0 15px;
-    }
-
-    #hero-contactanos .header-arriba h2 {
-        font-size: 28px;
-        left: 30%;
-        top: 75%;
+    #hero-contactanos p {
+        font-size: 15px;
     }
 
     /* SECCION FORMULARIO_____________________________________________________________________________________________________*/

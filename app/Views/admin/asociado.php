@@ -16,11 +16,17 @@ function e(string $v): string
 <div class="admin-detalle-grid">
     <div class="admin-panel">
         <div class="admin-panel-header">
-            <h2><?= e($asociado['nombres'] . ' ' . $asociado['apellidos']) ?></h2>
+            <h2 id="datos-asociado-titulo"><?= e($asociado['nombres'] . ' ' . $asociado['apellidos']) ?></h2>
             <span class="badge-estado badge-<?= e($asociado['estado']) ?>"><?= ucfirst(e($asociado['estado'])) ?></span>
         </div>
 
-        <dl class="admin-datos">
+        <?php if (Auth::puedeGestionarSolicitudes()): ?>
+            <button type="button" id="btn-editar-datos" class="btn-tabla" style="margin-bottom:12px;">
+                <i class="fas fa-pen"></i> Editar datos
+            </button>
+        <?php endif; ?>
+
+        <dl class="admin-datos" id="datos-asociado-vista">
             <dt>Cédula</dt><dd><?= e($asociado['cedula']) ?></dd>
             <dt>Fecha de nacimiento</dt>
             <dd><?= $asociado['fecha_nacimiento'] ? e((new DateTime($asociado['fecha_nacimiento']))->format('d/m/Y')) : '—' ?></dd>
@@ -40,6 +46,57 @@ function e(string $v): string
         </dl>
 
         <?php if (Auth::puedeGestionarSolicitudes()): ?>
+        <form id="form-datos-asociado" class="admin-form-inline" style="display:none;">
+            <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
+            <input type="hidden" name="asociado_id" value="<?= (int) $asociado['id'] ?>">
+
+            <div class="campo">
+                <label for="edit_nombres">Nombres</label>
+                <input type="text" id="edit_nombres" name="nombres" required value="<?= e($asociado['nombres']) ?>">
+            </div>
+            <div class="campo">
+                <label for="edit_apellidos">Apellidos</label>
+                <input type="text" id="edit_apellidos" name="apellidos" required value="<?= e($asociado['apellidos']) ?>">
+            </div>
+            <div class="campo">
+                <label for="edit_cedula">Cédula</label>
+                <input type="text" id="edit_cedula" name="cedula" required value="<?= e($asociado['cedula']) ?>">
+            </div>
+            <div class="campo">
+                <label for="edit_fecha_nacimiento">Fecha de nacimiento</label>
+                <input type="date" id="edit_fecha_nacimiento" name="fecha_nacimiento" value="<?= $asociado['fecha_nacimiento'] ? e($asociado['fecha_nacimiento']) : '' ?>">
+            </div>
+            <div class="campo">
+                <label for="edit_telefono">Teléfono</label>
+                <input type="text" id="edit_telefono" name="telefono" required value="<?= e($asociado['telefono']) ?>">
+            </div>
+            <div class="campo">
+                <label for="edit_email">Email</label>
+                <input type="email" id="edit_email" name="email" required value="<?= e($asociado['email']) ?>">
+                <span class="admin-texto-suave">Si lo cambias y ya tenía acceso al portal, se le genera una contraseña nueva.</span>
+            </div>
+            <div class="campo">
+                <label for="edit_direccion">Dirección</label>
+                <input type="text" id="edit_direccion" name="direccion" value="<?= $asociado['direccion'] ? e($asociado['direccion']) : '' ?>">
+            </div>
+            <div class="campo">
+                <label for="edit_fuerza">Fuerza</label>
+                <input type="text" id="edit_fuerza" name="fuerza" required value="<?= e($asociado['fuerza']) ?>">
+            </div>
+            <div class="campo">
+                <label for="edit_mensaje">Mensaje</label>
+                <textarea id="edit_mensaje" name="mensaje" rows="2"><?= $asociado['mensaje'] ? e($asociado['mensaje']) : '' ?></textarea>
+            </div>
+
+            <div class="admin-form-inline-row">
+                <button type="submit" class="btn-enviar">Guardar cambios</button>
+                <button type="button" id="btn-cancelar-editar-datos" class="btn-tabla">Cancelar</button>
+            </div>
+            <p id="datos-asociado-mensaje" class="admin-mensaje-accion"></p>
+        </form>
+        <?php endif; ?>
+
+        <?php if (Auth::puedeGestionarSolicitudes()): ?>
         <form id="form-estado" class="admin-form-inline">
             <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
             <input type="hidden" name="asociado_id" value="<?= (int) $asociado['id'] ?>">
@@ -49,11 +106,26 @@ function e(string $v): string
                     <option value="pendiente" <?= $asociado['estado'] === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
                     <option value="aprobado" <?= $asociado['estado'] === 'aprobado' ? 'selected' : '' ?>>Aprobado</option>
                     <option value="rechazado" <?= $asociado['estado'] === 'rechazado' ? 'selected' : '' ?>>Rechazado</option>
+                    <option value="inactivo" <?= $asociado['estado'] === 'inactivo' ? 'selected' : '' ?>>Inactivo (se salió de la asociación)</option>
                 </select>
                 <button type="submit" class="btn-tabla">Guardar</button>
             </div>
             <p id="estado-mensaje" class="admin-mensaje-accion"></p>
         </form>
+        <?php endif; ?>
+
+        <?php if ($asociado['estado'] === 'aprobado'): ?>
+            <div class="admin-acceso-portal">
+                <p class="admin-texto-suave">
+                    Acceso al portal del afiliado:
+                    <strong><?= $asociado['password_hash'] ? 'Activo' : 'Sin activar' ?></strong>
+                    <?= $asociado['ultimo_acceso'] ? ' — último ingreso ' . e((new DateTime($asociado['ultimo_acceso']))->format('d/m/Y H:i')) : '' ?>
+                </p>
+                <button type="button" class="btn-tabla" id="btn-generar-acceso" data-id="<?= (int) $asociado['id'] ?>">
+                    <?= $asociado['password_hash'] ? 'Restablecer contraseña del portal' : 'Enviar acceso al portal' ?>
+                </button>
+                <p id="acceso-afiliado-mensaje" class="admin-mensaje-accion"></p>
+            </div>
         <?php endif; ?>
     </div>
 
@@ -132,6 +204,24 @@ function e(string $v): string
                 <?php endif; ?>
             </tbody>
         </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-password-temporal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-password-temporal-titulo">Acceso al portal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-password-temporal-texto"></p>
+                <p class="admin-texto-suave">Cópiala ahora, no se volverá a mostrar. Se le pedirá cambiarla al ingresar.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-enviar" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
     </div>
 </div>
 

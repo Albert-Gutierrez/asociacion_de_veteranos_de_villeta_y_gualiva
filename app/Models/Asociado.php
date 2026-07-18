@@ -93,4 +93,117 @@ class Asociado
         $stmt->execute(['fecha' => $fecha, 'id' => $id]);
         return $stmt->rowCount();
     }
+
+    /**
+     * Corrección de datos personales por parte de un administrador
+     * (nombres, apellidos, cédula, etc. mal digitados por el asociado).
+     *
+     * @param array<string, mixed> $datos
+     */
+    public function actualizarDatos(int $id, array $datos): int
+    {
+        $datos['id'] = $id;
+        $stmt = $this->pdo->prepare(
+            'UPDATE asociados SET
+                nombres = :nombres,
+                apellidos = :apellidos,
+                cedula = :cedula,
+                fecha_nacimiento = :fecha_nacimiento,
+                telefono = :telefono,
+                email = :email,
+                direccion = :direccion,
+                fuerza = :fuerza,
+                mensaje = :mensaje
+             WHERE id = :id'
+        );
+        $stmt->execute($datos);
+        return $stmt->rowCount();
+    }
+
+    /**
+     * Único dato que el propio afiliado puede cambiar desde su portal.
+     */
+    public function actualizarFoto(int $id, ?string $rutaFoto): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE asociados SET foto_ruta = :foto WHERE id = :id');
+        $stmt->execute(['foto' => $rutaFoto, 'id' => $id]);
+    }
+
+    // ------------------------------------------------------------------
+    // Acceso al portal del afiliado (mismo patrón que UsuarioAdmin)
+    // ------------------------------------------------------------------
+
+    public function buscarPorEmail(string $email): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM asociados WHERE email = :email LIMIT 1');
+        $stmt->execute(['email' => $email]);
+        $fila = $stmt->fetch();
+        return $fila ?: null;
+    }
+
+    public function buscarPorCedula(string $cedula): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM asociados WHERE cedula = :cedula LIMIT 1');
+        $stmt->execute(['cedula' => $cedula]);
+        $fila = $stmt->fetch();
+        return $fila ?: null;
+    }
+
+    public function registrarLoginExitoso(int $id): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE asociados SET intentos_fallidos = 0, bloqueado_hasta = NULL, ultimo_acceso = NOW() WHERE id = :id'
+        );
+        $stmt->execute(['id' => $id]);
+    }
+
+    public function incrementarIntentos(int $id, int $intentos): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE asociados SET intentos_fallidos = :intentos WHERE id = :id');
+        $stmt->execute(['intentos' => $intentos, 'id' => $id]);
+    }
+
+    public function bloquear(int $id, int $intentos, string $bloqueadoHastaFormateado): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE asociados SET intentos_fallidos = :intentos, bloqueado_hasta = :bloqueo WHERE id = :id'
+        );
+        $stmt->execute(['intentos' => $intentos, 'bloqueo' => $bloqueadoHastaFormateado, 'id' => $id]);
+    }
+
+    /**
+     * Genera/renueva el acceso al portal: guarda el hash y limpia bloqueos
+     * previos (se usa tanto al aprobar por primera vez como al reactivar
+     * o resetear el acceso de alguien ya aprobado). Queda marcado para que
+     * tenga que cambiarla en su próximo ingreso.
+     */
+    public function activarAcceso(int $id, string $hash): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE asociados
+             SET password_hash = :hash, debe_cambiar_password = 1, intentos_fallidos = 0, bloqueado_hasta = NULL
+             WHERE id = :id'
+        );
+        $stmt->execute(['hash' => $hash, 'id' => $id]);
+    }
+
+    public function obtenerHashPassword(int $id): ?string
+    {
+        $stmt = $this->pdo->prepare('SELECT password_hash FROM asociados WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+        $fila = $stmt->fetch();
+        return $fila ? $fila['password_hash'] : null;
+    }
+
+    /**
+     * Cambio de contraseña hecho por el propio afiliado: ya no queda
+     * marcado como pendiente de cambio.
+     */
+    public function actualizarPassword(int $id, string $hash): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE asociados SET password_hash = :hash, debe_cambiar_password = 0 WHERE id = :id'
+        );
+        $stmt->execute(['hash' => $hash, 'id' => $id]);
+    }
 }

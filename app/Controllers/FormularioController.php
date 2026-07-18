@@ -12,6 +12,13 @@ use Throwable;
 
 class FormularioController
 {
+    private const FUERZAS_VALIDAS = [
+        'Ejército Nacional',
+        'Policía Nacional',
+        'Armada Nacional',
+        'Fuerza Aérea Colombiana',
+    ];
+
     public function store(): void
     {
         // Nunca mostrar errores de PHP al visitante, sin importar la
@@ -58,7 +65,9 @@ class FormularioController
             $errores[] = 'La cédula debe contener solo números (5 a 20 dígitos).';
         }
         $fechaNacimiento = null;
-        if ($fechaNacimientoRaw !== '') {
+        if ($fechaNacimientoRaw === '') {
+            $errores[] = 'La fecha de nacimiento es obligatoria.';
+        } else {
             $fecha = DateTime::createFromFormat('Y-m-d', $fechaNacimientoRaw);
             if (!$fecha || $fecha->format('Y-m-d') !== $fechaNacimientoRaw) {
                 $errores[] = 'La fecha de nacimiento no es válida.';
@@ -72,8 +81,11 @@ class FormularioController
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errores[] = 'El correo electrónico no es válido.';
         }
-        if ($fuerza === '') {
-            $errores[] = 'La fuerza en la que sirvió es obligatoria.';
+        if ($direccion === '') {
+            $errores[] = 'La dirección de residencia es obligatoria.';
+        }
+        if (!in_array($fuerza, self::FUERZAS_VALIDAS, true)) {
+            $errores[] = 'Selecciona una fuerza válida de la lista.';
         }
 
         if ($errores !== []) {
@@ -81,6 +93,15 @@ class FormularioController
         }
 
         $modelo = new Asociado();
+
+        // Verificar de una vez si la cédula o el correo ya están en el sistema,
+        // para dar un mensaje claro en vez de un error genérico de base de datos.
+        if ($modelo->buscarPorCedula($cedula) !== null) {
+            $this->responder(409, false, 'Ya existe una solicitud registrada con ese número de cédula en el sistema.');
+        }
+        if ($modelo->buscarPorEmail($email) !== null) {
+            $this->responder(409, false, 'Ya existe una solicitud registrada con ese correo electrónico en el sistema.');
+        }
 
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
@@ -101,7 +122,7 @@ class FormularioController
                 'fecha_nacimiento' => $fechaNacimiento,
                 'telefono' => $telefono,
                 'email' => $email,
-                'direccion' => $direccion !== '' ? $direccion : null,
+                'direccion' => $direccion,
                 'fuerza' => $fuerza,
                 'mensaje' => $mensaje !== '' ? $mensaje : null,
                 'ip' => $ip,

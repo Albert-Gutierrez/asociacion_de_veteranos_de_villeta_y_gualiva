@@ -22,9 +22,10 @@ use App\Core\Auth;
 <body class="admin-body">
 
     <div class="admin-layout">
-        <aside class="admin-sidebar" id="admin-sidebar">
+        <aside class="admin-sidebar sidebar-asovegu" id="admin-sidebar">
             <div class="admin-sidebar-logo">
-                <img src="../img/logo_nav.png" alt="ASOVEGU">
+                <img src="../img/escudo sin fondo.png" alt="Escudo ASOVEGU">
+                <span class="admin-sidebar-logo-texto">ASOVEGU</span>
             </div>
 
             <nav class="admin-nav">
@@ -34,6 +35,17 @@ use App\Core\Auth;
                 <a href="cuentas.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'cuentas' ? 'active' : '' ?>">
                     <i class="fas fa-sack-dollar"></i> Cuentas Totales
                 </a>
+                <a href="tickets.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'tickets' ? 'active' : '' ?>">
+                    <i class="fas fa-ticket"></i> Tickets
+                </a>
+                <?php if (Auth::puedeGestionarSolicitudes()): ?>
+                <a href="testimonios.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'testimonios' ? 'active' : '' ?>">
+                    <i class="fas fa-quote-left"></i> Testimonios
+                </a>
+                <a href="documentos.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'documentos' ? 'active' : '' ?>">
+                    <i class="fas fa-file-lines"></i> Documentos
+                </a>
+                <?php endif; ?>
                 <?php if (Auth::esSuperAdmin()): ?>
                 <a href="administradores.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'administradores' ? 'active' : '' ?>">
                     <i class="fas fa-user-shield"></i> Administradores
@@ -49,7 +61,11 @@ use App\Core\Auth;
 
             <div class="admin-sidebar-footer">
                 <div class="admin-user-chip">
-                    <i class="fas fa-circle-user"></i>
+                    <?php if (!empty($usuario['foto'])): ?>
+                        <img src="../img/perfiles/<?= htmlspecialchars($usuario['foto'], ENT_QUOTES, 'UTF-8') ?>" alt="Foto de perfil" class="admin-user-chip-foto">
+                    <?php else: ?>
+                        <i class="fas fa-circle-user"></i>
+                    <?php endif; ?>
                     <div>
                         <strong><?= htmlspecialchars($usuario['nombre'], ENT_QUOTES, 'UTF-8') ?></strong>
                         <span><?= Auth::etiquetaRol($usuario['rol']) ?></span>
