@@ -54,8 +54,9 @@ class CuentaController
         $nueva = (string) ($entrada['password_nueva'] ?? '');
         $confirmar = (string) ($entrada['password_confirmar'] ?? '');
 
-        if (strlen($nueva) < 8) {
-            $this->responder(422, false, 'La nueva contraseña debe tener al menos 8 caracteres.');
+        $errorPassword = Auth::validarPassword($nueva);
+        if ($errorPassword !== null) {
+            $this->responder(422, false, $errorPassword);
         }
         if ($nueva !== $confirmar) {
             $this->responder(422, false, 'La confirmación no coincide con la nueva contraseña.');

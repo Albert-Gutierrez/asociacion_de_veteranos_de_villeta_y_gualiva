@@ -14,7 +14,7 @@ use DateTimeImmutable;
 class AuthController
 {
     private const MAX_INTENTOS = 5;
-    private const BLOQUEO_MINUTOS = 15;
+    private const BLOQUEO_MINUTOS = 5;
     private const MINUTOS_ENTRE_SOLICITUDES = 5;
 
     public function login(): void

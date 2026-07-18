@@ -26,11 +26,12 @@ function e(string $v): string
         </div>
         <div class="campo">
             <label for="password_nueva">Nueva contraseña</label>
-            <input type="password" id="password_nueva" name="password_nueva" required minlength="8">
+            <input type="password" id="password_nueva" name="password_nueva" required minlength="10">
+            <span class="admin-texto-suave">Mínimo 10 caracteres, con al menos una mayúscula y un carácter especial. Sin números repetidos como 222.</span>
         </div>
         <div class="campo">
             <label for="password_confirmar">Confirmar nueva contraseña</label>
-            <input type="password" id="password_confirmar" name="password_confirmar" required minlength="8">
+            <input type="password" id="password_confirmar" name="password_confirmar" required minlength="10">
         </div>
         <button type="submit" class="btn-enviar">Guardar y continuar</button>
     </form>
