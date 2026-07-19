@@ -43,7 +43,7 @@ use App\Core\Auth;
                     <i class="fas fa-quote-left"></i> Testimonios
                 </a>
                 <a href="documentos.php" class="admin-nav-link <?= ($paginaActiva ?? '') === 'documentos' ? 'active' : '' ?>">
-                    <i class="fas fa-file-lines"></i> Documentos
+                    <i class="fas fa-images"></i> Doc e imágenes
                 </a>
                 <?php endif; ?>
                 <?php if (Auth::esSuperAdmin()): ?>

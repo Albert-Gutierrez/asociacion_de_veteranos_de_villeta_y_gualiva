@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\View;
+use App\Models\Actividad;
 use App\Models\Documento;
 
 class DocumentoController
@@ -20,8 +21,9 @@ class DocumentoController
     ];
 
     /**
-     * Página de administración: lista + formulario para subir documentos
-     * públicos (solo administrador/super administrador).
+     * Página de administración "Doc e imágenes": dos columnas, documentos
+     * públicos (izquierda) y actividades con galería de fotos (derecha,
+     * ver ActividadController).
      */
     public function index(): void
     {
@@ -29,13 +31,15 @@ class DocumentoController
         $csrf = Csrf::token();
 
         $modelo = new Documento();
+        $actividadModelo = new Actividad();
 
         View::render('admin/documentos', [
             'usuario' => $usuario,
             'csrf' => $csrf,
-            'tituloPagina' => 'Documentos públicos',
+            'tituloPagina' => 'Doc e imágenes',
             'paginaActiva' => 'documentos',
             'documentos' => $modelo->listarTodos(),
+            'actividades' => $actividadModelo->listarTodas(),
         ]);
     }
 

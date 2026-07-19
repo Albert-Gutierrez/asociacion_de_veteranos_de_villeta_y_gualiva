@@ -23,3 +23,14 @@ Desktop.ini
 /uploads/tickets/*
 /uploads/testimonios/*
 /uploads/documentos/*
+
+# Imágenes de actividades: las que suba el admin desde el panel se ignoran,
+# pero las 6 migradas al lanzar la función quedan versionadas como contenido
+# real del sitio.
+/img/actividades/*
+!/img/actividades/20julio.jpg
+!/img/actividades/actividad_sasaima.jpg
+!/img/actividades/condecoracion_asociacion.jpg
+!/img/actividades/deporte.jpg
+!/img/actividades/reunion.jpg
+!/img/actividades/boda.jpg

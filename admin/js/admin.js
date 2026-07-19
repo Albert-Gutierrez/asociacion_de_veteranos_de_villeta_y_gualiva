@@ -611,3 +611,51 @@ document.querySelectorAll('.btn-eliminar-documento').forEach((boton) => {
         }
     });
 });
+
+// Publicar actividad (admin/documentos.php)
+const formSubirActividad = document.getElementById('form-subir-actividad');
+if (formSubirActividad) {
+    formSubirActividad.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const mensajeEl = document.getElementById('actividad-mensaje');
+        const boton = formSubirActividad.querySelector('button[type="submit"]');
+        boton.disabled = true;
+
+        try {
+            const respuesta = await fetch('acciones/subir_actividad.php', {
+                method: 'POST',
+                body: new FormData(formSubirActividad),
+            });
+            const resultado = await respuesta.json();
+            mostrarMensaje(mensajeEl, resultado.mensaje, respuesta.ok);
+            if (respuesta.ok) {
+                formSubirActividad.reset();
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        } catch (error) {
+            mostrarMensaje(mensajeEl, 'No se pudo conectar con el servidor.', false);
+        } finally {
+            boton.disabled = false;
+        }
+    });
+}
+
+// Eliminar actividad publicada (admin/documentos.php)
+document.querySelectorAll('.btn-eliminar-actividad').forEach((boton) => {
+    boton.addEventListener('click', async () => {
+        if (!confirm('¿Eliminar esta actividad? Dejará de verse en el sitio público, junto con todas sus imágenes.')) return;
+        boton.disabled = true;
+        const csrf = document.querySelector('input[name="csrf_token"]').value;
+        const { ok, resultado } = await llamarAccion('acciones/eliminar_actividad.php', {
+            csrf_token: csrf,
+            actividad_id: boton.dataset.id,
+        }).catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+
+        if (ok) {
+            window.location.reload();
+        } else {
+            boton.disabled = false;
+            alert(resultado.mensaje);
+        }
+    });
+});

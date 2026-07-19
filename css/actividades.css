@@ -127,6 +127,60 @@
     font-family: var(--font-text);
     font-size: 14px;
     line-height: 1.6;
+    margin-bottom: 14px;
+}
+
+.btn-ver-mas-actividad {
+    border: 1px solid var(--color-dorado-honor);
+    background: transparent;
+    color: var(--color-dorado-honor);
+    font-family: var(--font-text);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+.btn-ver-mas-actividad:hover {
+    background: var(--color-dorado-honor);
+    color: var(--color-primary);
+}
+
+.testimonios-vacio {
+    text-align: center;
+    color: #888;
+    font-size: 15px;
+    padding: 20px;
+    grid-column: 1 / -1;
+}
+
+/* MODAL "VER MÁS" ____________________________________________________________ */
+#modal-actividad .modal-title {
+    font-family: var(--font-titles);
+    color: var(--color-primary);
+}
+
+#modal-actividad-descripcion {
+    font-family: var(--font-text);
+    color: #444;
+    margin-bottom: 18px;
+}
+
+.modal-actividad-galeria {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-actividad-galeria img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
 /* RESPONSIVE ________________________________________________________________ */

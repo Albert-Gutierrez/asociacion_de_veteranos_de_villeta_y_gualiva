@@ -70,94 +70,24 @@
 
     <!-- GALERÍA DE ACTIVIDADES__________________________________________________________________________________________ -->
     <section id="galeria-actividades">
-        <div class="grid-actividades">
-
-            <div class="tarjeta-actividad" data-aos="zoom-in" tabindex="0">
-                <div class="tarjeta-interna">
-                    <div class="tarjeta-frente">
-                        <img src="img/20julio.jpg" alt="Celebración del 20 de Julio">
-                        <h3>Celebración del 20 de Julio</h3>
-                    </div>
-                    <div class="tarjeta-reverso">
-                        <h3>20 de Julio</h3>
-                        <p>Conmemoramos el Día de la Independencia junto a nuestros asociados y sus familias,
-                            honrando la memoria y el servicio de quienes defendieron la patria.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tarjeta-actividad" data-aos="zoom-in" data-aos-delay="100" tabindex="0">
-                <div class="tarjeta-interna">
-                    <div class="tarjeta-frente">
-                        <img src="img/actividad sasaima.jpg" alt="Encuentro en Sasaima">
-                        <h3>Encuentro en Sasaima</h3>
-                    </div>
-                    <div class="tarjeta-reverso">
-                        <h3>Encuentro en Sasaima</h3>
-                        <p>Jornada de integración y camaradería con veteranos de la región, fortaleciendo los
-                            lazos de amistad y solidaridad entre asociados.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tarjeta-actividad" data-aos="zoom-in" data-aos-delay="200" tabindex="0">
-                <div class="tarjeta-interna">
-                    <div class="tarjeta-frente">
-                        <img src="img/condecoracion_asociacion.jpg" alt="Ceremonia de condecoración">
-                        <h3>Ceremonias de Condecoración</h3>
-                    </div>
-                    <div class="tarjeta-reverso">
-                        <h3>Condecoraciones</h3>
-                        <p>Reconocemos públicamente la trayectoria y el honor de nuestros veteranos mediante
-                            ceremonias de condecoración junto a autoridades civiles y militares.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tarjeta-actividad" data-aos="zoom-in" tabindex="0">
-                <div class="tarjeta-interna">
-                    <div class="tarjeta-frente">
-                        <img src="img/deporte.jpg" alt="Actividades deportivas">
-                        <h3>Deporte y Montañismo</h3>
-                    </div>
-                    <div class="tarjeta-reverso">
-                        <h3>Deporte y Montañismo</h3>
-                        <p>Promovemos la vida activa y el bienestar físico de nuestros asociados a través de
-                            actividades deportivas y salidas de montañismo.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tarjeta-actividad" data-aos="zoom-in" data-aos-delay="100" tabindex="0">
-                <div class="tarjeta-interna">
-                    <div class="tarjeta-frente">
-                        <img src="img/reunion.jpg" alt="Reunión de asociados">
-                        <h3>Reuniones de Hermandad</h3>
-                    </div>
-                    <div class="tarjeta-reverso">
-                        <h3>Reuniones de Hermandad</h3>
-                        <p>Espacios periódicos de encuentro entre asociados para compartir experiencias,
-                            planear actividades y fortalecer el sentido de pertenencia.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tarjeta-actividad" data-aos="zoom-in" data-aos-delay="200" tabindex="0">
-                <div class="tarjeta-interna">
-                    <div class="tarjeta-frente">
-                        <img src="img/boda.jpg" alt="Acompañamiento en bodas">
-                        <h3>Acompañamiento Familiar</h3>
-                    </div>
-                    <div class="tarjeta-reverso">
-                        <h3>Acompañamiento Familiar</h3>
-                        <p>Acompañamos a nuestros veteranos y sus familias en momentos especiales como bodas y
-                            celebraciones, reafirmando el espíritu de hermandad de la asociación.</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <div class="grid-actividades" id="grid-actividades"></div>
     </section>
+
+    <!-- MODAL "VER MÁS" - GALERÍA COMPLETA DE LA ACTIVIDAD_____________________________________________________________ -->
+    <div class="modal fade" id="modal-actividad" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-actividad-titulo"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modal-actividad-descripcion"></p>
+                    <div class="modal-actividad-galeria" id="modal-actividad-galeria"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- F O O T E R_____________________________________________________________________________________________________________________________ -->
     <footer id="footer">

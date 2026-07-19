@@ -133,6 +133,28 @@ CREATE TABLE IF NOT EXISTS documentos (
     CONSTRAINT fk_documento_admin FOREIGN KEY (subido_por) REFERENCES usuarios_admin(id)
 ) ENGINE=InnoDB;
 
+-- Actividades de la asociación (pestaña pública "Actividades"), gestionadas
+-- por administrador/super administrador. Cada actividad tiene una imagen de
+-- portada (la tarjeta) y hasta 20 imágenes de galería (el modal "Ver más").
+CREATE TABLE IF NOT EXISTS actividades (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT NOT NULL,
+    imagen_portada VARCHAR(255) NOT NULL,
+    creado_por INT UNSIGNED NULL,
+    creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_actividad_admin FOREIGN KEY (creado_por) REFERENCES usuarios_admin(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS actividad_imagenes (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    actividad_id INT UNSIGNED NOT NULL,
+    imagen_ruta VARCHAR(255) NOT NULL,
+    orden TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_actividad_imagen_actividad FOREIGN KEY (actividad_id) REFERENCES actividades(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 -- ---------------------------------------------------------------------------
 -- Usuario de base de datos de mínimo privilegio para la aplicación web.
 -- No uses la cuenta "root" en el .env de producción: crea un usuario dedicado
@@ -149,5 +171,7 @@ CREATE TABLE IF NOT EXISTS documentos (
 -- GRANT SELECT, INSERT, UPDATE ON asovegu.* TO 'asovegu_app'@'localhost';
 -- GRANT DELETE ON asovegu.pagos_cuota TO 'asovegu_app'@'localhost';
 -- GRANT DELETE ON asovegu.documentos TO 'asovegu_app'@'localhost';
+-- GRANT DELETE ON asovegu.actividades TO 'asovegu_app'@'localhost';
+-- GRANT DELETE ON asovegu.actividad_imagenes TO 'asovegu_app'@'localhost';
 -- FLUSH PRIVILEGES;
 -- ---------------------------------------------------------------------------
