@@ -212,8 +212,8 @@ class AsociadoController
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errores[] = 'El correo electrónico no es válido.';
         }
-        if ($fuerza === '') {
-            $errores[] = 'La fuerza en la que sirvió es obligatoria.';
+        if (!in_array($fuerza, Asociado::FUERZAS_VALIDAS, true)) {
+            $errores[] = 'Selecciona una fuerza válida de la lista.';
         }
 
         if ($errores !== []) {

@@ -1,6 +1,7 @@
 <?php
 
 use App\Core\Auth;
+use App\Models\Asociado;
 use App\Models\PagoCuota;
 
 require __DIR__ . '/layout_inicio.php';
@@ -81,7 +82,12 @@ function e(string $v): string
             </div>
             <div class="campo">
                 <label for="edit_fuerza">Fuerza</label>
-                <input type="text" id="edit_fuerza" name="fuerza" required value="<?= e($asociado['fuerza']) ?>">
+                <select id="edit_fuerza" name="fuerza" required>
+                    <option value="" disabled <?= $asociado['fuerza'] === '' ? 'selected' : '' ?>>Selecciona una opción</option>
+                    <?php foreach (Asociado::FUERZAS_VALIDAS as $f): ?>
+                        <option value="<?= e($f) ?>" <?= $asociado['fuerza'] === $f ? 'selected' : '' ?>><?= e($f) ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
             <div class="campo">
                 <label for="edit_mensaje">Mensaje</label>

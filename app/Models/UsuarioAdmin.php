@@ -24,6 +24,57 @@ class UsuarioAdmin
         return $fila ?: null;
     }
 
+    public function buscarPorId(int $id): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM usuarios_admin WHERE id = :id LIMIT 1');
+        $stmt->execute(['id' => $id]);
+        $fila = $stmt->fetch();
+        return $fila ?: null;
+    }
+
+    public function buscarPorCedula(string $cedula): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM usuarios_admin WHERE cedula = :cedula LIMIT 1');
+        $stmt->execute(['cedula' => $cedula]);
+        $fila = $stmt->fetch();
+        return $fila ?: null;
+    }
+
+    /**
+     * Datos personales que el propio usuario edita desde "Mi cuenta"
+     * (distinto de crear()/gestionar_admin.php, que es para que un super
+     * administrador cree/administre cuentas de otros).
+     *
+     * @param array<string, mixed> $datos
+     */
+    public function actualizarDatos(int $id, array $datos): int
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE usuarios_admin SET
+                nombre = :nombre,
+                email = :email,
+                telefono = :telefono,
+                cedula = :cedula,
+                fecha_nacimiento = :fecha_nacimiento,
+                direccion = :direccion,
+                fuerza = :fuerza,
+                fecha_afiliacion = :fecha_afiliacion
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            'nombre' => $datos['nombre'],
+            'email' => $datos['email'],
+            'telefono' => $datos['telefono'],
+            'cedula' => $datos['cedula'],
+            'fecha_nacimiento' => $datos['fecha_nacimiento'],
+            'direccion' => $datos['direccion'],
+            'fuerza' => $datos['fuerza'],
+            'fecha_afiliacion' => $datos['fecha_afiliacion'],
+            'id' => $id,
+        ]);
+        return $stmt->rowCount();
+    }
+
     public function buscarActivoPorEmail(string $email): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM usuarios_admin WHERE email = :email AND activo = 1 LIMIT 1');

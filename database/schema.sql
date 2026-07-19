@@ -51,6 +51,11 @@ CREATE TABLE IF NOT EXISTS usuarios_admin (
     nombre VARCHAR(150) NOT NULL,
     email VARCHAR(150) NOT NULL,
     telefono VARCHAR(20) NULL,
+    cedula VARCHAR(20) NULL,
+    fecha_nacimiento DATE NULL,
+    direccion VARCHAR(255) NULL,
+    fuerza VARCHAR(100) NULL COMMENT 'Opcional: solo si el propio miembro del staff también es veterano.',
+    fecha_afiliacion DATE NULL COMMENT 'Fecha real en la que se asoció, informativa (el staff no paga cuota).',
     password_hash VARCHAR(255) NOT NULL,
     rol ENUM('administrador', 'super_administrador', 'tesorero') NOT NULL DEFAULT 'administrador',
     foto_ruta VARCHAR(255) NULL COMMENT 'Foto de perfil opcional, ruta relativa dentro de img/perfiles/.',
@@ -60,7 +65,8 @@ CREATE TABLE IF NOT EXISTS usuarios_admin (
     ultimo_acceso TIMESTAMP NULL,
     ultimo_reset_solicitado TIMESTAMP NULL,
     creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uq_usuarios_admin_email (email)
+    UNIQUE KEY uq_usuarios_admin_email (email),
+    UNIQUE KEY uq_usuarios_admin_cedula (cedula)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS pagos_cuota (

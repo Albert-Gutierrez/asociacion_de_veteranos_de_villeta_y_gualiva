@@ -168,6 +168,29 @@ if (btnEditarDatos && formDatosAsociado && vistaDatosAsociado) {
     });
 }
 
+// Editar mis datos personales (mi-cuenta.php)
+const formDatosCuenta = document.getElementById('form-datos-cuenta');
+if (formDatosCuenta) {
+    formDatosCuenta.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const datos = {
+            csrf_token: formDatosCuenta.csrf_token.value,
+            nombre: formDatosCuenta.nombre.value,
+            email: formDatosCuenta.email.value,
+            cedula: formDatosCuenta.cedula.value,
+            fecha_nacimiento: formDatosCuenta.fecha_nacimiento.value,
+            telefono: formDatosCuenta.telefono.value,
+            direccion: formDatosCuenta.direccion.value,
+            fuerza: formDatosCuenta.fuerza.value,
+            fecha_afiliacion: formDatosCuenta.fecha_afiliacion.value,
+        };
+        const { ok, resultado } = await llamarAccion('acciones/actualizar_datos_cuenta.php', datos)
+            .catch(() => ({ ok: false, resultado: { mensaje: 'No se pudo conectar con el servidor.' } }));
+        mostrarMensaje(document.getElementById('datos-cuenta-mensaje'), resultado.mensaje, ok);
+        if (ok) setTimeout(() => window.location.reload(), 800);
+    });
+}
+
 // Subir foto de perfil (mi-cuenta.php)
 const formFotoPerfil = document.getElementById('form-foto-perfil');
 if (formFotoPerfil) {

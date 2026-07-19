@@ -12,13 +12,6 @@ use Throwable;
 
 class FormularioController
 {
-    private const FUERZAS_VALIDAS = [
-        'Ejército Nacional',
-        'Policía Nacional',
-        'Armada Nacional',
-        'Fuerza Aérea Colombiana',
-    ];
-
     public function store(): void
     {
         // Nunca mostrar errores de PHP al visitante, sin importar la
@@ -84,7 +77,7 @@ class FormularioController
         if ($direccion === '') {
             $errores[] = 'La dirección de residencia es obligatoria.';
         }
-        if (!in_array($fuerza, self::FUERZAS_VALIDAS, true)) {
+        if (!in_array($fuerza, Asociado::FUERZAS_VALIDAS, true)) {
             $errores[] = 'Selecciona una fuerza válida de la lista.';
         }
 

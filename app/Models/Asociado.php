@@ -9,6 +9,13 @@ use PDO;
 
 class Asociado
 {
+    public const FUERZAS_VALIDAS = [
+        'Ejército Nacional',
+        'Policía Nacional',
+        'Armada Nacional',
+        'Fuerza Aérea Colombiana',
+    ];
+
     private PDO $pdo;
 
     public function __construct()
