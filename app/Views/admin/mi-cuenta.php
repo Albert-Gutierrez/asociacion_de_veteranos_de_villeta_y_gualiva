@@ -17,12 +17,26 @@ function e(string $v): string
             <h2>Mi cuenta</h2>
         </div>
 
-        <dl class="admin-datos">
+        <button type="button" id="btn-editar-cuenta" class="btn-tabla" style="margin-bottom:12px;">
+            <i class="fas fa-pen"></i> Editar datos
+        </button>
+
+        <dl class="admin-datos" id="datos-cuenta-vista">
+            <dt>Nombre</dt><dd><?= e($perfil['nombre']) ?></dd>
+            <dt>Correo</dt><dd><?= e($perfil['email']) ?></dd>
+            <dt>Cédula</dt><dd><?= $perfil['cedula'] ? e($perfil['cedula']) : '—' ?></dd>
+            <dt>Fecha de nacimiento</dt>
+            <dd><?= $perfil['fecha_nacimiento'] ? e((new DateTime($perfil['fecha_nacimiento']))->format('d/m/Y')) : '—' ?></dd>
+            <dt>Teléfono</dt><dd><?= $perfil['telefono'] ? e($perfil['telefono']) : '—' ?></dd>
+            <dt>Dirección</dt><dd><?= $perfil['direccion'] ? e($perfil['direccion']) : '—' ?></dd>
+            <dt>Fuerza</dt><dd><?= $perfil['fuerza'] ? e($perfil['fuerza']) : '—' ?></dd>
             <dt>Rol</dt><dd><?= Auth::etiquetaRol($usuario['rol']) ?></dd>
             <dt>Fecha de inscripción</dt><dd><?= e((new DateTime($perfil['creado_en']))->format('d/m/Y H:i')) ?></dd>
+            <dt>Fecha de afiliación</dt>
+            <dd><?= $perfil['fecha_afiliacion'] ? e((new DateTime($perfil['fecha_afiliacion']))->format('d/m/Y')) : '—' ?></dd>
         </dl>
 
-        <form id="form-datos-cuenta">
+        <form id="form-datos-cuenta" style="display:none;">
             <input type="hidden" name="csrf_token" value="<?= e($csrf) ?>">
 
             <div class="campo">
@@ -63,9 +77,12 @@ function e(string $v): string
                 <input type="date" id="cuenta_fecha_afiliacion" name="fecha_afiliacion" value="<?= $perfil['fecha_afiliacion'] ? e($perfil['fecha_afiliacion']) : '' ?>">
             </div>
 
-            <button type="submit" class="btn-enviar">Guardar cambios</button>
+            <div class="admin-form-inline-row">
+                <button type="submit" class="btn-enviar">Guardar cambios</button>
+                <button type="button" id="btn-cancelar-editar-cuenta" class="btn-tabla">Cancelar</button>
+            </div>
+            <p id="datos-cuenta-mensaje" class="admin-mensaje-accion"></p>
         </form>
-        <p id="datos-cuenta-mensaje" class="admin-mensaje-accion"></p>
 
         <h3 class="admin-subtitulo">Foto de perfil</h3>
         <div class="admin-foto-perfil-editor">

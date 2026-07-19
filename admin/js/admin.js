@@ -169,8 +169,24 @@ if (btnEditarDatos && formDatosAsociado && vistaDatosAsociado) {
 }
 
 // Editar mis datos personales (mi-cuenta.php)
+const btnEditarCuenta = document.getElementById('btn-editar-cuenta');
 const formDatosCuenta = document.getElementById('form-datos-cuenta');
-if (formDatosCuenta) {
+const vistaDatosCuenta = document.getElementById('datos-cuenta-vista');
+if (btnEditarCuenta && formDatosCuenta && vistaDatosCuenta) {
+    const btnCancelarEditarCuenta = document.getElementById('btn-cancelar-editar-cuenta');
+
+    btnEditarCuenta.addEventListener('click', () => {
+        vistaDatosCuenta.style.display = 'none';
+        btnEditarCuenta.style.display = 'none';
+        formDatosCuenta.style.display = '';
+    });
+
+    btnCancelarEditarCuenta.addEventListener('click', () => {
+        formDatosCuenta.style.display = 'none';
+        vistaDatosCuenta.style.display = '';
+        btnEditarCuenta.style.display = '';
+    });
+
     formDatosCuenta.addEventListener('submit', async (e) => {
         e.preventDefault();
         const datos = {
