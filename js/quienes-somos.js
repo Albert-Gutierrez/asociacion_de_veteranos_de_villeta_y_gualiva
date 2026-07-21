@@ -90,11 +90,19 @@ fetch('documentos_publicos.php')
             return;
         }
 
+        const esImagen = (tipo) => tipo === 'jpg' || tipo === 'jpeg' || tipo === 'png' || tipo === 'webp';
+
         contenedor.innerHTML = documentos.map((d) => {
+            const preview = esImagen(d.tipo)
+                ? '<div class="documento-preview"><img src="' + d.url + '" alt="" loading="lazy"></div>'
+                : '<div class="documento-preview documento-preview-pdf"><i class="fas fa-file-pdf"></i></div>';
+
             return '<a class="documento-card disponible" href="' + d.url + '" target="_blank" rel="noopener">'
-                + '<i class="fas fa-file-lines documento-icono"></i>'
+                + preview
+                + '<div class="documento-card-info">'
                 + '<h3>' + escaparHtml(d.titulo) + '</h3>'
                 + '<span>Ver documento</span>'
+                + '</div>'
                 + '</a>';
         }).join('');
     })

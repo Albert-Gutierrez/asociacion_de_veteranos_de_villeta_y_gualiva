@@ -158,6 +158,7 @@ class DocumentoController
                 'id' => (int) $d['id'],
                 'titulo' => $d['titulo'],
                 'url' => 'descargar_documento.php?id=' . (int) $d['id'],
+                'tipo' => strtolower(pathinfo($d['archivo_ruta'], PATHINFO_EXTENSION)),
             ];
         }, $modelo->listarTodos());
 
