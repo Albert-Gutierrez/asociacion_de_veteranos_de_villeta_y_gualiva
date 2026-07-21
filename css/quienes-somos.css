@@ -76,32 +76,59 @@
 }
 
 .mv-tabs-contenido {
+    position: relative;
     background: var(--color-white);
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, .06);
     padding: 48px;
     min-height: 220px;
+    overflow: hidden;
+    perspective: 1400px;
 }
 
 .mv-panel {
+    position: relative;
     display: none;
-    animation: mv-fade-in .35s ease;
+    overflow: hidden;
 }
 
 .mv-panel.activo {
     display: block;
+    animation: mv-giro-in .6s cubic-bezier(0.25, 1, 0.4, 1);
+    transform-origin: center;
+    backface-visibility: hidden;
 }
 
-@keyframes mv-fade-in {
+@keyframes mv-giro-in {
     from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: rotateY(-100deg) scale(.85);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: rotateY(0deg) scale(1);
     }
+}
+
+.mv-panel-fondo {
+    position: absolute;
+    top: 50%;
+    right: -10px;
+    transform: translateY(-50%);
+    font-size: 200px;
+    line-height: 1;
+    color: var(--color-primary);
+    opacity: .07;
+    filter: blur(2px);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.mv-panel h2,
+.mv-panel p {
+    position: relative;
+    z-index: 1;
 }
 
 .mv-panel h2 {
@@ -122,6 +149,12 @@
 
 .mv-panel strong {
     color: var(--color-texto-oscuro);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mv-panel.activo {
+        animation: none;
+    }
 }
 
 /* SECCIÓN TESTIMONIOS (misma tarjeta visual que index.css tenía) ________________ */
@@ -377,6 +410,11 @@
 
     .mv-panel h2 {
         font-size: 19px;
+    }
+
+    .mv-panel-fondo {
+        font-size: 110px;
+        opacity: .06;
     }
 
     .mv-panel p {
